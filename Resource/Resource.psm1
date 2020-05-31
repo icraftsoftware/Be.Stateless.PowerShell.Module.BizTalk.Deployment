@@ -36,6 +36,3 @@ function Add-BizTalkResource {
     Write-Information $Path
     Invoke-Tool -Command { BTSTask AddResource -ApplicationName:"$ApplicationName" -Type:BizTalkAssembly -Overwrite -Source:"$Path" -Options:'GacOnAdd,GacOnImport,GacOnInstall' }
 }
-
-# https://docs.microsoft.com/en-us/biztalk/core/btstask-command-line-reference
-Add-ToolAlias -Path ($env:BTSINSTALLPATH) -Tool BTSTask

@@ -71,7 +71,3 @@ function Import-Bindings {
     Invoke-Tool -Command { BTSTask AddResource -ApplicationName:"$ApplicationName" -Type:BizTalkBinding -Overwrite -Source:"$Path" }
     Invoke-Tool -Command { BTSTask ImportBindings -ApplicationName:"$ApplicationName" -Source:"$Path" }
 }
-
-# https://docs.microsoft.com/en-us/biztalk/core/btstask-command-line-reference
-Add-ToolAlias -Path ($env:BTSINSTALLPATH) -Tool BTSTask
-Add-ToolAlias -Path 'Framework\v4.0.30319' -Tool InstallUtil

@@ -56,5 +56,3 @@ function Uninstall-Component {
         Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack "$Path" }
     }
 }
-
-Add-ToolAlias -Path 'Framework\v4.0.30319' -Tool InstallUtil
