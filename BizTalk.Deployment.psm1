@@ -28,5 +28,8 @@ Set-StrictMode -Version Latest
 Set-Alias BizTalk.Deployment.Tasks $PSScriptRoot/Tasks/Tasks.ps1
 
 # https://docs.microsoft.com/en-us/biztalk/core/btstask-command-line-reference
+# https://docs.microsoft.com/en-us/biztalk/core/managing-resources
 Add-ToolAlias -Path ($env:BTSINSTALLPATH) -Tool BTSTask -Scope Global
 Add-ToolAlias -Path 'Framework\v4.0.30319' -Tool InstallUtil -Scope Global
+
+# https://docs.microsoft.com/en-us/dotnet/api/?view=bts-dotnet
