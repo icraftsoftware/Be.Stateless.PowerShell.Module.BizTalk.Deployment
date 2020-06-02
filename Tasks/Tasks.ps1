@@ -70,13 +70,13 @@ task Stop-Application {
 
 # Synopsis: Add Assemblies to the GAC
 task Deploy-Assemblies {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Install-GacAssembly -Path $_.Path
     }
 }
 # Synopsis: Remove Assemblies from the GAC
 task Undeploy-Assemblies {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
 }
@@ -86,13 +86,13 @@ task Deploy-Bindings Import-Bindings, Install-FileAdapterPaths, Initialize-BizTa
 
 # Synopsis: Import Microsoft BizTalk Server Application Bindings
 task Import-Bindings Expand-Bindings, {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Import-Bindings -Path "$($_.Path).xml" -ApplicationName $ApplicationName
     }
 }
 # Synopsis: Generate Microsoft BizTalk Server Application Bindings
 task Expand-Bindings {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         $arguments = @{
             Path              = $_.Path
             TargetEnvironment = $TargetEnvironment
@@ -120,14 +120,14 @@ task Initialize-BizTalkServices {
 
 # Synopsis: Add Components to the GAC and Run Their Installer
 task Deploy-Components Undeploy-Components, {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Install-GacAssembly -Path $_.Path
         Install-Component -Path $_.Path -SkipInstallUtil:$SkipInstallUtil
     }
 }
 # Synopsis: Run Components Uninstaller and Remove Them from the GAC
 task Undeploy-Components {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Uninstall-Component -Path $_.Path -SkipInstallUtil:$SkipInstallUtil
         Uninstall-GacAssembly -Path $_.Path
     }
@@ -135,7 +135,7 @@ task Undeploy-Components {
 
 # Synopsis: Install Microsoft BizTalk Server Pipelines and Add Their Containing Assemblies to the GAC
 task Deploy-Pipelines {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
         } else {
@@ -145,21 +145,21 @@ task Deploy-Pipelines {
 }
 # Synopsis: Remove Microsoft BizTalk Server Pipelines' Containing Assemblies from the GAC
 task Undeploy-Pipelines {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
 }
 
 # Synopsis: Deploy Microsoft BizTalk Server Pipeline Components and Add Them to the GAC
 task Deploy-PipelineComponents {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Copy-Item -Path $_.Path -Destination "$(Join-Path -Path $env:BTSINSTALLPATH -ChildPath 'Pipeline Components')" -Force
         Install-GacAssembly -Path $_.Path
     }
 }
 # Synopsis: Undeploy Microsoft BizTalk Server Pipeline Components and Remove Them from the GAC
 task Undeploy-PipelineComponents Recycle-AppPool, {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         $pc = [System.IO.Path]::Combine($env:BTSINSTALLPATH, 'Pipeline Components', [System.IO.Path]::GetFileName($_.Path))
         if (Test-Path -Path $pc) {
             Remove-Item -Path $pc -Force
@@ -170,7 +170,7 @@ task Undeploy-PipelineComponents Recycle-AppPool, {
 
 # Synopsis: Install Microsoft BizTalk Server Orchestrations and Add Their Containing Assemblies to the GAC
 task Deploy-Orchestrations {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
         } else {
@@ -180,14 +180,14 @@ task Deploy-Orchestrations {
 }
 # Synopsis: Remove Microsoft BizTalk Server Orchestrations' Containing Assemblies from the GAC
 task Undeploy-Orchestrations {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
 }
 
 # Synopsis: Install Microsoft BizTalk Server Schemas and Add Their Containing Assemblies to the GAC
 task Deploy-Schemas {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
         } else {
@@ -197,14 +197,14 @@ task Deploy-Schemas {
 }
 # Synopsis: Remove Microsoft BizTalk Server Schemas' Containing Assemblies from the GAC
 task Undeploy-Schemas {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
 }
 
 # Synopsis: Install Microsoft BizTalk Server Transforms and Add Their Containing Assemblies to the GAC
 task Deploy-Transforms {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
         } else {
@@ -214,7 +214,7 @@ task Deploy-Transforms {
 }
 # Synopsis: Remove Microsoft BizTalk Server Transforms' Containing Assemblies from the GAC
 task Undeploy-Transforms {
-    Get-TaskItemGroup -Task $Task | ForEach-Object -Process {
+    $Items | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
 }
@@ -226,21 +226,19 @@ task Recycle-AppPool {
     # <RecycleAppPool Items="@(IISAppPool)" Condition="'@(IISAppPool)' != ''" />
 }
 
-function Get-TaskItemGroup {
-    [CmdletBinding()]
-    [OutputType([PSCustomObject[]])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNull()]
-        [psobject]
-        $Task
-    )
+Enter-BuildTask {
+    # assign task's matching ItemGroup's Items to Items variables
     $taskObject = $Task.Name -split '-' | Select-Object -Skip 1
-    if ($ItemGroups.ContainsKey($taskObject)) {
-        @($ItemGroups.$taskObject)
+    if ($null -ne $taskObject -and $ItemGroups.ContainsKey($taskObject)) {
+        Set-Variable -Name Items -Option ReadOnly -Scope Local -Value @($ItemGroups.$taskObject) -Force
     } else {
-        @()
+        Set-Variable -Name Items -Option ReadOnly -Scope Local -Value @() -Force
     }
+}
+
+Exit-BuildTask {
+    # ignore error to prevent failure should the variable Items not be defined
+    Remove-Variable -Name Items -Scope Local -Force -ErrorAction Ignore
 }
 
 Import-Module $PSScriptRoot\..\Application
