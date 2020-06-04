@@ -27,6 +27,7 @@ Set-StrictMode -Version Latest
 # https://github.com/nightroman/Invoke-Build/issues/73, Importing Tasks
 Set-Alias BizTalk.Deployment.Tasks $PSScriptRoot/Tasks/Tasks.ps1
 
+Add-ToolAlias -Path (Join-Path -Path ($env:BTSINSTALLPATH) -ChildPath Tracking) -Tool BM -Scope Global
 # https://docs.microsoft.com/en-us/biztalk/core/btstask-command-line-reference
 # https://docs.microsoft.com/en-us/biztalk/core/managing-resources
 Add-ToolAlias -Path ($env:BTSINSTALLPATH) -Tool BTSTask -Scope Global

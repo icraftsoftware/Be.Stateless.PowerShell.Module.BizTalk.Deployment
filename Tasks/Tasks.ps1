@@ -16,6 +16,8 @@
 
 #endregion
 
+# TODO option switches to skip tasks (e.g. SkipBamDeployment)
+
 Set-StrictMode -Version Latest
 
 Enter-Build {
@@ -23,223 +25,23 @@ Enter-Build {
     $script:ApplicationDescription = $ItemGroups.Application.Description
 }
 
-task Deploy Undeploy, Deploy-BizTalkApplication, Deploy-BizTalkArtifacts
+. $PSScriptRoot\Tasks.Shim.ps1
+. $PSScriptRoot\Tasks.Bam.ps1
+. $PSScriptRoot\Tasks.Bts.ps1
 
-task Patch { $Script:SkipMgmtDbDeployment = $true }, Deploy-BizTalkArtifacts
+# Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
+task Deploy Undeploy, `
+    Deploy-BizTalkApplication, `
+    Deploy-Bam
 
-task Undeploy -If { -not $SkipUndeploy } Undeploy-BizTalkArtifacts, Undeploy-BizTalkApplication
+# Synopsis: Patch a Whole Microsoft BizTalk Server Solution
+task Patch { $Script:SkipMgmtDbDeployment = $true }, `
+    Patch-BizTalkApplication
 
-# Synopsis: Deploy a Whole Microsoft BizTalk Server Application
-task Deploy-BizTalkArtifacts `
-    Deploy-Schemas, `
-    Deploy-Transforms, `
-    Deploy-Assemblies, `
-    Deploy-Components, `
-    Deploy-PipelineComponents, `
-    Deploy-Pipelines, `
-    Deploy-Orchestrations, `
-    Deploy-Bindings
-
-# Synopsis: Undeploy a Whole Microsoft BizTalk Server Application
-task Undeploy-BizTalkArtifacts `
-    Undeploy-Orchestrations, `
-    Undeploy-Pipelines, `
-    Undeploy-PipelineComponents, `
-    Undeploy-Components, `
-    Undeploy-Assemblies, `
-    Undeploy-Transforms, `
-    Undeploy-Schemas
-
-# Synopsis: Create a Microsoft BizTalk Server Application
-task Deploy-BizTalkApplication -If { -not (Test-BizTalkApplication $ApplicationName) } {
-    Write-Build DarkGreen "Adding Microsoft BizTalk Server Application '$ApplicationName'"
-    New-BizTalkApplication -Name $ApplicationName -Description $ApplicationDescription
-    # TODO add app references
-    # <AddAppReference ApplicationName="$(BizTalkAppName)" AppsToReference="@(AppsToReference)" Condition="%(Identity) == %(Identity) and '@(AppsToReference)' != ''" />
-}
-# Synopsis: Delete a Microsoft BizTalk Server Application
-task Undeploy-BizTalkApplication -If { Test-BizTalkApplication -Name $ApplicationName } Stop-Application, {
-    Write-Build DarkGreen "Removing Microsoft BizTalk Server Application '$ApplicationName'"
-    Remove-BizTalkApplication -Name $ApplicationName
-}
-# Synopsis: Stop a Microsoft BizTalk Server Application
-task Stop-Application {
-    Write-Build DarkGreen "Stopping Microsoft BizTalk Server Application '$ApplicationName'"
-    Stop-BizTalkApplication -Name $ApplicationName -TerminateServiceInstances:$TerminateServiceInstances
-}
-
-# Synopsis: Add Assemblies to the GAC
-task Deploy-Assemblies {
-    $Items | ForEach-Object -Process {
-        Install-GacAssembly -Path $_.Path
-    }
-}
-# Synopsis: Remove Assemblies from the GAC
-task Undeploy-Assemblies {
-    $Items | ForEach-Object -Process {
-        Uninstall-GacAssembly -Path $_.Path
-    }
-}
-
-# Synopsis: Deploy Microsoft BizTalk Server Application Bindings and Enforce Artifacts' Expected States
-task Deploy-Bindings Import-Bindings, Install-FileAdapterPaths, Initialize-BizTalkServices
-
-# Synopsis: Import Microsoft BizTalk Server Application Bindings
-task Import-Bindings Expand-Bindings, {
-    $Items | ForEach-Object -Process {
-        Import-Bindings -Path "$($_.Path).xml" -ApplicationName $ApplicationName
-    }
-}
-# Synopsis: Generate Microsoft BizTalk Server Application Bindings
-task Expand-Bindings {
-    $Items | ForEach-Object -Process {
-        $arguments = @{
-            Path              = $_.Path
-            TargetEnvironment = $TargetEnvironment
-            BindingFilePath   = "$($_.Path).xml"
-        }
-        if (Test-Item -Item $_ -Property 'EnvironmentSettingOverridesRootPath') {
-            $arguments.Add('EnvironmentSettingOverridesRootPath', $_.EnvironmentSettingOverridesRootPath)
-        }
-        if (Test-Item -Item $_ -Property 'AssemblyProbingPaths') {
-            $arguments.Add('AssemblyProbingPaths', $_.AssemblyProbingPaths)
-        }
-        Expand-Bindings @arguments
-    }
-}
-# Synopsis: Create FILE Adapter-based Receive Locations' and Send Ports' Folders
-task Install-FileAdapterPaths {
-    # TODO
-    Write-Build Yellow 'YET TO BE DONE'
-}
-# Synopsis: Start Microsoft BizTalk Server Application Services
-task Initialize-BizTalkServices {
-    # TODO
-    Write-Build Yellow 'YET TO BE DONE'
-}
-
-# Synopsis: Add Components to the GAC and Run Their Installer
-task Deploy-Components Undeploy-Components, {
-    $Items | ForEach-Object -Process {
-        Install-GacAssembly -Path $_.Path
-        Install-Component -Path $_.Path -SkipInstallUtil:$SkipInstallUtil
-    }
-}
-# Synopsis: Run Components Uninstaller and Remove Them from the GAC
-task Undeploy-Components {
-    $Items | ForEach-Object -Process {
-        Uninstall-Component -Path $_.Path -SkipInstallUtil:$SkipInstallUtil
-        Uninstall-GacAssembly -Path $_.Path
-    }
-}
-
-# Synopsis: Install Microsoft BizTalk Server Pipelines and Add Their Containing Assemblies to the GAC
-task Deploy-Pipelines {
-    $Items | ForEach-Object -Process {
-        if ($SkipMgmtDbDeployment) {
-            Install-GacAssembly -Path $_.Path
-        } else {
-            Add-BizTalkResource -Path $_.Path -ApplicationName $ApplicationName
-        }
-    }
-}
-# Synopsis: Remove Microsoft BizTalk Server Pipelines' Containing Assemblies from the GAC
-task Undeploy-Pipelines {
-    $Items | ForEach-Object -Process {
-        Uninstall-GacAssembly -Path $_.Path
-    }
-}
-
-# Synopsis: Deploy Microsoft BizTalk Server Pipeline Components and Add Them to the GAC
-task Deploy-PipelineComponents {
-    $Items | ForEach-Object -Process {
-        Copy-Item -Path $_.Path -Destination "$(Join-Path -Path $env:BTSINSTALLPATH -ChildPath 'Pipeline Components')" -Force
-        Install-GacAssembly -Path $_.Path
-    }
-}
-# Synopsis: Undeploy Microsoft BizTalk Server Pipeline Components and Remove Them from the GAC
-task Undeploy-PipelineComponents Recycle-AppPool, {
-    $Items | ForEach-Object -Process {
-        $pc = [System.IO.Path]::Combine($env:BTSINSTALLPATH, 'Pipeline Components', [System.IO.Path]::GetFileName($_.Path))
-        if (Test-Path -Path $pc) {
-            Remove-Item -Path $pc -Force
-        }
-        Uninstall-GacAssembly -Path $_.Path
-    }
-}
-
-# Synopsis: Install Microsoft BizTalk Server Orchestrations and Add Their Containing Assemblies to the GAC
-task Deploy-Orchestrations {
-    $Items | ForEach-Object -Process {
-        if ($SkipMgmtDbDeployment) {
-            Install-GacAssembly -Path $_.Path
-        } else {
-            Add-BizTalkResource -Path $_.Path -ApplicationName $ApplicationName
-        }
-    }
-}
-# Synopsis: Remove Microsoft BizTalk Server Orchestrations' Containing Assemblies from the GAC
-task Undeploy-Orchestrations {
-    $Items | ForEach-Object -Process {
-        Uninstall-GacAssembly -Path $_.Path
-    }
-}
-
-# Synopsis: Install Microsoft BizTalk Server Schemas and Add Their Containing Assemblies to the GAC
-task Deploy-Schemas {
-    $Items | ForEach-Object -Process {
-        if ($SkipMgmtDbDeployment) {
-            Install-GacAssembly -Path $_.Path
-        } else {
-            Add-BizTalkResource -Path $_.Path -ApplicationName $ApplicationName
-        }
-    }
-}
-# Synopsis: Remove Microsoft BizTalk Server Schemas' Containing Assemblies from the GAC
-task Undeploy-Schemas {
-    $Items | ForEach-Object -Process {
-        Uninstall-GacAssembly -Path $_.Path
-    }
-}
-
-# Synopsis: Install Microsoft BizTalk Server Transforms and Add Their Containing Assemblies to the GAC
-task Deploy-Transforms {
-    $Items | ForEach-Object -Process {
-        if ($SkipMgmtDbDeployment) {
-            Install-GacAssembly -Path $_.Path
-        } else {
-            Add-BizTalkResource -Path $_.Path -ApplicationName $ApplicationName
-        }
-    }
-}
-# Synopsis: Remove Microsoft BizTalk Server Transforms' Containing Assemblies from the GAC
-task Undeploy-Transforms {
-    $Items | ForEach-Object -Process {
-        Uninstall-GacAssembly -Path $_.Path
-    }
-}
-
-# Synopsis: Recycle an IIS AppPool
-task Recycle-AppPool {
-    # see cmdlet Restart-WebAppPool
-    # <Exec Command="iisreset.exe /noforce /restart /timeout:$(IisResetTime)" Condition="'@(IISAppPool)' == ''" />
-    # <RecycleAppPool Items="@(IISAppPool)" Condition="'@(IISAppPool)' != ''" />
-}
-
-Enter-BuildTask {
-    # assign task's matching ItemGroup's Items to Items variables
-    $taskObject = $Task.Name -split '-' | Select-Object -Skip 1
-    if ($null -ne $taskObject -and $ItemGroups.ContainsKey($taskObject)) {
-        Set-Variable -Name Items -Option ReadOnly -Scope Local -Value @($ItemGroups.$taskObject) -Force
-    } else {
-        Set-Variable -Name Items -Option ReadOnly -Scope Local -Value @() -Force
-    }
-}
-
-Exit-BuildTask {
-    # ignore error to prevent failure should the variable Items not be defined
-    Remove-Variable -Name Items -Scope Local -Force -ErrorAction Ignore
-}
+# Synopsis: Undeploy a Whole Microsoft BizTalk Server Solution
+task Undeploy -If { -not $SkipUndeploy } `
+    Undeploy-Bam, `
+    Undeploy-BizTalkApplication
 
 Import-Module $PSScriptRoot\..\Application
 Import-Module $PSScriptRoot\..\Assembly
