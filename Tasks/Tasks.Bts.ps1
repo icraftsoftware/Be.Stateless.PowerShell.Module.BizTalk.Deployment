@@ -52,8 +52,10 @@ task Undeploy-BizTalkArtifacts `
 task Add-BizTalkApplication -If { -not (Test-BizTalkApplication $ApplicationName) } {
     Write-Build DarkGreen "Adding Microsoft BizTalk Server Application '$ApplicationName'"
     New-BizTalkApplication -Name $ApplicationName -Description $ApplicationDescription
-    # TODO add app references
-    # <AddAppReference ApplicationName="$(BizTalkAppName)" AppsToReference="@(AppsToReference)" Condition="%(Identity) == %(Identity) and '@(AppsToReference)' != ''" />
+    if (Test-Item -Item $ItemGroups.Application -Property 'References') {
+        Write-Build DarkGreen "Adding References to Microsoft BizTalk Server Applications '$($ItemGroups.Application.References -join ''', ''')' from Microsoft BizTalk Server Application '$ApplicationName'"
+        Add-BizTalkApplicationReference -Name $ApplicationName -Reference $ItemGroups.Application.References
+    }
 }
 # Synopsis: Delete a Microsoft BizTalk Server Application
 task Remove-BizTalkApplication -If { Test-BizTalkApplication -Name $ApplicationName } Stop-Application, {

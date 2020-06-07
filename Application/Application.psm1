@@ -18,6 +18,39 @@
 
 Set-StrictMode -Version Latest
 
+function Add-BizTalkApplicationReference {
+    [CmdletBinding()]
+    [OutputType([void])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Name,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string[]]
+        $Reference
+    )
+    Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+    Use-Object ($catalog = Get-BizTalkCatalog ) {
+        try {
+            Assert-BizTalkApplication -Name $Name
+            $dependingApplication = $catalog.Applications[$Name]
+            $Reference | ForEach-Object -Process {
+                Assert-BizTalkApplication -Name $_
+                $dependantApplication = $catalog.Applications[$_]
+                Write-Information -MessageData "Adding Reference to Microsoft BizTalk Server Application '$_' from Microsoft BizTalk Server Application '$Name'"
+                $dependingApplication.AddReference($dependantApplication)
+            }
+            $catalog.SaveChanges()
+        } catch {
+            $catalog.DiscardChanges()
+            throw
+        }
+    }
+}
+
 function Install-BizTalkApplication {
     # TODO https://stackoverflow.com/questions/26910789/is-it-possible-to-reuse-a-param-block-across-multiple-functions
     [CmdletBinding()]
