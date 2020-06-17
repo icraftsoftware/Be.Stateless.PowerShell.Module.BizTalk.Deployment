@@ -19,17 +19,17 @@
 Set-StrictMode -Version Latest
 
 Enter-BuildTask {
-    # assign task's matching ItemGroup's Items to Items variables
+    # assign task's matching Manifest's Resources to Resources variables
     $taskObject = $Task.Name -split '-' | Select-Object -Skip 1
-    Set-Variable -Name Items -Option ReadOnly -Scope Local -Value (Get-ItemGroup -Name $taskObject) -Force
+    Set-Variable -Name Resources -Option ReadOnly -Scope Local -Value (Get-TaskResourceGroup -Name $taskObject) -Force
 }
 
 Exit-BuildTask {
-    # ignore error to prevent failure should the variable Items not be defined
-    Remove-Variable -Name Items -Scope Local -Force -ErrorAction Ignore
+    # ignore error to prevent failure should the variable Resources not be defined
+    Remove-Variable -Name Resources -Scope Local -Force -ErrorAction Ignore
 }
 
-function Get-ItemGroup {
+function Get-TaskResourceGroup {
     [CmdletBinding()]
     [OutputType([PSCustomObject[]])]
     param(
@@ -42,10 +42,10 @@ function Get-ItemGroup {
         [switch]
         $ThrowOnError
     )
-    if ($null -ne $Name -and $ItemGroups.ContainsKey($Name)) {
-        @($ItemGroups.$Name)
+    if ($null -ne $Name -and $Manifest.ContainsKey($Name)) {
+        @($Manifest.$Name)
     } elseif ($ThrowOnError) {
-        throw "ItemGroup '$Name' has not been defined."
+        throw "Resource group '$Name' has not been defined."
     } else {
         @()
     }

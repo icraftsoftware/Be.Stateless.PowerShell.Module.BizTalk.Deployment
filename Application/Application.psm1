@@ -18,39 +18,6 @@
 
 Set-StrictMode -Version Latest
 
-function Add-BizTalkApplicationReference {
-    [CmdletBinding()]
-    [OutputType([void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $Name,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string[]]
-        $Reference
-    )
-    Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-    Use-Object ($catalog = Get-BizTalkCatalog ) {
-        try {
-            Assert-BizTalkApplication -Name $Name
-            $dependingApplication = $catalog.Applications[$Name]
-            $Reference | ForEach-Object -Process {
-                Assert-BizTalkApplication -Name $_
-                $dependantApplication = $catalog.Applications[$_]
-                Write-Information -MessageData "Adding Reference to Microsoft BizTalk Server Application '$_' from Microsoft BizTalk Server Application '$Name'"
-                $dependingApplication.AddReference($dependantApplication)
-            }
-            $catalog.SaveChanges()
-        } catch {
-            $catalog.DiscardChanges()
-            throw
-        }
-    }
-}
-
 function Install-BizTalkApplication {
     # TODO https://stackoverflow.com/questions/26910789/is-it-possible-to-reuse-a-param-block-across-multiple-functions
     [CmdletBinding()]
@@ -58,7 +25,7 @@ function Install-BizTalkApplication {
     param(
         [Parameter(Mandatory = $true)]
         [hashtable[]]
-        $ItemGroup,
+        $Manifest,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -87,8 +54,7 @@ function Install-BizTalkApplication {
     )
     begin {
         Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-        # TODO ensure all hashtables are merged into one
-        $script:ItemGroups = Expand-ItemGroup -ItemGroup $ItemGroup
+        $script:Manifest = $Manifest
     }
     end {
         # https://github.com/nightroman/Invoke-Build/issues/78, Script block as `File`
@@ -109,7 +75,7 @@ function Uninstall-BizTalkApplication {
     param(
         [Parameter(Mandatory = $true)]
         [hashtable[]]
-        $ItemGroup,
+        $Manifest,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -138,7 +104,7 @@ function Uninstall-BizTalkApplication {
     )
     begin {
         Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-        $script:ItemGroups = Expand-ItemGroup -ItemGroup $ItemGroup
+        $script:Manifest = $Manifest
     }
     end {
         # https://github.com/nightroman/Invoke-Build/issues/78, Script block as `File`

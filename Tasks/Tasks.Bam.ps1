@@ -26,7 +26,7 @@ task Undeploy-Bam -If { -not $SkipUndeploy } Undeploy-BamActivityModels
 
 # Synopsis: Deploy a business activity model definition file
 task Deploy-BamActivityModels {
-    $Items | ForEach-Object -Process {
+    $Resources | ForEach-Object -Process {
         Write-Build DarkGreen "Deploying BAM Activity Model '$($_.Name)'"
         Invoke-Tool -Command { BM update-all -DefinitionFile:"$($_.Path)" }
     }
@@ -34,7 +34,7 @@ task Deploy-BamActivityModels {
 
 # Synopsis: Create BAM indexes for a set of Activities and Properties
 task Deploy-BamIndexes {
-    $Items | ForEach-Object -Process {
+    $Resources | ForEach-Object -Process {
         Write-Build DarkGreen "Creating BAM Index '$($_.Activity)'.'$($_.Name)'"
         Invoke-Tool -Command { BM create-index -Activity:"$($_.Activity)" -IndexName:"IX_$($_.Name)" -Checkpoint:"$($_.Name)" }
     }
@@ -42,7 +42,7 @@ task Deploy-BamIndexes {
 
 # Synopsis: Undeploy a business activity model definition file
 task Undeploy-BamActivityModels {
-    $Items | ForEach-Object -Process {
+    $Resources | ForEach-Object -Process {
         Write-Build DarkGreen "Undeploying BAM Activity Model '$($_.Name)'"
         Invoke-Tool -Command { BM remove-all -DefinitionFile:"$($_.Path)" }
     }

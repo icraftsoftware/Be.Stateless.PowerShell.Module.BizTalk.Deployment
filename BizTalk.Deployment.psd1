@@ -34,7 +34,7 @@
       'Resource\Resource.psm1'
    )
    RequiredAssemblies    = @()
-   RequiredModules       = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'ItemGroup', 'Psx')
+   RequiredModules       = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'SQLPS')
 
    AliasesToExport       = @('BizTalk.Deployment.Tasks')
    CmdletsToExport       = @()

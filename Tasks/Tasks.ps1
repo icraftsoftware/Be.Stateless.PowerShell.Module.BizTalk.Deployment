@@ -21,13 +21,13 @@
 Set-StrictMode -Version Latest
 
 Enter-Build {
-    $script:ApplicationName = $ItemGroups.Application.Name
-    $script:ApplicationDescription = $ItemGroups.Application.Description
+    $script:ApplicationName = $Manifest.Application.Name
 }
 
 . $PSScriptRoot\Tasks.Shim.ps1
 . $PSScriptRoot\Tasks.Bam.ps1
 . $PSScriptRoot\Tasks.Bts.ps1
+. $PSScriptRoot\Tasks.Db.ps1
 
 # Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
 task Deploy Undeploy, `
