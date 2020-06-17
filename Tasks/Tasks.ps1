@@ -31,8 +31,9 @@ Enter-Build {
 
 # Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
 task Deploy Undeploy, `
-    Deploy-BizTalkApplication, `
-    Deploy-Bam
+    Deploy-BamConfiguration, `
+    Deploy-SqlDatabases, `
+    Deploy-BizTalkApplication
 
 # Synopsis: Patch a Whole Microsoft BizTalk Server Solution
 task Patch { $Script:SkipMgmtDbDeployment = $true }, `
@@ -40,8 +41,9 @@ task Patch { $Script:SkipMgmtDbDeployment = $true }, `
 
 # Synopsis: Undeploy a Whole Microsoft BizTalk Server Solution
 task Undeploy -If { -not $SkipUndeploy } `
-    Undeploy-Bam, `
-    Undeploy-BizTalkApplication
+    Undeploy-BizTalkApplication, `
+    Undeploy-SqlDatabases, `
+    Undeploy-BamConfiguration
 
 Import-Module $PSScriptRoot\..\Application
 Import-Module $PSScriptRoot\..\Assembly

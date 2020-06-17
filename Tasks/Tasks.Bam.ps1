@@ -19,10 +19,10 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Deploy a business activity model and its indexes
-task Deploy-Bam Deploy-BamActivityModels, Deploy-BamIndexes
+task Deploy-BamConfiguration Deploy-BamActivityModels, Deploy-BamIndexes
 
 # Synopsis: Undeploy a business activity model
-task Undeploy-Bam -If { -not $SkipUndeploy } Undeploy-BamActivityModels
+task Undeploy-BamConfiguration -If { -not $SkipUndeploy } Undeploy-BamActivityModels
 
 # Synopsis: Deploy a business activity model definition file
 task Deploy-BamActivityModels {
