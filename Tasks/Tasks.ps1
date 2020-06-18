@@ -27,6 +27,7 @@ Enter-Build {
 . $PSScriptRoot\Tasks.Shim.ps1
 . $PSScriptRoot\Tasks.Bam.ps1
 . $PSScriptRoot\Tasks.Bts.ps1
+. $PSScriptRoot\Tasks.Iis.ps1
 . $PSScriptRoot\Tasks.Sql.ps1
 
 # Synopsis: Deploy a Whole Microsoft BizTalk Server Solution

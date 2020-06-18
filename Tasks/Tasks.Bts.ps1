@@ -103,11 +103,11 @@ task Expand-Bindings {
             TargetEnvironment = $TargetEnvironment
             BindingFilePath   = "$($_.Path).xml"
         }
-        if ($_ | Get-Member -MemberType *Property -Name EnvironmentSettingOverridesRootPath | Test-Any) {
-            $arguments.Add('EnvironmentSettingOverridesRootPath', $_.EnvironmentSettingOverridesRootPath)
+        if (![string]::IsNullOrEmpty($_.EnvironmentSettingOverridesRootPath)) {
+            $arguments.EnvironmentSettingOverridesRootPath = $_.EnvironmentSettingOverridesRootPath
         }
-        if ($_ | Get-Member -MemberType *Property -Name AssemblyProbingPaths | Test-Any) {
-            $arguments.Add('AssemblyProbingPaths', $_.AssemblyProbingPaths)
+        if ($_.AssemblyProbingPaths | Test-Any) {
+            $arguments.AssemblyProbingPaths = $_.AssemblyProbingPaths
         }
         Expand-Bindings @arguments
     }
@@ -132,7 +132,6 @@ task Initialize-BizTalkServices {
 # Synopsis: Add Components to the GAC and Run Their Installer
 task Deploy-Components Undeploy-Components, {
     $Resources | ForEach-Object -Process {
-        Install-GacAssembly -Path $_.Path
         Install-Component -Path $_.Path -SkipInstallUtil:$SkipInstallUtil
     }
 }
@@ -140,7 +139,6 @@ task Deploy-Components Undeploy-Components, {
 task Undeploy-Components {
     $Resources | ForEach-Object -Process {
         Uninstall-Component -Path $_.Path -SkipInstallUtil:$SkipInstallUtil
-        Uninstall-GacAssembly -Path $_.Path
     }
 }
 
@@ -228,13 +226,4 @@ task Undeploy-Transforms {
     $Resources | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
-}
-
-# Synopsis: Recycle an IIS AppPool
-task Recycle-AppPool {
-    Write-Build Yellow 'TO BE DONE'
-    # $Resources | ForEach-Object -Process {
-    #     Write-Build DarkGreen "Recycle IIS AppPool '$($_.Name)'"
-    #     Restart-WebAppPool -Name $_.Name
-    # }
 }
