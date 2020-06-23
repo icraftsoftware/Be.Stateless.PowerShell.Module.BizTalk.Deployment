@@ -34,3 +34,7 @@ Add-ToolAlias -Path ($env:BTSINSTALLPATH) -Tool BTSTask -Scope Global
 Add-ToolAlias -Path 'Framework\v4.0.30319' -Tool InstallUtil -Scope Global
 
 # https://docs.microsoft.com/en-us/dotnet/api/?view=bts-dotnet
+
+# Push-Location -Path (Get-Location)
+# Import-Module -Name SQLPS -DisableNameChecking
+# Pop-Location
