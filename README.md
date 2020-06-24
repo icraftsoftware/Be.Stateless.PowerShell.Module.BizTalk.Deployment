@@ -1,4 +1,4 @@
-﻿# Be.Stateless.PowerShell.Module.BizTalk.Deployment
+# Be.Stateless.PowerShell.Module.BizTalk.Deployment
 
 [![Build Status](https://dev.azure.com/icraftsoftware/be.stateless/_apis/build/status/Be.Stateless.PowerShell.Module.BizTalk.Deployment%20Manual%20Release?branchName=master)](https://dev.azure.com/icraftsoftware/be.stateless/_build/latest?definitionId=30&branchName=master)
 [![GitHub Release](https://img.shields.io/github/v/release/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment)](https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/releases/latest)
