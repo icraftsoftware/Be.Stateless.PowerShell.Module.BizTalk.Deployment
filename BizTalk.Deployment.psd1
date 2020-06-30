@@ -18,7 +18,7 @@
 
 @{
    RootModule            = 'BizTalk.Deployment.psm1'
-   ModuleVersion         = '2.0.0.0'
+   ModuleVersion         = '1.0.0.0'
    GUID                  = '533b5f59-49ce-4f51-a293-cb78f5cf81b5'
    Author                = 'François Chabot'
    CompanyName           = 'be.stateless'
