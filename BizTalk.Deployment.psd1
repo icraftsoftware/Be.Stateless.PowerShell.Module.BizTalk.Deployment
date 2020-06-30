@@ -34,7 +34,7 @@
       'Resource\Resource.psm1'
    )
    RequiredAssemblies    = @()
-   RequiredModules       = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SQLPS')
+   RequiredModules       = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SqlServer')
 
    AliasesToExport       = @('BizTalk.Deployment.Tasks')
    CmdletsToExport       = @()
@@ -45,7 +45,7 @@
          Tags                       = @('Application', 'BizTalk', 'Deployment', 'Declarative', 'SQL')
          LicenseUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/blob/master/LICENSE'
          ProjectUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment'
-         ExternalModuleDependencies = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SQLPS')
+         ExternalModuleDependencies = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SqlServer')
       }
    }
 }
