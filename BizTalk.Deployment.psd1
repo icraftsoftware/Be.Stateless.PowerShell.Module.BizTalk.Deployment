@@ -42,9 +42,10 @@
    VariablesToExport     = @()
    PrivateData           = @{
       PSData = @{
-         Tags       = @('BizTalk', 'BizTalk Deployment', 'Application Deployment', 'Declarative Deployment', 'Deployment Framework', 'SQL Server')
-         LicenseUri = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/blob/master/LICENSE'
-         ProjectUri = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment'
+         Tags                       = @('BizTalk', 'BizTalk Deployment', 'Application Deployment', 'Declarative Deployment', 'Deployment Framework', 'SQL Server')
+         LicenseUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/blob/master/LICENSE'
+         ProjectUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment'
+         ExternalModuleDependencies = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SQLPS')
       }
    }
 }
