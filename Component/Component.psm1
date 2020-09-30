@@ -34,7 +34,7 @@ function Install-Component {
     Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     if (-not $SkipInstallUtil) {
         Write-Information $Path
-        Install-GacAssembly -Path $_.Path
+        Install-GacAssembly -Path $Path
         Invoke-Tool -Command { InstallUtil /ShowCallStack "$Path" }
     }
 }
@@ -55,6 +55,6 @@ function Uninstall-Component {
     if (-not $SkipInstallUtil) {
         Write-Information $Path
         Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack "$Path" }
-        Uninstall-GacAssembly -Path $_.Path
+        Uninstall-GacAssembly -Path $Path
     }
 }
