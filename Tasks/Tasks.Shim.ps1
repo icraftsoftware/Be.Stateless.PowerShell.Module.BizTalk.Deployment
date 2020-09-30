@@ -21,7 +21,7 @@ Set-StrictMode -Version Latest
 Enter-BuildTask {
     # assign task's matching Manifest's Resources to Resources variables
     $taskObject = $Task.Name -split '-' | Select-Object -Skip 1
-    Set-Variable -Name Resources -Option ReadOnly -Scope Local -Value (Get-TaskResourceGroup -Name $taskObject) -Force
+    Set-Variable -Name Resources -Option ReadOnly -Scope Local -Value @(Get-TaskResourceGroup -Name $taskObject) -Force
 }
 
 Exit-BuildTask {
