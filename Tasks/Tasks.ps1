@@ -45,9 +45,3 @@ task Undeploy -If { -not $SkipUndeploy } `
     Undeploy-BizTalkApplication, `
     Undeploy-SqlDatabases, `
     Undeploy-BamConfiguration
-
-Import-Module $PSScriptRoot\..\Application
-Import-Module $PSScriptRoot\..\Assembly
-Import-Module $PSScriptRoot\..\Bindings
-Import-Module $PSScriptRoot\..\Component
-Import-Module $PSScriptRoot\..\Resource

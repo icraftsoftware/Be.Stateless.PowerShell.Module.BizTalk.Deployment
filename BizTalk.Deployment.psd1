@@ -26,13 +26,7 @@
    Description           = 'Commands to deploy Microsoft BizTalk Server Applications supported by a deployment framework featuring a declarative task model.'
    ProcessorArchitecture = 'None'
    PowerShellVersion     = '5.0'
-   NestedModules         = @(
-      'Application\Application.psm1',
-      'Assembly\Assembly.psm1',
-      'Bindings\Bindings.psm1',
-      'Component\Component.psm1',
-      'Resource\Resource.psm1'
-   )
+   NestedModules         = @()
    RequiredAssemblies    = @()
    RequiredModules       = @('BizTalk.Administration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SqlServer')
 
