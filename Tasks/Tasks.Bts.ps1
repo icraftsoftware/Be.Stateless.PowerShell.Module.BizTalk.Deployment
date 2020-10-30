@@ -49,7 +49,7 @@ task Undeploy-BizTalkArtifacts `
     Undeploy-Schemas
 
 # Synopsis: Create a Microsoft BizTalk Server Application with References to Its Dependant Microsoft BizTalk Server Applications
-task Add-BizTalkApplication -If { -not (Test-BizTalkApplication $ApplicationName) } {
+task Add-BizTalkApplication -If { ($Manifest.Properties.Type -eq 'Application') -and -not (Test-BizTalkApplication $ApplicationName) } {
     $arguments = @{ Name = $ApplicationName }
     if (![string]::IsNullOrWhiteSpace($Manifest.Application.Description)) {
         $arguments.Description = $Manifest.Application.Description
@@ -63,7 +63,7 @@ task Add-BizTalkApplication -If { -not (Test-BizTalkApplication $ApplicationName
     New-BizTalkApplication @arguments
 }
 # Synopsis: Delete a Microsoft BizTalk Server Application
-task Remove-BizTalkApplication -If { Test-BizTalkApplication -Name $ApplicationName } Stop-Application, {
+task Remove-BizTalkApplication -If { ($Manifest.Properties.Type -eq 'Application') -and (Test-BizTalkApplication -Name $ApplicationName) } Stop-Application, {
     Write-Build DarkGreen "Removing Microsoft BizTalk Server Application '$ApplicationName'"
     Remove-BizTalkApplication -Name $ApplicationName
 }
@@ -113,7 +113,7 @@ task Expand-Bindings {
     }
 }
 # Synopsis: Create FILE Adapter-based Receive Locations' and Send Ports' Folders
-task Install-FileAdapterPaths {
+task Install-FileAdapterPaths -If { $Manifest.Properties.Type -eq 'Application' } {
     Write-Build DarkGreen "Creating '$ApplicationName' file-based receive locations and send ports' folders"
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         #TODO support another user account than BUILTIN\Users, see BTDF
@@ -122,7 +122,7 @@ task Install-FileAdapterPaths {
     # TODO corresponding undeploy task
 }
 # Synopsis: Start Microsoft BizTalk Server Application Services
-task Initialize-BizTalkServices {
+task Initialize-BizTalkServices -If { $Manifest.Properties.Type -eq 'Application' } {
     Write-Build DarkGreen "Initializing '$ApplicationName' services"
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         Invoke-Tool -Command { InstallUtil /ShowCallStack /TargetEnvironment=$TargetEnvironment /InitializeServices /EnvironmentSettingOverridesRootPath="$($_.EnvironmentSettingOverridesRootPath)" /AssemblyProbingPaths="$($_.AssemblyProbingPaths -join ';')" "$($_.Path)" }
@@ -143,7 +143,7 @@ task Undeploy-Components {
 }
 
 # Synopsis: Install Microsoft BizTalk Server Pipelines and Add Their Containing Assemblies to the GAC
-task Deploy-Pipelines {
+task Deploy-Pipelines -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
@@ -153,7 +153,7 @@ task Deploy-Pipelines {
     }
 }
 # Synopsis: Remove Microsoft BizTalk Server Pipelines' Containing Assemblies from the GAC
-task Undeploy-Pipelines {
+task Undeploy-Pipelines -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
@@ -178,7 +178,7 @@ task Undeploy-PipelineComponents Recycle-AppPool, {
 }
 
 # Synopsis: Install Microsoft BizTalk Server Orchestrations and Add Their Containing Assemblies to the GAC
-task Deploy-Orchestrations {
+task Deploy-Orchestrations -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
@@ -188,14 +188,14 @@ task Deploy-Orchestrations {
     }
 }
 # Synopsis: Remove Microsoft BizTalk Server Orchestrations' Containing Assemblies from the GAC
-task Undeploy-Orchestrations {
+task Undeploy-Orchestrations -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
 }
 
 # Synopsis: Install Microsoft BizTalk Server Schemas and Add Their Containing Assemblies to the GAC
-task Deploy-Schemas {
+task Deploy-Schemas -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
@@ -205,14 +205,14 @@ task Deploy-Schemas {
     }
 }
 # Synopsis: Remove Microsoft BizTalk Server Schemas' Containing Assemblies from the GAC
-task Undeploy-Schemas {
+task Undeploy-Schemas -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }
 }
 
 # Synopsis: Install Microsoft BizTalk Server Transforms and Add Their Containing Assemblies to the GAC
-task Deploy-Transforms {
+task Deploy-Transforms -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         if ($SkipMgmtDbDeployment) {
             Install-GacAssembly -Path $_.Path
@@ -222,7 +222,7 @@ task Deploy-Transforms {
     }
 }
 # Synopsis: Remove Microsoft BizTalk Server Transforms' Containing Assemblies from the GAC
-task Undeploy-Transforms {
+task Undeploy-Transforms -If { $Manifest.Properties.Type -eq 'Application' } {
     $Resources | ForEach-Object -Process {
         Uninstall-GacAssembly -Path $_.Path
     }

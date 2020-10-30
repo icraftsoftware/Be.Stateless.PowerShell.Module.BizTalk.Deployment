@@ -18,7 +18,7 @@
 
 Set-StrictMode -Version Latest
 
-function Install-BizTalkApplication {
+function Install-BizTalkPackage {
     # TODO https://stackoverflow.com/questions/26910789/is-it-possible-to-reuse-a-param-block-across-multiple-functions
     [CmdletBinding()]
     [OutputType([void])]
@@ -68,7 +68,7 @@ function Install-BizTalkApplication {
     }
 }
 
-function Uninstall-BizTalkApplication {
+function Uninstall-BizTalkPackage {
     # TODO https://stackoverflow.com/questions/26910789/is-it-possible-to-reuse-a-param-block-across-multiple-functions
     [CmdletBinding()]
     [OutputType([void])]

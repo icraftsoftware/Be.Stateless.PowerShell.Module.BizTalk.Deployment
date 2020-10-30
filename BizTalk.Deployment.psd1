@@ -32,7 +32,7 @@
 
    AliasesToExport       = @('BizTalk.Deployment.Tasks')
    CmdletsToExport       = @()
-   FunctionsToExport     = @('Install-BizTalkApplication', 'Uninstall-BizTalkApplication')
+   FunctionsToExport     = @('Install-BizTalkPackage', 'Uninstall-BizTalkPackage')
    VariablesToExport     = @()
    PrivateData           = @{
       PSData = @{

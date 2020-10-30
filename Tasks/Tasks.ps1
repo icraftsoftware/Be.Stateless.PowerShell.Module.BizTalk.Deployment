@@ -21,7 +21,7 @@
 Set-StrictMode -Version Latest
 
 Enter-Build {
-    $script:ApplicationName = $Manifest.Application.Name
+    if ($Manifest.Properties.Type -eq 'Application') { $script:ApplicationName = $Manifest.Properties.Name }
 }
 
 . $PSScriptRoot\Tasks.Shim.ps1
