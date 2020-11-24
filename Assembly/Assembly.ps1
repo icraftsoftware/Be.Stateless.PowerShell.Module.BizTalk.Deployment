@@ -18,56 +18,6 @@
 
 Set-StrictMode -Version Latest
 
-function Install-GacAssembly {
-    [CmdletBinding()]
-    [OutputType([void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
-        [string]
-        $Path
-    )
-    Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-    Write-Information $Path
-    Gac\Add-GacAssembly -LiteralPath $Path -Force -Verbose:($VerbosePreference -eq 'Continue')
-}
-
-function Test-GacAssembly {
-    [CmdletBinding()]
-    [OutputType([bool])]
-    param(
-        [Parameter(Mandatory = $true, ParameterSetName = 'name')]
-        [ValidateNotNullOrEmpty()]
-        [System.Reflection.AssemblyName]
-        $AssemblyName,
-
-        [Parameter(Mandatory = $true, ParameterSetName = 'path')]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
-        [string]
-        $Path
-    )
-    if ($PSCmdlet.ParameterSetName -eq 'path') { $AssemblyName = Get-AssemblyName -Path $Path }
-    [bool](Gac\Get-GacAssembly -AssemblyName $AssemblyName)
-}
-
-function Uninstall-GacAssembly {
-    [CmdletBinding()]
-    [OutputType([void])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
-        [string]
-        $Path
-    )
-    Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-    Write-Information $Path
-    $name = Get-AssemblyName -Path $Path
-    if (Test-GacAssembly -AssemblyName $name) { Gac\Remove-GacAssembly -AssemblyName $name -Verbose:($VerbosePreference -eq 'Continue') }
-}
-
 function Get-AssemblyName {
     [CmdletBinding()]
     [OutputType([psobject[]])]
@@ -97,5 +47,95 @@ function Get-AssemblyName {
                 $assemblyName
             }
         }
+    }
+}
+
+function Install-GacAssembly {
+    [CmdletBinding()]
+    [OutputType([void])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript( { Test-Path -Path $_ })]
+        [string]
+        $Path
+    )
+    Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+    Write-Information $Path
+    $name = Get-AssemblyName -Path $Path
+    if (Test-GacAssembly -AssemblyName $name) {
+        $gacFileVersion = Gac\Get-GacAssemblyFile -AssemblyName $name | Select-Object -ExpandProperty VersionInfo | Select-Object -ExpandProperty FileVersion
+        $pathFileVersion = Get-Item -Path $Path | Select-Object -ExpandProperty VersionInfo | Select-Object -ExpandProperty FileVersion
+        if ($pathFileVersion -gt $gacFileVersion) {
+            Write-Verbose -Message "Installing a more recent version of the assembly file in GAC [$pathFileVersion > $gacFileVersion]."
+            Gac\Add-GacAssembly -LiteralPath $Path -Force -Verbose:($VerbosePreference -eq 'Continue')
+        } else {
+            Write-Verbose -Message 'An equivalent or more recent version of the assembly file is already installed in GAC.'
+        }
+    } else {
+        Gac\Add-GacAssembly -LiteralPath $Path -Force -Verbose:($VerbosePreference -eq 'Continue')
+    }
+}
+
+function Test-GacAssembly {
+    [CmdletBinding()]
+    [OutputType([bool])]
+    param(
+        [Parameter(Mandatory = $true, ParameterSetName = 'name')]
+        [ValidateNotNullOrEmpty()]
+        [System.Reflection.AssemblyName]
+        $AssemblyName,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'path')]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript( { Test-Path -Path $_ })]
+        [string]
+        $Path
+    )
+    if ($PSCmdlet.ParameterSetName -eq 'path') { $AssemblyName = Get-AssemblyName -Path $Path }
+    [bool](Gac\Get-GacAssembly -AssemblyName $AssemblyName)
+}
+
+function Test-GacAssemblyInstallReference {
+    [CmdletBinding()]
+    [OutputType([bool])]
+    param(
+        [Parameter(Mandatory = $true, ParameterSetName = 'name')]
+        [ValidateNotNullOrEmpty()]
+        [System.Reflection.AssemblyName]
+        $AssemblyName,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'path')]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript( { Test-Path -Path $_ })]
+        [string]
+        $Path
+    )
+    if ($PSCmdlet.ParameterSetName -eq 'path') { $AssemblyName = Get-AssemblyName -Path $Path }
+    [bool](Gac\Get-GacAssemblyInstallReference -AssemblyName $AssemblyName)
+}
+
+
+function Uninstall-GacAssembly {
+    [CmdletBinding()]
+    [OutputType([void])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript( { Test-Path -Path $_ })]
+        [string]
+        $Path
+    )
+    Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+    Write-Information $Path
+    $name = Get-AssemblyName -Path $Path
+    if (Test-GacAssembly -AssemblyName $name) {
+        if (Test-GacAssemblyInstallReference -AssemblyName $name) {
+            Write-Verbose -Message 'The assembly is referenced by an installer and cannot be uninstalled from GAC.'
+        } else {
+            Gac\Remove-GacAssembly -AssemblyName $name -Verbose:($VerbosePreference -eq 'Continue')
+        }
+    } else {
+        Write-Verbose -Message 'The assembly is already uninstalled from GAC.'
     }
 }

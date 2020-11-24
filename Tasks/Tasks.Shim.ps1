@@ -21,7 +21,10 @@ Set-StrictMode -Version Latest
 Enter-BuildTask {
     # assign task's matching Manifest's Resources to Resources variables
     $taskObject = $Task.Name -split '-' | Select-Object -Skip 1
-    Set-Variable -Name Resources -Option ReadOnly -Scope Local -Value @(Get-TaskResourceGroup -Name $taskObject) -Force
+    if (-not [string]::IsNullOrEmpty($taskObject)) {
+        $taskResourceGroup = @(Get-TaskResourceGroup -Name $taskObject)
+        Set-Variable -Name Resources -Option ReadOnly -Scope Local -Value $taskResourceGroup -Force
+    }
 }
 
 Exit-BuildTask {
@@ -34,7 +37,6 @@ function Get-TaskResourceGroup {
     [OutputType([PSCustomObject[]])]
     param(
         [Parameter(Mandatory = $true)]
-        [AllowEmptyString()]
         [string]
         $Name,
 
@@ -42,8 +44,8 @@ function Get-TaskResourceGroup {
         [switch]
         $ThrowOnError
     )
-    if ($null -ne $Name -and $Manifest.ContainsKey($Name)) {
-        @($Manifest.$Name)
+    if ($Manifest.ContainsKey($Name)) {
+        @($Manifest.$Name | Where-Object { -not(Get-Member -InputObject $_ -Name Condition) -or $_.Condition() })
     } elseif ($ThrowOnError) {
         throw "Resource group '$Name' has not been defined."
     } else {
