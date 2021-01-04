@@ -51,12 +51,12 @@ task Undeploy-BizTalkArtifacts `
 # Synopsis: Create a Microsoft BizTalk Server Application with References to Its Dependant Microsoft BizTalk Server Applications
 task Add-BizTalkApplication -If { ($Manifest.Properties.Type -eq 'Application') -and -not (Test-BizTalkApplication $ApplicationName) } {
     $arguments = @{ Name = $ApplicationName }
-    if (![string]::IsNullOrWhiteSpace($Manifest.Application.Description)) {
-        $arguments.Description = $Manifest.Application.Description
+    if (![string]::IsNullOrWhiteSpace($Manifest.Properties.Description)) {
+        $arguments.Description = $Manifest.Properties.Description
     }
-    if ($Manifest.Application.References | Test-Any) {
-        Write-Build DarkGreen "Adding Microsoft BizTalk Server Application '$ApplicationName' with References to Microsoft BizTalk Server Applications '$($Manifest.Application.References -join ''', ''')'"
-        $arguments.References = $Manifest.Application.References
+    if ($Manifest.Properties.References | Test-Any) {
+        Write-Build DarkGreen "Adding Microsoft BizTalk Server Application '$ApplicationName' with References to Microsoft BizTalk Server Applications '$($Manifest.Properties.References -join ''', ''')'"
+        $arguments.References = $Manifest.Properties.References
     } else {
         Write-Build DarkGreen "Adding Microsoft BizTalk Server Application '$ApplicationName'"
     }
