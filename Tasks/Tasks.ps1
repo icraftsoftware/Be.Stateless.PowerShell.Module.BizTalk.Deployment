@@ -29,9 +29,11 @@ Enter-Build {
 . $PSScriptRoot\Tasks.Bts.ps1
 . $PSScriptRoot\Tasks.Iis.ps1
 . $PSScriptRoot\Tasks.Sql.ps1
+. $PSScriptRoot\Tasks.Config.ps1
 
 # Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
 task Deploy Undeploy, `
+    Deploy-Configurations, `
     Deploy-BamConfiguration, `
     Deploy-SqlDatabases, `
     Deploy-BizTalkApplication
@@ -44,4 +46,5 @@ task Patch { $Script:SkipMgmtDbDeployment = $true }, `
 task Undeploy -If { -not $SkipUndeploy } `
     Undeploy-BizTalkApplication, `
     Undeploy-SqlDatabases, `
-    Undeploy-BamConfiguration
+    Undeploy-BamConfiguration, `
+    Undeploy-Configurations
