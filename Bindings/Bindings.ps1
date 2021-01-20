@@ -1,6 +1,6 @@
 #region Copyright & License
 
-# Copyright © 2012 - 2020 François Chabot
+# Copyright © 2012 - 2021 François Chabot
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,21 +35,21 @@ function Expand-Bindings {
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $BindingFilePath,
+        $OutputFilePath,
 
         [Parameter(Mandatory = $false)]
         [AllowEmptyString()]
         [string]
-        $EnvironmentSettingOverridesRootPath,
+        $ExcelSettingOverridesFolderPath,
 
         [Parameter(Mandatory = $false)]
         [AllowEmptyCollection()]
         [string[]]
-        $AssemblyProbingPaths
+        $AssemblyProbingFolderPaths
     )
     Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     Write-Information $Path
-    Invoke-Tool -Command { InstallUtil /ShowCallStack /TargetEnvironment=$TargetEnvironment /BindingFilePath="$BindingFilePath" /EnvironmentSettingOverridesRootPath="$EnvironmentSettingOverridesRootPath" /AssemblyProbingPaths="$($AssemblyProbingPaths -join ';')" "$Path" }
+    Invoke-Tool -Command { InstallUtil /ShowCallStack /TargetEnvironment=$TargetEnvironment /OutputFilePath="$OutputFilePath" /ExcelSettingOverridesFolderPath="$ExcelSettingOverridesFolderPath" /AssemblyProbingFolderPaths="$($AssemblyProbingFolderPaths -join ';')" "$Path" }
 }
 
 function Import-Bindings {

@@ -1,6 +1,6 @@
 #region Copyright & License
 
-# Copyright © 2012 - 2020 François Chabot
+# Copyright © 2012 - 2021 François Chabot
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -100,14 +100,14 @@ task Expand-Bindings {
     $Resources | ForEach-Object -Process {
         $arguments = @{
             Path              = $_.Path
+            OutputFilePath    = "$($_.Path).xml"
             TargetEnvironment = $TargetEnvironment
-            BindingFilePath   = "$($_.Path).xml"
         }
-        if (![string]::IsNullOrEmpty($_.EnvironmentSettingOverridesRootPath)) {
-            $arguments.EnvironmentSettingOverridesRootPath = $_.EnvironmentSettingOverridesRootPath
+        if (![string]::IsNullOrEmpty($_.ExcelSettingOverridesFolderPath)) {
+            $arguments.ExcelSettingOverridesFolderPath = $_.ExcelSettingOverridesFolderPath
         }
-        if ($_.AssemblyProbingPaths | Test-Any) {
-            $arguments.AssemblyProbingPaths = $_.AssemblyProbingPaths
+        if ($_.AssemblyProbingFolderPaths | Test-Any) {
+            $arguments.AssemblyProbingFolderPaths = $_.AssemblyProbingFolderPaths
         }
         Expand-Bindings @arguments
     }
@@ -117,7 +117,7 @@ task Install-FileAdapterPaths -If { $Manifest.Properties.Type -eq 'Application' 
     Write-Build DarkGreen "Creating '$ApplicationName' file-based receive locations and send ports' folders"
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         #TODO support another user account than BUILTIN\Users, see BTDF
-        Invoke-Tool -Command { InstallUtil /ShowCallStack /TargetEnvironment=$TargetEnvironment /SetupFileAdapterPaths /Users='BUILTIN\Users' /EnvironmentSettingOverridesRootPath="$($_.EnvironmentSettingOverridesRootPath)" /AssemblyProbingPaths="$($_.AssemblyProbingPaths -join ';')" "$($_.Path)" }
+        Invoke-Tool -Command { InstallUtil /ShowCallStack /TargetEnvironment=$TargetEnvironment /SetupFileAdapterPaths /Users='BUILTIN\Users' /ExcelSettingOverridesFolderPath="$($_.ExcelSettingOverridesFolderPath)" /AssemblyProbingFolderPaths="$($_.AssemblyProbingFolderPaths -join ';')" "$($_.Path)" }
     }
     # TODO corresponding undeploy task
 }
@@ -125,7 +125,7 @@ task Install-FileAdapterPaths -If { $Manifest.Properties.Type -eq 'Application' 
 task Initialize-BizTalkServices -If { $Manifest.Properties.Type -eq 'Application' } {
     Write-Build DarkGreen "Initializing '$ApplicationName' services"
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
-        Invoke-Tool -Command { InstallUtil /ShowCallStack /TargetEnvironment=$TargetEnvironment /InitializeServices /EnvironmentSettingOverridesRootPath="$($_.EnvironmentSettingOverridesRootPath)" /AssemblyProbingPaths="$($_.AssemblyProbingPaths -join ';')" "$($_.Path)" }
+        Invoke-Tool -Command { InstallUtil /ShowCallStack /TargetEnvironment=$TargetEnvironment /InitializeServices /ExcelSettingOverridesFolderPath="$($_.ExcelSettingOverridesFolderPath)" /AssemblyProbingFolderPaths="$($_.AssemblyProbingFolderPaths -join ';')" "$($_.Path)" }
     }
 }
 
