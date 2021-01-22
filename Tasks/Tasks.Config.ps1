@@ -22,21 +22,23 @@ Set-StrictMode -Version Latest
 task Deploy-Configurations Apply-XmlConfigurations
 
 # Synopsis: Undeploy SQL databases and execute SQL undeployment scripts
-task Undeploy-Configurations -If { -not $SkipUndeploy } Apply-UndoXmlConfigurations
+task Undeploy-Configurations -If { -not $SkipUndeploy } Undo-XmlConfigurations
 
 # Synopsis: Apply XML configuration customizations
 task Apply-XmlConfigurations {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        Get-ConfigurationSpecification -Path $_.Path | Merge-ConfigurationSpecification -SaveBeforeMerge -GenerateUndo
+        Get-ConfigurationSpecification -Path $_.Path | Merge-ConfigurationSpecification -CreateBackup -CreateUndo
     }
 }
 
 # Synopsis: Remove XML configuration customizations
-task Apply-UndoXmlConfigurations -If { -not $SkipUndeploy } {
+task Undo-XmlConfigurations -If { -not $SkipUndeploy } {
     $Resources | ForEach-Object -Process {
-        Write-Build DarkGreen $_.Path
-        Get-ConfigurationSpecification -Path $_.Path | Merge-ConfigurationSpecification -SaveBeforeMerge
-        Remove-Item -Path $_.Path -Force
+        Split-Path $_.Path | Get-ChildItem -Filter "$($_.Name).*.undo" -File | Resolve-Path | Select-Object -ExpandProperty ProviderPath | ForEach-Object -Process {
+            Write-Build DarkGreen $_
+            Get-ConfigurationSpecification -Path $_ | Merge-ConfigurationSpecification -CreateBackup
+            Remove-Item -Path $_ -Force
+        }
     }
 }
