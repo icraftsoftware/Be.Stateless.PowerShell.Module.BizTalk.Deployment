@@ -75,7 +75,7 @@ function Invoke-SqlScript {
         $Server,
 
         [Parameter(Mandatory = $true)]
-        [ValidateNotNullOrEmpty()]
+        [ValidateNotNull()]
         [hashtable]
         $Variables
     )
