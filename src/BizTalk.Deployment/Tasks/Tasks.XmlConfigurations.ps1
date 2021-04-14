@@ -19,6 +19,16 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Apply XML configuration customizations
+task Deploy-XmlConfigurations `
+    Apply-XmlConfigurations, `
+    Invoke-XmlConfigurationActions
+
+# Synopsis: Revert XML configuration customizations
+task Undeploy-XmlConfigurations `
+    Revert-XmlConfigurations, `
+    Invoke-XmlUnconfigurationActions
+
+# Synopsis: Apply XML configuration specifications
 task Apply-XmlConfigurations {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
@@ -26,7 +36,20 @@ task Apply-XmlConfigurations {
     }
 }
 
-# Synopsis: Remove XML configuration customizations
+# Synopsis: Apply XML configuration actions
+task Invoke-XmlConfigurationActions {
+    $Resources | ForEach-Object -Process { $_ } -PipelineVariable xca | ForEach-Object -Process {
+        Write-Build DarkGreen $xca.Path
+        switch ($xca.Action) {
+            'insert' { Add-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Name $xca.Name -Attributes $xca.Attributes }
+            'update' { Set-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Attributes $xca.Attributes }
+            'delete' { Remove-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath }
+            default { throw "Unknown XML configuration action $($xca.Action)." }
+        }
+    }
+}
+
+# Synopsis: Remove XML configuration specifications
 task Revert-XmlConfigurations -If { -not $SkipUndeploy } {
     $Resources | ForEach-Object -Process {
         Get-ChildItem -Path "$($_.Path).*.undo" -File | Sort-Object -Descending | ForEach-Object -Process {
@@ -36,3 +59,17 @@ task Revert-XmlConfigurations -If { -not $SkipUndeploy } {
         }
     }
 }
+
+# Synopsis: Apply XML unconfiguration actions
+task Invoke-XmlUnconfigurationActions {
+    $Resources | ForEach-Object -Process { $_ } -PipelineVariable xca | ForEach-Object -Process {
+        Write-Build DarkGreen $xca.Path
+        switch ($xca.Action) {
+            'insert' { Add-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Name $xca.Name -Attributes $xca.Attributes }
+            'update' { Set-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Attributes $xca.Attributes }
+            'delete' { Remove-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath }
+            default { throw "Unknown XML configuration action $($xca.Action)." }
+        }
+    }
+}
+

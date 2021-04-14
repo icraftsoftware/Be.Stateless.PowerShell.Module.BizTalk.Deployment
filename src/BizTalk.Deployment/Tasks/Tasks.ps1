@@ -22,28 +22,30 @@ Set-StrictMode -Version Latest
 
 . $PSScriptRoot\Tasks.Shim.ps1
 
-. $PSScriptRoot\Tasks.Assembly.ps1
+. $PSScriptRoot\Tasks.Assemblies.ps1
 . $PSScriptRoot\Tasks.Bam.ps1
 . $PSScriptRoot\Tasks.Bts.ps1
+. $PSScriptRoot\Tasks.EventLogSources.ps1
 . $PSScriptRoot\Tasks.Iis.ps1
 . $PSScriptRoot\Tasks.Sql.ps1
 . $PSScriptRoot\Tasks.SsoConfigStores.ps1
+. $PSScriptRoot\Tasks.WindowsServices.ps1
 . $PSScriptRoot\Tasks.XmlConfigurations.ps1
 
 # Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
 task Deploy Undeploy, `
+    Deploy-EventLogSources, `
     Deploy-Assemblies, `
-    Apply-XmlConfigurations, `
+    Deploy-WindowsServices, `
+    Deploy-XmlConfigurations, `
     Deploy-BamConfiguration, `
     Deploy-SqlDatabases, `
     Deploy-SsoConfigStores, `
-    Deploy-BizTalkApplication, `
-    Restart-BizTalkGroupHostInstances
+    Deploy-BizTalkApplication
 
 # Synopsis: Patch a Whole Microsoft BizTalk Server Solution
 task Patch { $Script:SkipMgmtDbDeployment = $true }, `
-    Patch-BizTalkApplication, `
-    Restart-BizTalkGroupHostInstances
+    Patch-BizTalkApplication
 
 # Synopsis: Undeploy a Whole Microsoft BizTalk Server Solution
 task Undeploy -If { -not $SkipUndeploy } `
@@ -51,14 +53,7 @@ task Undeploy -If { -not $SkipUndeploy } `
     Undeploy-SsoConfigStores, `
     Undeploy-SqlDatabases, `
     Undeploy-BamConfiguration, `
-    Revert-XmlConfigurations, `
+    Undeploy-XmlConfigurations, `
+    Undeploy-WindowsServices, `
     Undeploy-Assemblies, `
-    Restart-BizTalkGroupHostInstances
-
-task Restart-BizTalkGroupHostInstances {
-    # TODO restart only the host instances concerning the application being deployed and those depending upon
-    Get-BizTalkHost | Where-Object -FilterScript { Test-BizTalkHost -Host $_ -Type InProcess } | Get-BizTalkHostInstance | ForEach-Object -Process {
-        Write-Build DarkGreen $_.HostName
-        Restart-BizTalkHostInstance -HostInstance $_
-    }
-}
+    Undeploy-EventLogSources
