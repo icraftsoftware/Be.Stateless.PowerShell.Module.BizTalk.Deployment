@@ -40,7 +40,7 @@ task Invoke-SqlDeploymentScripts {
         Write-Build DarkGreen $_.Path
         $location = Get-Location
         try {
-            Invoke-SqlScript -Path $_.Path -Server $_.Server -Variables $_.Variables
+            Invoke-SqlScript -Path $_.Path -Server $_.Server -Database $_.Database -Variables $_.Variables
         } finally {
             Set-Location $location
         }
@@ -53,7 +53,7 @@ task Invoke-SqlUndeploymentScripts -If { -not $SkipUndeploy } {
         Write-Build DarkGreen $_.Path
         $location = Get-Location
         try {
-            Invoke-SqlScript -Path $_.Path -Server $_.Server -Variables $_.Variables
+            Invoke-SqlScript -Path $_.Path -Server $_.Server -Database $_.Database -Variables $_.Variables
         } finally {
             Set-Location $location
         }
@@ -75,6 +75,11 @@ function Invoke-SqlScript {
         $Server,
 
         [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]
+        $Database,
+
+        [Parameter(Mandatory = $true)]
         [ValidateNotNull()]
         [hashtable]
         $Variables
@@ -83,6 +88,7 @@ function Invoke-SqlScript {
         InputFile      = $Path
         ServerInstance = $Server
     }
+    if (-not([string]::IsNullOrWhiteSpace($Database))) { $arguments.Database = $Database }
     # see https://stackoverflow.com/a/16656788/1789441
     if ($Variables.Keys | Test-Any) { $arguments.Variable = $( @($Variables.Keys | ForEach-Object -Process { "$_=$($Variables.$_)" }) ) }
     Invoke-Sqlcmd @arguments
