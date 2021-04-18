@@ -20,6 +20,7 @@ Set-StrictMode -Version Latest
 
 # Synopsis: Deploy application's SSO config stores if on the Management Server
 task Deploy-SsoConfigStores -If { -not $SkipMgmtDbDeployment } `
+    Undeploy-SsoConfigStores, `
     Deploy-SsoConfigStoresOnManagementServer
 
 # Synopsis: Deploy application's SSO config stores

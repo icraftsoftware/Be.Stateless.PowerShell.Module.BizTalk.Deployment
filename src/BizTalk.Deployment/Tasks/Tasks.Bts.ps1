@@ -33,15 +33,20 @@ Set-StrictMode -Version Latest
 task Deploy-BizTalkApplication `
     Undeploy-BizTalkApplication, `
     Add-BizTalkApplication, `
-    Deploy-BizTalkArtifacts
+    Deploy-BizTalkArtifacts, `
+    Start-Application
 
 # Synopsis: Patch a Microsoft BizTalk Server Application's Binaries
-task Patch-BizTalkApplication Deploy-BizTalkArtifacts
+task Patch-BizTalkApplication Deploy-BizTalkArtifacts, `
+    Start-Application, `
+    Restart-BizTalkGroupHostInstances
 
 # Synopsis: Undeploy a Microsoft BizTalk Server Application
 task Undeploy-BizTalkApplication -If { -not $SkipUndeploy } `
+    Stop-Application, `
     Undeploy-BizTalkArtifacts, `
-    Remove-BizTalkApplication
+    Remove-BizTalkApplication, `
+    Restart-BizTalkGroupHostInstances
 
 # Synopsis: Deploy all Microsoft BizTalk Server Artifacts
 task Deploy-BizTalkArtifacts `
@@ -52,12 +57,10 @@ task Deploy-BizTalkArtifacts `
     Deploy-Pipelines, `
     Deploy-Orchestrations, `
     Deploy-Bindings, `
-    Deploy-FileAdapterPaths, `
-    Start-Application
+    Deploy-FileAdapterPaths
 
 # Synopsis: Undeploy all Microsoft BizTalk Server Artifacts
 task Undeploy-BizTalkArtifacts -If { -not $SkipUndeploy } `
-    Stop-Application, `
     Undeploy-FileAdapterPaths, `
     Undeploy-Orchestrations, `
     Undeploy-Pipelines, `
@@ -65,3 +68,11 @@ task Undeploy-BizTalkArtifacts -If { -not $SkipUndeploy } `
     Undeploy-Components, `
     Undeploy-Maps, `
     Undeploy-Schemas
+
+task Restart-BizTalkGroupHostInstances {
+    # TODO restart only the host instances concerning the application being deployed and those depending upon
+    Get-BizTalkHost | Where-Object -FilterScript { Test-BizTalkHost -Host $_ -Type InProcess } | Get-BizTalkHostInstance | ForEach-Object -Process {
+        Write-Build DarkGreen $_.HostName
+        Restart-BizTalkHostInstance -HostInstance $_
+    }
+}
