@@ -45,9 +45,11 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Settings
 		protected override void ProcessRecord()
 		{
 			WriteVerbose($"{nameof(IEnvironmentSettings)}-derived type is being loaded...");
-			var resolvedEnvironmentSettingsType = Assembly
-				// see https://stackoverflow.com/a/1477899/1789441
-				.LoadFile(ResolvePowerShellPath(EnvironmentSettingsAssemblyFilePath, nameof(EnvironmentSettingsAssemblyFilePath)))
+			// see https://stackoverflow.com/a/1477899/1789441
+			// see https://stackoverflow.com/a/41858160/1789441
+			var resolvedEnvironmentSettingsType = AppDomain
+				.CurrentDomain
+				.Load(Assembly.LoadFile(ResolvedEnvironmentSettingsAssemblyFilePath).GetName())
 				.GetEnvironmentSettingsType(true);
 			WriteDebug($"Resolved EnvironmentSettingsType: '{resolvedEnvironmentSettingsType.AssemblyQualifiedName}'.");
 			var environmentSettings = (IEnvironmentSettings) Reflector.GetProperty(resolvedEnvironmentSettingsType, "Settings");
@@ -69,5 +71,10 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Settings
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
 		public string TargetEnvironment { get; set; }
+
+		private string ResolvedEnvironmentSettingsAssemblyFilePath =>
+			_resolvedEnvironmentSettingsAssemblyFilePath ??= ResolvePowerShellPath(EnvironmentSettingsAssemblyFilePath, nameof(EnvironmentSettingsAssemblyFilePath));
+
+		private string _resolvedEnvironmentSettingsAssemblyFilePath;
 	}
 }

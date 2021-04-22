@@ -31,15 +31,8 @@ task Deploy-BindingsOnManagementServer `
 task Convert-Bindings {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        $arguments = @{
-            ApplicationBindingAssemblyFilePath = $_.Path
-            OutputFilePath                     = "$($_.Path).xml"
-            TargetEnvironment                  = $TargetEnvironment
-        }
-        if ($_.AssemblyProbingFolderPaths | Test-Any) { $arguments.AssemblyProbingFolderPaths = $_.AssemblyProbingFolderPaths }
-        if (Test-Member -InputObject $_ -Name EnvironmentSettingOverridesType) { $arguments.EnvironmentSettingOverridesType = $_.EnvironmentSettingOverridesType }
-        if (Test-Member -InputObject $_ -Name ExcelSettingOverridesFolderPath) { $arguments.ExcelSettingOverridesFolderPath = $_.ExcelSettingOverridesFolderPath }
-        Convert-ApplicationBinding @arguments
+        $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
+        Convert-ApplicationBinding @arguments -OutputFilePath "$($_.Path).xml"
     }
 }
 
@@ -56,30 +49,17 @@ task Import-Bindings {
 task Deploy-FileAdapterPaths {
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        $arguments = @{
-            ApplicationBindingAssemblyFilePath = $_.Path
-            TargetEnvironment                  = $TargetEnvironment
-            # TODO $FileAdapterFolderUsers is a global variable ; it should be bound to some resource
-            # Users                              = if ($FileAdapterFolderUsers | Test-Any) { $FileAdapterFolderUsers } else { @("$($Env:COMPUTERNAME)\BizTalk Application Users", 'BUILTIN\Users') }
-            Users                              = @("$($Env:COMPUTERNAME)\BizTalk Application Users", 'BUILTIN\Users')
-        }
-        if ($_.AssemblyProbingFolderPaths | Test-Any) { $arguments.AssemblyProbingFolderPaths = $_.AssemblyProbingFolderPaths }
-        if (Test-Member -InputObject $_ -Name EnvironmentSettingOverridesType) { $arguments.EnvironmentSettingOverridesType = $_.EnvironmentSettingOverridesType }
-        if (Test-Member -InputObject $_ -Name ExcelSettingOverridesFolderPath) { $arguments.ExcelSettingOverridesFolderPath = $_.ExcelSettingOverridesFolderPath }
-        Install-ApplicationFileAdapterFolders @arguments
+        $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
+        # TODO $FileAdapterFolderUsers is a global variable ; it should be bound to some resource
+        # Users = if ($FileAdapterFolderUsers | Test-Any) { $FileAdapterFolderUsers } else { @("$($Env:COMPUTERNAME)\BizTalk Application Users", 'BUILTIN\Users') }
+        Install-ApplicationFileAdapterFolders @arguments -Users @("$($Env:COMPUTERNAME)\BizTalk Application Users", 'BUILTIN\Users')
     }
 }
 # Synopsis: Remove FILE Adapter-based Receive Locations' and Send Ports' Folders
 task Undeploy-FileAdapterPaths -If { -not $SkipUndeploy } {
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        $arguments = @{
-            ApplicationBindingAssemblyFilePath = $_.Path
-            TargetEnvironment                  = $TargetEnvironment
-        }
-        if ($_.AssemblyProbingFolderPaths | Test-Any) { $arguments.AssemblyProbingFolderPaths = $_.AssemblyProbingFolderPaths }
-        if (Test-Member -InputObject $_ -Name EnvironmentSettingOverridesType) { $arguments.EnvironmentSettingOverridesType = $_.EnvironmentSettingOverridesType }
-        if (Test-Member -InputObject $_ -Name ExcelSettingOverridesFolderPath) { $arguments.ExcelSettingOverridesFolderPath = $_.ExcelSettingOverridesFolderPath }
+        $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
         Uninstall-ApplicationFileAdapterFolders @arguments
     }
 }

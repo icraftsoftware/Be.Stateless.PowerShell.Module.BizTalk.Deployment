@@ -27,6 +27,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 		public const string AffiliateApplicationStore = nameof(AffiliateApplicationStore);
 		public const string ApplicationBinding = nameof(ApplicationBinding);
 		public const string ApplicationFileAdapterFolders = nameof(ApplicationFileAdapterFolders);
+		public const string ApplicationHosts = nameof(ApplicationHosts);
 		public const string ApplicationState = nameof(ApplicationState);
 		public const string EnvironmentSettings = nameof(EnvironmentSettings);
 	}

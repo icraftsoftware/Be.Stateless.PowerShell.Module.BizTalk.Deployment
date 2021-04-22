@@ -40,6 +40,7 @@
    AliasesToExport       = @('BizTalk.Deployment.Tasks')
    CmdletsToExport       = @(
       # Application
+      'Get-ApplicationHosts',
       'Initialize-ApplicationState',
       'Install-ApplicationFileAdapterFolders',
       'Test-ApplicationState',

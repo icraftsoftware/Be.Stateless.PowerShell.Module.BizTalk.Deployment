@@ -60,9 +60,11 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 			{
 				if (_resolvedApplicationBindingType == null)
 				{
-					_resolvedApplicationBindingType = Assembly
-						// see https://stackoverflow.com/a/1477899/1789441
-						.LoadFile(ResolvedApplicationBindingAssemblyFilePath)
+					// see https://stackoverflow.com/a/1477899/1789441
+					// see https://stackoverflow.com/a/41858160/1789441
+					_resolvedApplicationBindingType = AppDomain
+						.CurrentDomain
+						.Load(Assembly.LoadFile(ResolvedApplicationBindingAssemblyFilePath).GetName())
 						.GetApplicationBindingType(true);
 					WriteDebug($"Resolved ApplicationBindingType: '{_resolvedApplicationBindingType.AssemblyQualifiedName}'.");
 				}

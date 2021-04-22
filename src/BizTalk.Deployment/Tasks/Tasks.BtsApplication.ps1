@@ -49,6 +49,7 @@ task Remove-BizTalkApplicationOnManagementServer -If { Test-ManifestApplication 
 }
 
 # Synopsis: Start Microsoft BizTalk Server Application if on the Management Server
+# the task is not named Start-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
 task Start-Application -If { -not $SkipMgmtDbDeployment } `
     Start-ApplicationOnManagementServer
 
@@ -56,18 +57,13 @@ task Start-Application -If { -not $SkipMgmtDbDeployment } `
 task Start-ApplicationOnManagementServer -If { Test-ManifestApplication } {
     Write-Build DarkGreen "Starting Microsoft BizTalk Server Application '$ApplicationName'"
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
-        $arguments = @{
-            ApplicationBindingAssemblyFilePath = $_.Path
-            TargetEnvironment                  = $TargetEnvironment
-        }
-        if ($_.AssemblyProbingFolderPaths | Test-Any) { $arguments.AssemblyProbingFolderPaths = $_.AssemblyProbingFolderPaths }
-        if (Test-Member -InputObject $_ -Name EnvironmentSettingOverridesType) { $arguments.EnvironmentSettingOverridesType = $_.EnvironmentSettingOverridesType }
-        if (Test-Member -InputObject $_ -Name ExcelSettingOverridesFolderPath) { $arguments.ExcelSettingOverridesFolderPath = $_.ExcelSettingOverridesFolderPath }
+        $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
         Initialize-ApplicationState @arguments
     }
 }
 
 # Synopsis: Stop a Microsoft BizTalk Server Application if on the Management Server
+# the task is not named Stop-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
 task Stop-Application -If { -not $SkipMgmtDbDeployment } `
     Stop-ApplicationOnManagementServer
 

@@ -39,6 +39,11 @@ namespace Be.Stateless.BizTalk.Install.Command.Extensions
 			return (ICommand) cmd;
 		}
 
+		internal static ICommand Initialize(this IApplicationHostEnumerationCommand cmd, ApplicationBindingBasedCmdlet cmdlet)
+		{
+			return ((IApplicationBindingCommand) cmd).Initialize(cmdlet);
+		}
+
 		internal static ICommand Initialize(this IApplicationBindingCommand cmd, ApplicationBindingBasedCmdlet cmdlet)
 		{
 			cmd.AssemblyProbingFolderPaths = cmdlet.ResolvedAssemblyProbingFolderPaths;
