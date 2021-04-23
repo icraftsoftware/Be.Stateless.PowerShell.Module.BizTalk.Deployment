@@ -27,6 +27,7 @@ Set-StrictMode -Version Latest
 . $PSScriptRoot\Tasks.Bts.ps1
 . $PSScriptRoot\Tasks.EventLogSources.ps1
 . $PSScriptRoot\Tasks.Iis.ps1
+. $PSScriptRoot\Tasks.Installers.ps1
 . $PSScriptRoot\Tasks.Sql.ps1
 . $PSScriptRoot\Tasks.SsoConfigStores.ps1
 . $PSScriptRoot\Tasks.WindowsServices.ps1
@@ -42,6 +43,7 @@ task Deploy Undeploy, `
     Deploy-SqlDatabases, `
     Deploy-SsoConfigStores, `
     Deploy-BizTalkApplication, `
+    Invoke-Installers, `
     Start-WindowsServices
 
 # Synopsis: Patch a Whole Microsoft BizTalk Server Solution
@@ -51,6 +53,7 @@ task Patch { $Script:SkipMgmtDbDeployment = $true }, `
 # Synopsis: Undeploy a Whole Microsoft BizTalk Server Solution
 task Undeploy -If { -not $SkipUndeploy } `
     Stop-WindowsServices, `
+    Revoke-Installers, `
     Undeploy-BizTalkApplication, `
     Undeploy-SsoConfigStores, `
     Undeploy-SqlDatabases, `

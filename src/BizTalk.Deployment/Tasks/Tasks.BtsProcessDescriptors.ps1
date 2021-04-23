@@ -18,22 +18,18 @@
 
 Set-StrictMode -Version Latest
 
-# Synopsis: Install Microsoft BizTalk Server Orchestrations and Add Their Containing Assemblies to the GAC
-task Deploy-Orchestrations {
+# Synopsis: Register Microsoft BizTalk Server Process Descriptors
+task Register-ProcessDescriptors -If { -not $SkipMgmtDbDeployment } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        if ($SkipMgmtDbDeployment) {
-            Install-GacAssembly -Path $_.Path
-        } else {
-            Add-BizTalkResource -Path $_.Path -ApplicationName $ApplicationName
-        }
+        Invoke-Tool -Command { InstallUtil /ShowCallStack /DataSource=`"$($_.DatabaseServer)`" `"$($_.Path)`" }
     }
 }
 
-# Synopsis: Remove Microsoft BizTalk Server Orchestrations' Containing Assemblies from the GAC
-task Undeploy-Orchestrations -If { -not $SkipUndeploy } {
+# Synopsis: Unregister Microsoft BizTalk Server Process Descriptors
+task Unregister-ProcessDescriptors -If { -not $SkipUndeploy -and -not $SkipMgmtDbDeployment } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        Uninstall-GacAssembly -Path $_.Path
+        Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack /DataSource=`"$($_.DatabaseServer)`" `"$($_.Path)`" }
     }
 }

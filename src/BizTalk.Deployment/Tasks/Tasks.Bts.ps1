@@ -28,6 +28,7 @@ Set-StrictMode -Version Latest
 . $PSScriptRoot\Tasks.BtsOrchestrations.ps1
 . $PSScriptRoot\Tasks.BtsPipelineComponents.ps1
 . $PSScriptRoot\Tasks.BtsPipelines.ps1
+. $PSScriptRoot\Tasks.BtsProcessDescriptors.ps1
 . $PSScriptRoot\Tasks.BtsSchemas.ps1
 
 # Synopsis: Deploy a Microsoft BizTalk Server Application
@@ -58,11 +59,13 @@ task Deploy-BizTalkArtifacts `
     Deploy-Pipelines, `
     Deploy-Orchestrations, `
     Deploy-Bindings, `
+    Register-ProcessDescriptors, `
     Deploy-FileAdapterPaths
 
 # Synopsis: Undeploy all Microsoft BizTalk Server Artifacts
 task Undeploy-BizTalkArtifacts -If { -not $SkipUndeploy } `
     Undeploy-FileAdapterPaths, `
+    Unregister-ProcessDescriptors, `
     Undeploy-Orchestrations, `
     Undeploy-Pipelines, `
     Undeploy-PipelineComponents, `
