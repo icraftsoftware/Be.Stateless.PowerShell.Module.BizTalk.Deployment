@@ -37,12 +37,12 @@ Set-StrictMode -Version Latest
 task Deploy Undeploy, `
     Deploy-EventLogSources, `
     Deploy-Assemblies, `
-    Deploy-WindowsServices, `
-    Deploy-XmlConfigurations, `
     Deploy-BamConfiguration, `
     Deploy-SqlDatabases, `
     Deploy-SsoConfigStores, `
     Deploy-BizTalkApplication, `
+    Deploy-WindowsServices, `
+    Deploy-XmlConfigurations, `
     Invoke-Installers, `
     Start-WindowsServices
 
@@ -54,11 +54,11 @@ task Patch { $Script:SkipMgmtDbDeployment = $true }, `
 task Undeploy -If { -not $SkipUndeploy } `
     Stop-WindowsServices, `
     Revoke-Installers, `
+    Undeploy-XmlConfigurations, `
+    Undeploy-WindowsServices, `
     Undeploy-BizTalkApplication, `
     Undeploy-SsoConfigStores, `
     Undeploy-SqlDatabases, `
     Undeploy-BamConfiguration, `
-    Undeploy-XmlConfigurations, `
-    Undeploy-WindowsServices, `
     Undeploy-Assemblies, `
     Undeploy-EventLogSources

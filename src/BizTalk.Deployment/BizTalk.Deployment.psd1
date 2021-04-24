@@ -58,7 +58,12 @@
       'Remove-AffiliateApplication',
       'Update-AffiliateApplicationStore'
    )
-   FunctionsToExport     = @('Install-BizTalkPackage', 'Uninstall-BizTalkPackage')
+   FunctionsToExport     = @(
+      'Install-BizTalkPackage',
+      'Install-Package',
+      'Uninstall-BizTalkPackage',
+      'Uninstall-Package'
+   )
    VariablesToExport     = @()
    PrivateData           = @{
       PSData = @{

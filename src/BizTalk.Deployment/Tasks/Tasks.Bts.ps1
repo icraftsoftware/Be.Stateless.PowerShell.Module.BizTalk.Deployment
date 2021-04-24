@@ -39,7 +39,8 @@ task Deploy-BizTalkApplication `
     Start-Application
 
 # Synopsis: Patch a Microsoft BizTalk Server Application's Binaries
-task Patch-BizTalkApplication Deploy-BizTalkArtifacts, `
+task Patch-BizTalkApplication `
+    Deploy-BizTalkArtifacts, `
     Start-Application, `
     Restart-BizTalkHostInstances
 
