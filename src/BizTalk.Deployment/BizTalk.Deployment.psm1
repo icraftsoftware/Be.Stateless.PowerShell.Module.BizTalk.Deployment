@@ -34,4 +34,3 @@ Add-ToolAlias -Path ($env:BTSINSTALLPATH) -Tool BTSTask -Scope Global
 Add-ToolAlias -Path 'Framework\v4.0.30319' -Tool InstallUtil -Scope Global
 
 . $PSScriptRoot\BtsPackage\BtsPackage.ps1
-. $PSScriptRoot\Package\Package.ps1

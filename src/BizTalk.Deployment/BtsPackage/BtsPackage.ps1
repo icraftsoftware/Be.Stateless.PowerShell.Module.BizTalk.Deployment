@@ -73,6 +73,46 @@ function Install-BizTalkPackage {
         }
     }
 }
+function Install-Package {
+    [CmdletBinding()]
+    [OutputType([void])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable[]]
+        $Manifest,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $TargetEnvironment,
+
+        [Parameter()]
+        [switch]
+        $SkipInstallUtil,
+
+        [Parameter()]
+        [switch]
+        $SkipUndeploy,
+
+        [Parameter()]
+        [scriptblock[]]
+        $Tasks = ([scriptblock] { })
+    )
+    begin {
+        Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+        $script:Manifest = $Manifest
+        $script:SkipMgmtDbDeployment = $false
+    }
+    end {
+        Invoke-Build Deploy {
+            . BizTalk.Deployment.Tasks
+            foreach ($taskBlock in $Tasks) {
+                . $taskBlock
+            }
+            . $canceledTasks
+        }
+    }
+}
 
 function Uninstall-BizTalkPackage {
     # TODO https://stackoverflow.com/questions/26910789/is-it-possible-to-reuse-a-param-block-across-multiple-functions
@@ -122,4 +162,57 @@ function Uninstall-BizTalkPackage {
             }
         }
     }
+}
+
+function Uninstall-Package {
+    [CmdletBinding()]
+    [OutputType([void])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable[]]
+        $Manifest,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $TargetEnvironment,
+
+        [Parameter()]
+        [switch]
+        $SkipInstallUtil,
+
+        [Parameter()]
+        [switch]
+        $SkipUndeploy,
+
+        [Parameter()]
+        [scriptblock[]]
+        $Tasks = ([scriptblock] { })
+    )
+    begin {
+        Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+        $script:Manifest = $Manifest
+        $script:SkipMgmtDbDeployment = $false
+    }
+    end {
+        Invoke-Build Undeploy {
+            . BizTalk.Deployment.Tasks
+            foreach ($taskBlock in $Tasks) {
+                . $taskBlock
+            }
+            . $canceledTasks
+        }
+    }
+}
+
+$canceledTasks = [ScriptBlock] {
+    task Deploy-BamConfiguration { }
+    task Deploy-SsoConfigStores { }
+    task Deploy-BizTalkApplication { }
+
+    task Patch-BizTalkApplication { }
+
+    task Undeploy-BizTalkApplication { }
+    task Undeploy-SsoConfigStores { }
+    task Undeploy-BamConfiguration { }
 }
