@@ -20,6 +20,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using System.Reflection;
+using Be.Stateless.BizTalk.Dsl;
 using Be.Stateless.BizTalk.Dsl.Environment.Settings;
 using Be.Stateless.BizTalk.Dsl.Environment.Settings.Extensions;
 using Be.Stateless.BizTalk.Install;
@@ -47,13 +48,16 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Settings
 			WriteVerbose($"{nameof(IEnvironmentSettings)}-derived type is being loaded...");
 			// see https://stackoverflow.com/a/1477899/1789441
 			// see https://stackoverflow.com/a/41858160/1789441
-			var resolvedEnvironmentSettingsType = AppDomain
-				.CurrentDomain
-				.Load(Assembly.LoadFile(ResolvedEnvironmentSettingsAssemblyFilePath).GetName())
-				.GetEnvironmentSettingsType(true);
-			WriteDebug($"Resolved EnvironmentSettingsType: '{resolvedEnvironmentSettingsType.AssemblyQualifiedName}'.");
-			var environmentSettings = (IEnvironmentSettings) Reflector.GetProperty(resolvedEnvironmentSettingsType, "Settings");
-			WriteObject(environmentSettings);
+			using (new BizTalkAssemblyResolver(msg => WriteInformation(msg, null), true, System.IO.Path.GetDirectoryName(ResolvedEnvironmentSettingsAssemblyFilePath)))
+			{
+				var resolvedEnvironmentSettingsType = AppDomain
+					.CurrentDomain
+					.Load(Assembly.LoadFile(ResolvedEnvironmentSettingsAssemblyFilePath).GetName())
+					.GetEnvironmentSettingsType(true);
+				WriteDebug($"Resolved EnvironmentSettingsType: '{resolvedEnvironmentSettingsType.AssemblyQualifiedName}'.");
+				var environmentSettings = (IEnvironmentSettings) Reflector.GetProperty(resolvedEnvironmentSettingsType, "Settings");
+				WriteObject(environmentSettings);
+			}
 			WriteVerbose($"{nameof(IEnvironmentSettings)}-derived type has been loaded.");
 		}
 

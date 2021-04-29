@@ -18,8 +18,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
+using Be.Stateless.BizTalk.Dsl;
 using Be.Stateless.BizTalk.Dsl.Binding.Extensions;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet
@@ -60,20 +62,25 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 			{
 				if (_resolvedApplicationBindingType == null)
 				{
-					// see https://stackoverflow.com/a/1477899/1789441
-					// see https://stackoverflow.com/a/41858160/1789441
-					_resolvedApplicationBindingType = AppDomain
-						.CurrentDomain
-						.Load(Assembly.LoadFile(ResolvedApplicationBindingAssemblyFilePath).GetName())
-						.GetApplicationBindingType(true);
-					WriteDebug($"Resolved ApplicationBindingType: '{_resolvedApplicationBindingType.AssemblyQualifiedName}'.");
+					using (new BizTalkAssemblyResolver(msg => WriteInformation(msg, null), true, ResolvedAssemblyProbingFolderPaths))
+					{
+						// see https://stackoverflow.com/a/1477899/1789441
+						// see https://stackoverflow.com/a/41858160/1789441
+						_resolvedApplicationBindingType = AppDomain
+							.CurrentDomain
+							.Load(Assembly.LoadFile(ResolvedApplicationBindingAssemblyFilePath).GetName())
+							.GetApplicationBindingType(true);
+						WriteDebug($"Resolved ApplicationBindingType: '{_resolvedApplicationBindingType.AssemblyQualifiedName}'.");
+					}
 				}
 				return _resolvedApplicationBindingType;
 			}
 		}
 
 		protected internal string[] ResolvedAssemblyProbingFolderPaths =>
-			_resolvedAssemblyProbingFolderPaths ??= ResolvePowerShellPaths(AssemblyProbingFolderPaths, nameof(AssemblyProbingFolderPaths));
+			_resolvedAssemblyProbingFolderPaths ??= ResolvePowerShellPaths(AssemblyProbingFolderPaths, nameof(AssemblyProbingFolderPaths))
+				.Append(System.IO.Path.GetDirectoryName(ResolvedApplicationBindingAssemblyFilePath))
+				.ToArray();
 
 		protected internal string ResolvedExcelSettingOverridesFolderPath =>
 			_resolvedExcelSettingOverridesFolderPath ??= ResolvePowerShellPath(ExcelSettingOverridesFolderPath, nameof(ExcelSettingOverridesFolderPath));
