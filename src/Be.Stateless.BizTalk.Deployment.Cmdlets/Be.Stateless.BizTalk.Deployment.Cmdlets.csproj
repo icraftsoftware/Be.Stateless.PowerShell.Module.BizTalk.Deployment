@@ -25,10 +25,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Deployment\Cmdlet\ExpandApplicationBinding.Trimmer.xslt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Deployment\Cmdlet\Binding\ExpandApplicationBinding.Trimmer.xslt" />
   </ItemGroup>
 
@@ -38,13 +34,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21105.29865" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21163.21265" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21161.28536" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.21161.28536" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21161.28536" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21151.36103" />
-    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21073.36728" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21163.29737" />
+    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21163.28366" />
     <PackageReference Include="Be.Stateless.BizTalk.Settings" Version="2.0.21151.35729" />
+    <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.0.21165.20574" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

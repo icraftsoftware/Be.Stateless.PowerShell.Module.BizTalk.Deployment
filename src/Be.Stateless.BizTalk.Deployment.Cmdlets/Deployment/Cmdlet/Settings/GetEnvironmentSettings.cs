@@ -20,10 +20,10 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using System.Reflection;
-using Be.Stateless.BizTalk.Dsl;
 using Be.Stateless.BizTalk.Dsl.Environment.Settings;
 using Be.Stateless.BizTalk.Dsl.Environment.Settings.Extensions;
 using Be.Stateless.BizTalk.Install;
+using Be.Stateless.BizTalk.Reflection;
 using Be.Stateless.Reflection;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Settings
