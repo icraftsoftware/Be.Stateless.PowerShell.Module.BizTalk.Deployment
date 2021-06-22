@@ -21,8 +21,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
-using Be.Stateless.BizTalk.Dsl;
 using Be.Stateless.BizTalk.Dsl.Binding.Extensions;
+using Be.Stateless.BizTalk.Reflection;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 {
