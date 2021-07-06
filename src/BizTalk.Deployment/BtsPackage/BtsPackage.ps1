@@ -138,10 +138,6 @@ function Uninstall-BizTalkPackage {
 
         [Parameter()]
         [switch]
-        $SkipUndeploy,
-
-        [Parameter()]
-        [switch]
         $TerminateServiceInstances,
 
         [Parameter()]
@@ -180,10 +176,6 @@ function Uninstall-Package {
         [Parameter()]
         [switch]
         $SkipInstallUtil,
-
-        [Parameter()]
-        [switch]
-        $SkipUndeploy,
 
         [Parameter()]
         [scriptblock[]]
