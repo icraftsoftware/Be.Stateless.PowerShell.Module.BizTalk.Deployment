@@ -151,6 +151,7 @@ function Uninstall-BizTalkPackage {
     end {
         # https://github.com/nightroman/Invoke-Build/issues/78, Script block as `File`
         # https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Inline
+        $script:SkipUndeploy = $false
         Invoke-Build Undeploy {
             . BizTalk.Deployment.Tasks
             foreach ($taskBlock in $Tasks) {
@@ -187,6 +188,7 @@ function Uninstall-Package {
         $script:SkipMgmtDbDeployment = $false
     }
     end {
+        $script:SkipUndeploy = $false
         Invoke-Build Undeploy {
             . BizTalk.Deployment.Tasks
             foreach ($taskBlock in $Tasks) {
