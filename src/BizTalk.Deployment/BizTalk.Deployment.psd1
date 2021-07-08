@@ -37,7 +37,13 @@
    )
    RequiredModules       = @('BizTalk.Administration', 'Dsl.Configuration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SqlServer')
 
-   AliasesToExport       = @('BizTalk.Deployment.Tasks')
+   AliasesToExport       = @(
+      'BizTalk.Deployment.Tasks',
+      'Install-BizTalkPackage',
+      'Install-Package',
+      'Uninstall-BizTalkPackage',
+      'Uninstall-Package'
+   )
    CmdletsToExport       = @(
       # Application
       'Get-ApplicationHosts',
@@ -58,12 +64,7 @@
       'Remove-AffiliateApplication',
       'Update-AffiliateApplicationStore'
    )
-   FunctionsToExport     = @(
-      'Install-BizTalkPackage',
-      'Install-Package',
-      'Uninstall-BizTalkPackage',
-      'Uninstall-Package'
-   )
+   FunctionsToExport     = @()
    VariablesToExport     = @()
    PrivateData           = @{
       PSData = @{

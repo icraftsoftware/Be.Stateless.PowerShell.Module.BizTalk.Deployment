@@ -33,31 +33,51 @@ Set-StrictMode -Version Latest
 . $PSScriptRoot\Tasks.WindowsServices.ps1
 . $PSScriptRoot\Tasks.XmlConfigurations.ps1
 
-# Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
+# Synopsis: Deploy a Runtime Solution
 task Deploy Undeploy, `
     Deploy-EventLogSources, `
     Deploy-Assemblies, `
-    Deploy-BamConfiguration, `
     Deploy-SqlDatabases, `
-    Deploy-SsoConfigStores, `
-    Deploy-BizTalkApplication, `
     Deploy-WindowsServices, `
     Deploy-XmlConfigurations, `
     Invoke-Installers, `
     Start-WindowsServices
 
-# Synopsis: Patch a Whole Microsoft BizTalk Server Solution
-task Patch { $Script:SkipMgmtDbDeployment = $true }, `
-    Patch-BizTalkApplication
-
-# Synopsis: Undeploy a Whole Microsoft BizTalk Server Solution
+# Synopsis: Undeploy a Runtime Solution
 task Undeploy -If { -not $SkipUndeploy } `
     Stop-WindowsServices, `
     Revoke-Installers, `
     Undeploy-XmlConfigurations, `
     Undeploy-WindowsServices, `
+    Undeploy-SqlDatabases, `
+    Undeploy-Assemblies, `
+    Undeploy-EventLogSources
+
+# Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
+task DeployBizTalk UndeployBizTalk, `
+    Deploy-EventLogSources, `
+    Deploy-Assemblies, `
+    Deploy-BamConfiguration, `
+    Deploy-SqlDatabases, `
+    Deploy-WindowsServices, `
+    Deploy-XmlConfigurations, `
+    Deploy-SsoConfigStores, `
+    Deploy-BizTalkApplication, `
+    Invoke-Installers, `
+    Start-WindowsServices
+
+# Synopsis: Patch a Whole Microsoft BizTalk Server Solution
+task PatchBizTalk { $Script:SkipMgmtDbDeployment = $true }, `
+    Patch-BizTalkApplication
+
+# Synopsis: Undeploy a Whole Microsoft BizTalk Server Solution
+task UndeployBizTalk -If { -not $SkipUndeploy } `
+    Stop-WindowsServices, `
+    Revoke-Installers, `
     Undeploy-BizTalkApplication, `
     Undeploy-SsoConfigStores, `
+    Undeploy-XmlConfigurations, `
+    Undeploy-WindowsServices, `
     Undeploy-SqlDatabases, `
     Undeploy-BamConfiguration, `
     Undeploy-Assemblies, `
