@@ -26,11 +26,13 @@ Set-StrictMode -Version Latest
 # https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Import
 # https://github.com/nightroman/Invoke-Build/issues/73, Importing Tasks
 Set-Alias -Name BizTalk.Deployment.Tasks -Value $PSScriptRoot/Tasks/Tasks.ps1
+Set-Alias -Name Install-BizTalkApplication $PSScriptRoot/Scripts/Install-BizTalkApplication.ps1
+Set-Alias -Name Install-BizTalkLibrary $PSScriptRoot/Scripts/Install-BizTalkLibrary.ps1
+Set-Alias -Name Uninstall-BizTalkApplication $PSScriptRoot/Scripts/Uninstall-BizTalkApplication.ps1
+Set-Alias -Name Uninstall-BizTalkLibrary $PSScriptRoot/Scripts/Uninstall-BizTalkLibrary.ps1
 
 Add-ToolAlias -Path (Join-Path -Path ($env:BTSINSTALLPATH) -ChildPath Tracking) -Tool BM -Scope Global
 # https://docs.microsoft.com/en-us/biztalk/core/btstask-command-line-reference
 # https://docs.microsoft.com/en-us/biztalk/core/managing-resources
 Add-ToolAlias -Path ($env:BTSINSTALLPATH) -Tool BTSTask -Scope Global
 Add-ToolAlias -Path 'Framework\v4.0.30319' -Tool InstallUtil -Scope Global
-
-. $PSScriptRoot\BtsPackage\BtsPackage.ps1

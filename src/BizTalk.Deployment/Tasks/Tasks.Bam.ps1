@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Deploy business activity models and their indexes if on the Management Server
-task Deploy-BamConfiguration -If { -not $SkipMgmtDbDeployment } `
+task Deploy-BamConfiguration -If ( -not $SkipMgmtDbDeployment -and $Manifest.Properties.Type -eq 'Application' ) -Before Deploy-SqlDatabases `
     Undeploy-BamConfiguration, `
     Deploy-BamConfigurationOnManagementServer
 
@@ -45,7 +45,7 @@ task Deploy-BamIndexes {
 }
 
 # Synopsis: Undeploy business activity models if on the Management Server
-task Undeploy-BamConfiguration -If { -not $SkipMgmtDbDeployment } `
+task Undeploy-BamConfiguration -If ( -not $SkipMgmtDbDeployment -and $Manifest.Properties.Type -eq 'Application' ) -After Undeploy-SqlDatabases `
     Undeploy-BamConfigurationOnManagementServer
 
 # Synopsis: Undeploy business activity models

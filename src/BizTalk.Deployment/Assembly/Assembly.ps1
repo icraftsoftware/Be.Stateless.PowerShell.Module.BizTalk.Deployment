@@ -24,7 +24,7 @@ function Get-AssemblyName {
     param(
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
+        [ValidateScript( { Test-Path -Path $_ } )]
         [psobject[]]
         $Path,
 
@@ -56,7 +56,7 @@ function Install-GacAssembly {
     param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
+        [ValidateScript( { Test-Path -Path $_ } )]
         [string]
         $Path
     )
@@ -87,7 +87,7 @@ function Test-GacAssembly {
 
         [Parameter(Mandatory = $true, ParameterSetName = 'path')]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
+        [ValidateScript( { Test-Path -Path $_ } )]
         [string]
         $Path
     )
@@ -106,7 +106,7 @@ function Test-GacAssemblyInstallReference {
 
         [Parameter(Mandatory = $true, ParameterSetName = 'path')]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
+        [ValidateScript( { Test-Path -Path $_ } )]
         [string]
         $Path
     )
@@ -120,7 +120,7 @@ function Uninstall-GacAssembly {
     param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( { Test-Path -Path $_ })]
+        [ValidateScript( { Test-Path -Path $_ } )]
         [string]
         $Path
     )

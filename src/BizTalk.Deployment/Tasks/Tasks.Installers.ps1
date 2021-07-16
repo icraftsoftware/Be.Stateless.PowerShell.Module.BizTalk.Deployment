@@ -18,16 +18,16 @@
 
 Set-StrictMode -Version Latest
 
-# Synopsis: Invoke installers through InstallUtil
-task Invoke-Installers -If { -not $SkipInstallUtil } {
+# Synopsis: Invoke installers' install command through InstallUtil
+task Deploy-Installers -If { -not $SkipInstallUtil } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         Invoke-Tool -Command { InstallUtil /ShowCallStack `"$($_.Path)`" }
     }
 }
 
-# Synopsis: Revoke installers through InstallUtil
-task Revoke-Installers -If { -not $SkipUndeploy -and -not $SkipInstallUtil } {
+# Synopsis: Invoke installers' uninstall command through InstallUtil
+task Undeploy-Installers -If { -not $SkipUndeploy -and -not $SkipInstallUtil } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack `"$($_.Path)`" }

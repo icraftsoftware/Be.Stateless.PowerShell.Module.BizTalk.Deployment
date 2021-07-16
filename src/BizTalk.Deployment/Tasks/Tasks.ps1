@@ -33,32 +33,60 @@ Set-StrictMode -Version Latest
 . $PSScriptRoot\Tasks.WindowsServices.ps1
 . $PSScriptRoot\Tasks.XmlConfigurations.ps1
 
-# Synopsis: Deploy a Whole Microsoft BizTalk Server Solution
+# Synopsis: Deploy a Whole Microsoft BizTalk Server Application or Library Solution
 task Deploy Undeploy, `
     Deploy-EventLogSources, `
     Deploy-Assemblies, `
-    Deploy-BamConfiguration, `
-    Deploy-SqlDatabases, `
-    Deploy-SsoConfigStores, `
-    Deploy-BizTalkApplication, `
     Deploy-WindowsServices, `
     Deploy-XmlConfigurations, `
-    Invoke-Installers, `
+    Add-DatabaseDeploymentTasks, `
+    Add-BtsDeploymentTasks, `
+    Deploy-Installers, `
     Start-WindowsServices
 
-# Synopsis: Patch a Whole Microsoft BizTalk Server Solution
+# Synopsis: Patch a Whole Microsoft BizTalk Server Application or Library Solution
 task Patch { $Script:SkipMgmtDbDeployment = $true }, `
     Patch-BizTalkApplication
 
-# Synopsis: Undeploy a Whole Microsoft BizTalk Server Solution
+# Synopsis: Undeploy a Whole Microsoft BizTalk Server Application or Library Solution
 task Undeploy -If { -not $SkipUndeploy } `
     Stop-WindowsServices, `
-    Revoke-Installers, `
+    Undeploy-Installers, `
+    Add-BtsUndeploymentTasks, `
+    Add-DatabaseUndeploymentTasks, `
     Undeploy-XmlConfigurations, `
     Undeploy-WindowsServices, `
-    Undeploy-BizTalkApplication, `
-    Undeploy-SsoConfigStores, `
-    Undeploy-SqlDatabases, `
-    Undeploy-BamConfiguration, `
     Undeploy-Assemblies, `
     Undeploy-EventLogSources
+
+task Add-DatabaseDeploymentTasks `
+    Enter-DatabaseDeployment, `
+    Deploy-SqlDatabases, `
+    Exit-DatabaseDeployment
+task Enter-DatabaseDeployment
+task Exit-DatabaseDeployment
+
+task Add-DatabaseUndeploymentTasks `
+    Enter-DatabaseUndeployment, `
+    Undeploy-SqlDatabases, `
+    Exit-DatabaseUndeployment
+task Enter-DatabaseUndeployment
+task Exit-DatabaseUndeployment
+
+task Add-BtsDeploymentTasks -If ($Manifest.Properties.Type -eq 'Application') `
+    Enter-BtsDeployment, `
+    Deploy-BamConfiguration, `
+    Deploy-SsoConfigStores, `
+    Deploy-BizTalkApplication, `
+    Exit-BtsDeployment
+task Enter-BtsDeployment
+task Exit-BtsDeployment
+
+task Add-BtsUndeploymentTasks -If ($Manifest.Properties.Type -eq 'Application') `
+    Enter-BtsUndeployment, `
+    Undeploy-BizTalkApplication, `
+    Undeploy-SsoConfigStores, `
+    Undeploy-BamConfiguration, `
+    Exit-BtsUndeployment
+task Enter-BtsUndeployment
+task Exit-BtsUndeployment
