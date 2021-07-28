@@ -43,9 +43,8 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 					.Execute(WriteVerbose);
 				WriteObject(true);
 			}
-			catch (Exception exception)
+			catch (Exception exception) when (!exception.IsFatal())
 			{
-				if (exception.IsFatal()) throw;
 				WriteVerbose(exception.ToString());
 				WriteObject(false);
 			}
