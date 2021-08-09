@@ -65,10 +65,15 @@ begin {
 end {
     # https://github.com/nightroman/Invoke-Build/issues/78, Script block as `File`
     # https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Inline
-    Invoke-Build Deploy {
-        . BizTalk.Deployment.Tasks
-        foreach ($taskBlock in $Tasks) {
-            . $taskBlock
+    try {
+        Invoke-Build Deploy {
+            . BizTalk.Deployment.Tasks
+            foreach ($taskBlock in $Tasks) {
+                . $taskBlock
+            }
         }
+    } catch {
+        Write-Error $_.Exception.ToString()
+        throw
     }
 }

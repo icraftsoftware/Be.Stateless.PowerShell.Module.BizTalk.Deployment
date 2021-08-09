@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 Enter-Build {
-    if ($Manifest.Properties.Type -eq 'Application') { $script:ApplicationName = $Manifest.Properties.Name }
+    $script:ApplicationName = $Manifest.Properties.Name
 }
 
 Enter-BuildTask {

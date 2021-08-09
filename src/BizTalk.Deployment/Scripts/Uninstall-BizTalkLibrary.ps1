@@ -46,10 +46,15 @@ begin {
     $script:SkipUndeploy = $false
 }
 end {
-    Invoke-Build Undeploy {
-        . BizTalk.Deployment.Tasks
-        foreach ($taskBlock in $Tasks) {
-            . $taskBlock
+    try {
+        Invoke-Build Undeploy {
+            . BizTalk.Deployment.Tasks
+            foreach ($taskBlock in $Tasks) {
+                . $taskBlock
+            }
         }
+    } catch {
+        Write-Error $_.Exception.ToString()
+        throw
     }
 }

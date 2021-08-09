@@ -39,6 +39,7 @@ task Deploy Undeploy, `
     Deploy-Assemblies, `
     Deploy-WindowsServices, `
     Deploy-XmlConfigurations, `
+    Deploy-SsoConfigStores, `
     Add-DatabaseDeploymentTasks, `
     Add-BtsDeploymentTasks, `
     Deploy-Installers, `
@@ -54,6 +55,7 @@ task Undeploy -If { -not $SkipUndeploy } `
     Undeploy-Installers, `
     Add-BtsUndeploymentTasks, `
     Add-DatabaseUndeploymentTasks, `
+    Undeploy-SsoConfigStores, `
     Undeploy-XmlConfigurations, `
     Undeploy-WindowsServices, `
     Undeploy-Assemblies, `
@@ -75,8 +77,6 @@ task Exit-DatabaseUndeployment
 
 task Add-BtsDeploymentTasks -If ($Manifest.Properties.Type -eq 'Application') `
     Enter-BtsDeployment, `
-    Deploy-BamConfiguration, `
-    Deploy-SsoConfigStores, `
     Deploy-BizTalkApplication, `
     Exit-BtsDeployment
 task Enter-BtsDeployment
@@ -85,8 +85,6 @@ task Exit-BtsDeployment
 task Add-BtsUndeploymentTasks -If ($Manifest.Properties.Type -eq 'Application') `
     Enter-BtsUndeployment, `
     Undeploy-BizTalkApplication, `
-    Undeploy-SsoConfigStores, `
-    Undeploy-BamConfiguration, `
     Exit-BtsUndeployment
 task Enter-BtsUndeployment
 task Exit-BtsUndeployment

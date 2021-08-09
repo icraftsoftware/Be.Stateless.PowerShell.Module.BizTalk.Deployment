@@ -48,10 +48,15 @@ begin {
     $script:SkipMgmtDbDeployment = $false
 }
 end {
-    Invoke-Build Deploy {
-        . BizTalk.Deployment.Tasks
-        foreach ($taskBlock in $Tasks) {
-            . $taskBlock
+    try {
+        Invoke-Build Deploy {
+            . BizTalk.Deployment.Tasks
+            foreach ($taskBlock in $Tasks) {
+                . $taskBlock
+            }
         }
+    } catch {
+        Write-Error $_.Exception.ToString()
+        throw
     }
 }
