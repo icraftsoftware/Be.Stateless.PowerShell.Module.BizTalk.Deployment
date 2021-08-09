@@ -89,7 +89,7 @@ task Restart-BizTalkHostInstancesForApplication -If { Get-TaskResourceGroup -Nam
         $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
         Get-ApplicationHosts @arguments | ForEach-Object -Process {
             Get-BizTalkHost -Name $_ | Where-Object -FilterScript { Test-BizTalkHost -Host $_ -Type InProcess } | Get-BizTalkHostInstance | ForEach-Object -Process {
-                Write-Build DarkGreen $_.HostName
+                Write-Build DarkGreen $_.HostName on $_.RunningServer
                 Restart-BizTalkHostInstance -HostInstance $_
             }
         }
@@ -99,7 +99,7 @@ task Restart-BizTalkHostInstancesForApplication -If { Get-TaskResourceGroup -Nam
 # Synopsis: Restart the Microsoft BizTalk Server Host Instances of the BizTalk Group
 task Restart-BizTalkHostInstancesForGroup -If { Get-TaskResourceGroup -Name Bindings | Test-None } {
     Get-BizTalkHost | Where-Object -FilterScript { Test-BizTalkHost -Host $_ -Type InProcess } | Get-BizTalkHostInstance | ForEach-Object -Process {
-        Write-Build DarkGreen $_.HostName
+        Write-Build DarkGreen $_.HostName on $_.RunningServer
         Restart-BizTalkHostInstance -HostInstance $_
     }
 }
