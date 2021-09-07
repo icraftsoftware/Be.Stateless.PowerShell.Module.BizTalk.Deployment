@@ -18,13 +18,9 @@
 
 Set-StrictMode -Version Latest
 
-# Synopsis: Deploy business activity models and their indexes if on the Management Server
-task Deploy-BamConfiguration -If ( -not $SkipMgmtDbDeployment -and $Manifest.Properties.Type -eq 'Application' ) -Before Enter-DatabaseDeployment `
-    Undeploy-BamConfiguration, `
-    Deploy-BamConfigurationOnManagementServer
-
 # Synopsis: Deploy business activity models and their indexes
-task Deploy-BamConfigurationOnManagementServer `
+task Deploy-BamConfiguration -If ( (-not $SkipSharedResourceDeployment) -and ($Manifest.Properties.Type -eq 'Application') ) -Before Enter-DatabaseDeployment `
+    Undeploy-BamConfiguration, `
     Deploy-BamActivityModels, `
     Deploy-BamIndexes
 
@@ -44,12 +40,8 @@ task Deploy-BamIndexes {
     }
 }
 
-# Synopsis: Undeploy business activity models if on the Management Server
-task Undeploy-BamConfiguration -If ( -not $SkipMgmtDbDeployment -and $Manifest.Properties.Type -eq 'Application' ) -After Exit-DatabaseUndeployment `
-    Undeploy-BamConfigurationOnManagementServer
-
 # Synopsis: Undeploy business activity models
-task Undeploy-BamConfigurationOnManagementServer -If { -not $SkipUndeploy } `
+task Undeploy-BamConfiguration -If ( (-not $SkipUndeploy) -and (-not $SkipSharedResourceDeployment) -and ($Manifest.Properties.Type -eq 'Application') ) -After Exit-DatabaseUndeployment `
     Undeploy-BamActivityModels
 
 # Synopsis: Undeploy business activity models

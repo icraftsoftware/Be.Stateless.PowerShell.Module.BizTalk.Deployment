@@ -31,16 +31,16 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 
 		protected override void ProcessRecord()
 		{
-			var affiliateApplication = AffiliateApplication.FindByName(ResolvedAffiliateApplicationName);
+			var affiliateApplication = AffiliateApplication.FindByName(AffiliateApplicationName);
 			if (affiliateApplication != null)
 			{
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{ResolvedAffiliateApplicationName}' is being deleted...", null);
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}' is being deleted...", null);
 				affiliateApplication.Delete();
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{ResolvedAffiliateApplicationName}' has been deleted.", null);
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}' has been deleted.", null);
 			}
 			else
 			{
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{ResolvedAffiliateApplicationName}' was not found.", null);
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}' was not found.", null);
 			}
 		}
 

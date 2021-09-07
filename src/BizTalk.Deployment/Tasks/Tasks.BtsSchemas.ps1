@@ -22,7 +22,7 @@ Set-StrictMode -Version Latest
 task Deploy-Schemas {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        if ($SkipMgmtDbDeployment) {
+        if ($SkipSharedResourceDeployment) {
             Install-GacAssembly -Path $_.Path
         } else {
             Add-BizTalkResource -Path $_.Path -ApplicationName $ApplicationName

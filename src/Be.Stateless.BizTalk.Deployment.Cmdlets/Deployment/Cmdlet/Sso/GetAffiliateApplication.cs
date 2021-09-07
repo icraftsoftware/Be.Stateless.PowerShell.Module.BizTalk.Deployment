@@ -16,10 +16,8 @@
 
 #endregion
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
-using Be.Stateless.BizTalk.Dsl.Environment.Settings;
 using Be.Stateless.BizTalk.Settings.Sso;
 using Be.Stateless.Extensions;
 
@@ -28,45 +26,29 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
-	[Cmdlet(VerbsCommon.Get, Nouns.AffiliateApplication, DefaultParameterSetName = AffiliateApplicationCmdlet.BY_NAME_PARAMETER_SET_NAME)]
+	[Cmdlet(VerbsCommon.Get, Nouns.AffiliateApplication)]
 	[OutputType(typeof(AffiliateApplication))]
-	public class GetAffiliateApplication : PSCmdlet
+	public class GetAffiliateApplication : System.Management.Automation.Cmdlet
 	{
 		#region Base Class Member Overrides
 
-		protected override void BeginProcessing()
-		{
-			ResolvedAffiliateApplicationName = ParameterSetName switch {
-				AffiliateApplicationCmdlet.BY_NAME_PARAMETER_SET_NAME => AffiliateApplicationName,
-				AffiliateApplicationCmdlet.BY_SETTINGS_PARAMETER_SET_NAME => EnvironmentSettings.ApplicationName,
-				_ => throw new InvalidOperationException($"Unexpected parameter set name: {ParameterSetName}.")
-			};
-		}
-
 		protected override void ProcessRecord()
 		{
-			WriteInformation($"SSO {nameof(AffiliateApplication)} are being loaded...", null);
-			var affiliateApplications = ResolvedAffiliateApplicationName.IsNullOrEmpty()
+			WriteInformation($"SSO {nameof(AffiliateApplication)}s are being loaded...", null);
+			var affiliateApplications = AffiliateApplicationName.IsNullOrEmpty()
 				? AffiliateApplication.FindByContact()
-				: ResolvedAffiliateApplicationName == AffiliateApplication.ANY_CONTACT_INFO
+				: AffiliateApplicationName == AffiliateApplication.ANY_CONTACT_INFO
 					? AffiliateApplication.FindByContact(AffiliateApplication.ANY_CONTACT_INFO)
-					: new[] { AffiliateApplication.FindByName(ResolvedAffiliateApplicationName) };
+					: new[] { AffiliateApplication.FindByName(AffiliateApplicationName) };
 			WriteObject(affiliateApplications, true);
-			WriteInformation($"SSO {nameof(AffiliateApplication)} have been loaded.", null);
+			WriteInformation($"SSO {nameof(AffiliateApplication)}s have been loaded.", null);
 		}
 
 		#endregion
 
 		[Alias("Name")]
-		[Parameter(Mandatory = false, ParameterSetName = AffiliateApplicationCmdlet.BY_NAME_PARAMETER_SET_NAME)]
+		[Parameter(Mandatory = false)]
 		[ValidateNotNullOrEmpty]
 		public string AffiliateApplicationName { get; set; }
-
-		[Alias("Settings")]
-		[Parameter(Mandatory = false, ParameterSetName = AffiliateApplicationCmdlet.BY_SETTINGS_PARAMETER_SET_NAME)]
-		[ValidateNotNull]
-		public IEnvironmentSettings EnvironmentSettings { get; set; }
-
-		private string ResolvedAffiliateApplicationName { get; set; }
 	}
 }

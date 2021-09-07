@@ -18,8 +18,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
-using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Extensions;
+using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
+using Be.Stateless.BizTalk.Install.Command.Application;
+using Be.Stateless.BizTalk.Install.Command.Dispatcher;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
@@ -32,12 +33,10 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} is being initialized...", null);
-			ApplicationBindingCommandFactory
-				.CreateApplicationStateInitializationCommand(ResolvedApplicationBindingType)
-				.Initialize(this)
-				.Execute(msg => WriteInformation(msg, null));
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} has been initialized.", null);
+			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationStateInitializationCommand>.Create(this))
+			{
+				dispatcher.Run();
+			}
 		}
 
 		#endregion

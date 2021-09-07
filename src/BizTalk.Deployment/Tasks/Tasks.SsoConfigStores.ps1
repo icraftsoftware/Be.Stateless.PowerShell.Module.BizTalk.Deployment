@@ -18,46 +18,44 @@
 
 Set-StrictMode -Version Latest
 
-# Synopsis: Deploy application's SSO config stores if on the Management Server
-task Deploy-SsoConfigStores -If { -not $SkipMgmtDbDeployment } `
-    Undeploy-SsoConfigStores, `
-    Deploy-SsoConfigStoresOnManagementServer
-
 # Synopsis: Deploy application's SSO config stores
-task Deploy-SsoConfigStoresOnManagementServer `
+task Deploy-SsoConfigStores -If { -not $SkipSharedResourceDeployment } `
+    Undeploy-SsoConfigStores, `
+    Add-SsoConfigStores, `
     Update-SsoConfigStores
+
+# Synopsis: Add application's SSO config stores
+task Add-SsoConfigStores {
+    $Resources | ForEach-Object -Process {
+        Write-Build DarkGreen $_.Path
+        $arguments = @{ AffiliateApplicationName = $ApplicationName }
+        if ($_.AdministratorGroups | Test-Any) { $arguments.AdministratorGroups = $_.AdministratorGroups }
+        if ($_.UserGroups | Test-Any ) { $arguments.UserGroups = $_.UserGroups }
+        New-AffiliateApplication @arguments
+    }
+}
 
 # Synopsis: Update application's SSO config stores
 task Update-SsoConfigStores {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-
-        $arguments = @{ AffiliateApplicationName = $ApplicationName }
-        if ($_.AdministratorGroups | Test-Any) { $arguments.AdministratorGroups = $_.AdministratorGroups }
-        if ($_.UserGroups | Test-Any ) { $arguments.UserGroups = $_.UserGroups }
-        $application = New-AffiliateApplication @arguments
-
         $arguments = @{
+            AffiliateApplicationName            = $ApplicationName
             EnvironmentSettingsAssemblyFilePath = $_.Path
             TargetEnvironment                   = $TargetEnvironment
         }
-        if (Test-Member -InputObject $_ -Name EnvironmentSettingOverridesType) { $arguments.EnvironmentSettingOverridesType = $_.EnvironmentSettingOverridesType }
-        $settings = Get-EnvironmentSettings @arguments
-
-        Update-AffiliateApplicationStore -AffiliateApplication $application -EnvironmentSettings $settings
+        if ($_.AssemblyProbingFolderPaths | Test-Any) { $arguments.AssemblyProbingFolderPaths = $_.AssemblyProbingFolderPaths }
+        if (Test-Member -InputObject $_ -Name EnvironmentSettingOverridesTypeName) { $arguments.EnvironmentSettingOverridesTypeName = $_.EnvironmentSettingOverridesTypeName }
+        Update-AffiliateApplicationStore @arguments
     }
 }
 
-# Synopsis: Undeploy application's SSO config stores if on the Management Server
-task Undeploy-SsoConfigStores -If { -not $SkipMgmtDbDeployment } `
-    Undeploy-SsoConfigStoresOnManagementServer
-
 # Synopsis: Undeploy application's SSO config stores
-task Undeploy-SsoConfigStoresOnManagementServer -If { -not $SkipUndeploy } `
+task Undeploy-SsoConfigStores -If { (-not $SkipUndeploy) -and (-not $SkipSharedResourceDeployment) } `
     Remove-SsoConfigStores
 
 # Synopsis: Remove application's SSO config stores
-task Remove-SsoConfigStores -If { -not $SkipUndeploy } {
+task Remove-SsoConfigStores {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         Remove-AffiliateApplication -AffiliateApplicationName $ApplicationName

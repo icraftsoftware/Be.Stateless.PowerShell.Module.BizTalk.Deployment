@@ -18,9 +18,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
-using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Extensions;
-using Be.Stateless.Linq.Extensions;
+using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
+using Be.Stateless.BizTalk.Install.Command.Application;
+using Be.Stateless.BizTalk.Install.Command.Dispatcher;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
@@ -33,10 +33,10 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			var cmd = ApplicationBindingCommandFactory.CreateApplicationHostEnumerationCommand(ResolvedApplicationBindingType);
-			cmd.Initialize(this)
-				.Execute(WriteVerbose);
-			cmd.Hosts.ForEach(WriteObject);
+			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationHostEnumerationCommand>.Create(this))
+			{
+				dispatcher.Run();
+			}
 		}
 
 		#endregion

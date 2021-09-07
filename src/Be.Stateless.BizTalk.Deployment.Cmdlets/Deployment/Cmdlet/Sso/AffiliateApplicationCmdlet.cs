@@ -16,43 +16,18 @@
 
 #endregion
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
-using Be.Stateless.BizTalk.Dsl.Environment.Settings;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 {
-	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
+	[SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "Cmdlet API.")]
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
-	public abstract class AffiliateApplicationCmdlet : PSCmdlet
+	public abstract class AffiliateApplicationCmdlet : System.Management.Automation.Cmdlet
 	{
-		#region Base Class Member Overrides
-
-		protected override void BeginProcessing()
-		{
-			ResolvedAffiliateApplicationName = ParameterSetName switch {
-				BY_NAME_PARAMETER_SET_NAME => AffiliateApplicationName,
-				BY_SETTINGS_PARAMETER_SET_NAME => EnvironmentSettings.ApplicationName,
-				_ => throw new InvalidOperationException($"Unexpected parameter set name: {ParameterSetName}.")
-			};
-		}
-
-		#endregion
-
 		[Alias("Name")]
-		[Parameter(Mandatory = true, ParameterSetName = BY_NAME_PARAMETER_SET_NAME)]
+		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
 		public string AffiliateApplicationName { get; set; }
-
-		[Alias("Settings")]
-		[Parameter(Mandatory = true, ParameterSetName = BY_SETTINGS_PARAMETER_SET_NAME)]
-		[ValidateNotNull]
-		public IEnvironmentSettings EnvironmentSettings { get; set; }
-
-		protected string ResolvedAffiliateApplicationName { get; set; }
-
-		protected internal const string BY_NAME_PARAMETER_SET_NAME = "by-name";
-		protected internal const string BY_SETTINGS_PARAMETER_SET_NAME = "by-settings";
 	}
 }

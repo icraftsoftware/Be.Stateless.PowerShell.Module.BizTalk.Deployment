@@ -23,6 +23,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Xsl;
+using Be.Stateless.BizTalk.Management.Automation;
 using Be.Stateless.Extensions;
 using Be.Stateless.Resources;
 using Be.Stateless.Xml.Extensions;
@@ -34,7 +35,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
 	[Cmdlet(VerbsData.Expand, Nouns.ApplicationBinding)]
 	[OutputType(typeof(void))]
-	public class ExpandApplicationBinding : ProviderPathResolvingCmdlet
+	public class ExpandApplicationBinding : PSCmdlet
 	{
 		#region Base Class Member Overrides
 
@@ -43,8 +44,8 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 			WriteInformation($"BizTalk Application bindings '{ResolvedInputPath}' are being expanded...", null);
 			var xmlBindings = new XmlDocument();
 			xmlBindings.Load(ResolvedInputPath);
-			UnescapeXmlBindingTree(xmlBindings.DocumentElement);
-			if (Trimmed.IsPresent && Trimmed) TrimXmlBindingTree(xmlBindings);
+			UnescapeXmlTree(xmlBindings.DocumentElement);
+			if (Trim.IsPresent && Trim) TrimXmlBinding(xmlBindings);
 			xmlBindings.Save(ResolvedOutputFilePath);
 			WriteInformation($"BizTalk Application bindings '{ResolvedInputPath}' have been expanded.", null);
 		}
@@ -61,50 +62,40 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 		public string OutputFilePath { get; set; }
 
 		[Parameter(Mandatory = false)]
-		public SwitchParameter Trimmed { get; set; }
+		public SwitchParameter Trim { get; set; }
 
-		private string ResolvedInputPath => _resolvedInputFilePath ??= ResolvePowerShellPath(InputFilePath, nameof(InputFilePath));
+		private string ResolvedInputPath => _resolvedInputFilePath ??= this.ResolvePath(InputFilePath);
 
 		[SuppressMessage("ReSharper", "InvertIf")]
-		private string ResolvedOutputFilePath
-		{
-			get
-			{
-				if (_resolvedOutputFilePath == null)
-				{
-					_resolvedOutputFilePath = OutputFilePath.IsNullOrEmpty()
-						? Path.Combine(Path.GetDirectoryName(ResolvedInputPath)!, Path.GetFileNameWithoutExtension(ResolvedInputPath) + ".unescaped.xml")
-						: SessionState.Path.GetUnresolvedProviderPathFromPSPath(OutputFilePath);
-					WriteDebug($"Resolved {nameof(OutputFilePath)}: '{_resolvedOutputFilePath}'.");
-				}
-				return _resolvedOutputFilePath;
-			}
-		}
+		private string ResolvedOutputFilePath => _resolvedOutputFilePath ??= OutputFilePath.IsNullOrEmpty()
+			? Path.Combine(Path.GetDirectoryName(ResolvedInputPath)!, Path.GetFileNameWithoutExtension(ResolvedInputPath) + ".unescaped.xml")
+			: this.ResolvePath(OutputFilePath);
 
-		private void TrimXmlBindingTree(XmlDocument xmlDocument)
+		private XslCompiledTransform TrimmingXslt => _trimmingXslt ??= ResourceManager.Load(
+			Assembly.GetExecutingAssembly(),
+			GetType().FullName + ".Trimmer.xslt",
+			stream => {
+				using (var xmlReader = XmlReader.Create(stream))
+				{
+					var xslt = new XslCompiledTransform(true);
+					xslt.Load(xmlReader, XsltSettings.TrustedXslt, new XmlUrlResolver());
+					return xslt;
+				}
+			});
+
+		private void TrimXmlBinding(XmlDocument xmlDocument)
 		{
-			var xslCompiledTransform = ResourceManager.Load(
-				Assembly.GetExecutingAssembly(),
-				GetType().FullName + ".Trimmer.xslt",
-				stream => {
-					using (var xmlReader = XmlReader.Create(stream))
-					{
-						var xslt = new XslCompiledTransform(true);
-						xslt.Load(xmlReader, XsltSettings.TrustedXslt, new XmlUrlResolver());
-						return xslt;
-					}
-				});
 			using (var xmlReader = XmlReader.Create(xmlDocument.AsStream()))
 			using (var writer = new StringWriter())
-			using (var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings { OmitXmlDeclaration = true }))
+			using (var xmlWriter = XmlWriter.Create(writer, new() { OmitXmlDeclaration = true }))
 			{
-				xslCompiledTransform.Transform(xmlReader, xmlWriter);
+				TrimmingXslt.Transform(xmlReader, xmlWriter);
 				writer.Flush();
 				xmlDocument.LoadXml(writer.ToString());
 			}
 		}
 
-		private void UnescapeXmlBindingTree(XmlNode node)
+		private void UnescapeXmlTree(XmlNode node)
 		{
 			// to be unescaped, a text node must be a node's only child
 			if (node.ChildNodes.Count == 1 && node.ChildNodes[0].NodeType == XmlNodeType.Text)
@@ -118,10 +109,11 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 			// also try to unescape current node's newly created XML subtree if it was a text node that has just been unescaped
 			foreach (XmlNode childNode in node.ChildNodes)
 			{
-				UnescapeXmlBindingTree(childNode);
+				UnescapeXmlTree(childNode);
 			}
 		}
 
+		private static XslCompiledTransform _trimmingXslt;
 		private string _resolvedInputFilePath;
 		private string _resolvedOutputFilePath;
 	}

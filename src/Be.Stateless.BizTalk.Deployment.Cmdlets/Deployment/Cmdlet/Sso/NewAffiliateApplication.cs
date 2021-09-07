@@ -33,29 +33,27 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 
 		protected override void ProcessRecord()
 		{
-			var affiliateApplication = AffiliateApplication.FindByName(ResolvedAffiliateApplicationName);
+			var affiliateApplication = AffiliateApplication.FindByName(AffiliateApplicationName);
 			if (affiliateApplication == null)
 			{
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{ResolvedAffiliateApplicationName}' is being created...", null);
-				affiliateApplication = AffiliateApplication.Create(ResolvedAffiliateApplicationName, AdministratorGroups, UserGroups);
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{ResolvedAffiliateApplicationName}' has been created.", null);
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}' is being created...", null);
+				affiliateApplication = AffiliateApplication.Create(AffiliateApplicationName, AdministratorGroups, UserGroups);
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}' has been created.", null);
 			}
 			else
 			{
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{ResolvedAffiliateApplicationName}' already exists.", null);
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}' already exists.", null);
 			}
 			WriteObject(affiliateApplication);
 		}
 
 		#endregion
 
-		[Parameter(Mandatory = false, ParameterSetName = BY_NAME_PARAMETER_SET_NAME)]
-		[Parameter(Mandatory = false, ParameterSetName = BY_SETTINGS_PARAMETER_SET_NAME)]
+		[Parameter(Mandatory = false)]
 		[ValidateNotNullOrEmpty]
 		public string[] AdministratorGroups { get; set; }
 
-		[Parameter(Mandatory = false, ParameterSetName = BY_NAME_PARAMETER_SET_NAME)]
-		[Parameter(Mandatory = false, ParameterSetName = BY_SETTINGS_PARAMETER_SET_NAME)]
+		[Parameter(Mandatory = false)]
 		[ValidateNotNullOrEmpty]
 		public string[] UserGroups { get; set; }
 	}

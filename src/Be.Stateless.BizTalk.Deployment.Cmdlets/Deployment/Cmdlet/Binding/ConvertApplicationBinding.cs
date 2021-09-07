@@ -19,35 +19,43 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Extensions;
+using Be.Stateless.BizTalk.Install.Command.Binding;
+using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Management.Automation;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 {
-	[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Cmdlet.")]
+	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[Cmdlet(VerbsData.Convert, Nouns.ApplicationBinding)]
 	[OutputType(typeof(void))]
-	public class ConvertApplicationBinding : ApplicationBindingBasedCmdlet
+	public class ConvertApplicationBinding : ApplicationBindingBasedCmdlet, ISetupDispatchedCommand<DispatchedApplicationBindingGenerationCommand>
 	{
-		#region Base Class Member Overrides
+		#region ISetupDispatchedCommand<DispatchedApplicationBindingGenerationCommand> Members
 
-		protected override void ProcessRecord()
+		void ISetupDispatchedCommand<DispatchedApplicationBindingGenerationCommand>.Setup(DispatchedApplicationBindingGenerationCommand dispatchedCommand)
 		{
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} bindings are being converted to XML...", null);
-			ApplicationBindingCommandFactory
-				.CreateApplicationBindingGenerationCommand(ResolvedApplicationBindingType)
-				.Initialize(this)
-				.Execute(msg => WriteInformation(msg, null));
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} bindings have been converted to XML.", null);
+			Setup(dispatchedCommand);
+			dispatchedCommand.OutputFilePath = this.ResolvePath(OutputFilePath);
 		}
 
 		#endregion
 
+		#region Base Class Member Overrides
+
+		protected override void ProcessRecord()
+		{
+			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationBindingGenerationCommand>.Create(this))
+			{
+				dispatcher.Run();
+			}
+		}
+
+		#endregion
+
+		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
 		public string OutputFilePath { get; set; }
-
-		protected internal string ResolvedOutputFilePath => _resolvedOutputFilePath ??= ResolvePowerShellPath(OutputFilePath, nameof(OutputFilePath));
-
-		private string _resolvedOutputFilePath;
 	}
 }

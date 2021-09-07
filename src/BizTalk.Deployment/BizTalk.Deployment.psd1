@@ -55,8 +55,6 @@
       'Convert-ApplicationBinding',
       'Expand-ApplicationBinding',
       'Test-ApplicationBinding',
-      # Settings
-      'Get-EnvironmentSettings',
       # Sso
       'Get-AffiliateApplication',
       'Get-AffiliateApplicationStore',

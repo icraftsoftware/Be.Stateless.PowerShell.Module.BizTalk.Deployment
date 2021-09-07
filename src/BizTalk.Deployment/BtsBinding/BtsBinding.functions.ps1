@@ -32,7 +32,7 @@ function ConvertTo-BindingBasedCmdletArguments {
         TargetEnvironment                  = $TargetEnvironment
     }
     if ($Binding.AssemblyProbingFolderPaths | Test-Any) { $arguments.AssemblyProbingFolderPaths = $Binding.AssemblyProbingFolderPaths }
-    if (Test-Member -InputObject $Binding -Name EnvironmentSettingOverridesType) { $arguments.EnvironmentSettingOverridesType = $Binding.EnvironmentSettingOverridesType }
+    if (Test-Member -InputObject $Binding -Name EnvironmentSettingOverridesTypeName) { $arguments.EnvironmentSettingOverridesTypeName = $Binding.EnvironmentSettingOverridesTypeName }
     if (Test-Member -InputObject $Binding -Name ExcelSettingOverridesFolderPath) { $arguments.ExcelSettingOverridesFolderPath = $Binding.ExcelSettingOverridesFolderPath }
     return $arguments
 }

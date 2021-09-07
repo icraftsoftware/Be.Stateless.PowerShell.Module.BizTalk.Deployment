@@ -18,13 +18,13 @@
 
 Set-StrictMode -Version Latest
 
-# Synopsis: Create a Microsoft BizTalk Server Application if on the Management Server
-task Add-BizTalkApplication -If { -not $SkipMgmtDbDeployment } `
+# Synopsis: Create a Microsoft BizTalk Server Application
+task Add-BizTalkApplication -If { -not $SkipSharedResourceDeployment } `
     Remove-BizTalkApplication, `
-    Add-BizTalkApplicationOnManagementServer
+    Add-BizTalkApplicationIfNonExistent
 
-# Synopsis: Create a Microsoft BizTalk Server Application with References to Its Dependant Microsoft BizTalk Server Applications
-task Add-BizTalkApplicationOnManagementServer -If { Test-ManifestApplication -Absent } {
+# Synopsis: Create a Microsoft BizTalk Server Application with References to Its Dependant Microsoft BizTalk Server Applications if It Does Not Already Exist
+task Add-BizTalkApplicationIfNonExistent -If { Test-ManifestApplication -Absent } {
     $arguments = @{ Name = $ApplicationName }
     if (![string]::IsNullOrWhiteSpace($Manifest.Properties.Description)) {
         $arguments.Description = $Manifest.Properties.Description
@@ -38,23 +38,15 @@ task Add-BizTalkApplicationOnManagementServer -If { Test-ManifestApplication -Ab
     New-BizTalkApplication @arguments | Out-Null
 }
 
-# Synopsis: Delete a Microsoft BizTalk Server Application if on the Management Server
-task Remove-BizTalkApplication -If { -not $SkipMgmtDbDeployment } `
-    Remove-BizTalkApplicationOnManagementServer
-
 # Synopsis: Delete a Microsoft BizTalk Server Application
-task Remove-BizTalkApplicationOnManagementServer -If { Test-ManifestApplication } {
+task Remove-BizTalkApplication -If { (-not $SkipSharedResourceDeployment) -and (Test-ManifestApplication) } {
     Write-Build DarkGreen "Removing Microsoft BizTalk Server Application '$ApplicationName'"
     Remove-BizTalkApplication -Name $ApplicationName
 }
 
-# Synopsis: Start Microsoft BizTalk Server Application if on the Management Server
+# Synopsis: Start a Microsoft BizTalk Server Application
 # the task is not named Start-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
-task Start-Application -If { -not $SkipMgmtDbDeployment } `
-    Start-ApplicationOnManagementServer
-
-# Synopsis: Start Microsoft BizTalk Server Application
-task Start-ApplicationOnManagementServer -If { Test-ManifestApplication } {
+task Start-Application -If { (-not $SkipSharedResourceDeployment) -and (Test-ManifestApplication) } {
     Write-Build DarkGreen "Starting Microsoft BizTalk Server Application '$ApplicationName'"
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
@@ -62,13 +54,9 @@ task Start-ApplicationOnManagementServer -If { Test-ManifestApplication } {
     }
 }
 
-# Synopsis: Stop a Microsoft BizTalk Server Application if on the Management Server
-# the task is not named Stop-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
-task Stop-Application -If { -not $SkipMgmtDbDeployment } `
-    Stop-ApplicationOnManagementServer
-
 # Synopsis: Stop a Microsoft BizTalk Server Application
-task Stop-ApplicationOnManagementServer -If { Test-ManifestApplication } {
+# the task is not named Stop-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
+task Stop-Application -If { (-not $SkipSharedResourceDeployment) -and (Test-ManifestApplication) } {
     Write-Build DarkGreen "Stopping Microsoft BizTalk Server Application '$ApplicationName'"
     Stop-BizTalkApplication -Name $ApplicationName -TerminateServiceInstances:$TerminateServiceInstances
 }

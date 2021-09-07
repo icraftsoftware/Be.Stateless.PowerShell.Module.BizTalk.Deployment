@@ -74,12 +74,8 @@ task Undeploy-BizTalkArtifacts -If { -not $SkipUndeploy } `
     Undeploy-Maps, `
     Undeploy-Schemas
 
-# Synopsis: Restart the Microsoft BizTalk Server Host Instances if on the Management Server
-task Restart-BizTalkHostInstances -If { -not $SkipMgmtDbDeployment } `
-    Restart-BizTalkHostInstancesOnManagementServer
-
 # Synopsis: Restart the Microsoft BizTalk Server Host Instances of either a BizTalk Application or the BizTalk Group
-task Restart-BizTalkHostInstancesOnManagementServer `
+task Restart-BizTalkHostInstances -If { -not $SkipSharedResourceDeployment } `
     Restart-BizTalkHostInstancesForApplication, `
     Restart-BizTalkHostInstancesForGroup
 

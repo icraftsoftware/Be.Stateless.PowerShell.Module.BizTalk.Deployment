@@ -18,12 +18,8 @@
 
 Set-StrictMode -Version Latest
 
-# Synopsis: Deploy Microsoft BizTalk Server Application Bindings if on the Management Server
-task Deploy-Bindings -If { -not $SkipMgmtDbDeployment } `
-    Deploy-BindingsOnManagementServer
-
 # Synopsis: Deploy Microsoft BizTalk Server Application Bindings
-task Deploy-BindingsOnManagementServer `
+task Deploy-Bindings -If { -not $SkipSharedResourceDeployment } `
     Convert-Bindings, `
     Import-Bindings
 
@@ -60,6 +56,6 @@ task Undeploy-FileAdapterPaths -If { -not $SkipUndeploy } {
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
-        Uninstall-ApplicationFileAdapterFolders @arguments
+        Uninstall-ApplicationFileAdapterFolders @arguments -Recurse
     }
 }

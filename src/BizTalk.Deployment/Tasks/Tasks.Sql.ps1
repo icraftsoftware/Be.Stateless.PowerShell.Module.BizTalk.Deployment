@@ -18,20 +18,12 @@
 
 Set-StrictMode -Version Latest
 
-# Synopsis: Deploy SQL databases and execute SQL deployment scripts if on the Management Server
-task Deploy-SqlDatabases -If { -not $SkipMgmtDbDeployment } `
-    Deploy-SqlDatabasesOnManagementServer
-
 # Synopsis: Deploy SQL databases and execute SQL deployment scripts
-task Deploy-SqlDatabasesOnManagementServer `
+task Deploy-SqlDatabases -If { -not $SkipSharedResourceDeployment } `
     Invoke-SqlDeploymentScripts
 
-# Synopsis: Undeploy SQL databases and execute SQL undeployment scripts if on the Management Server
-task Undeploy-SqlDatabases -If { -not $SkipMgmtDbDeployment } `
-    Undeploy-SqlDatabasesOnManagementServer
-
 # Synopsis: Undeploy SQL databases and execute SQL undeployment scripts
-task Undeploy-SqlDatabasesOnManagementServer -If { -not $SkipUndeploy } `
+task Undeploy-SqlDatabases -If { (-not $SkipUndeploy) -and (-not $SkipSharedResourceDeployment) } `
     Invoke-SqlUndeploymentScripts
 
 # Synopsis: Execute SQL deployment scripts

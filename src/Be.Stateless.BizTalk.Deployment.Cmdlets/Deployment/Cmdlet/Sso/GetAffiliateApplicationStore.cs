@@ -25,22 +25,25 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[Cmdlet(VerbsCommon.Get, Nouns.AffiliateApplicationStore)]
 	[OutputType(typeof(ConfigStore))]
-	public class GetAffiliateApplicationStore : PSCmdlet
+	public class GetAffiliateApplicationStore : AffiliateApplicationCmdlet
 	{
 		#region Base Class Member Overrides
 
 		protected override void ProcessRecord()
 		{
-			WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplication.Name}''s {nameof(ConfigStore)} is being loaded...", null);
-			WriteObject(AffiliateApplication.ConfigStores.Default);
-			WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplication.Name}''s {nameof(ConfigStore)} has been loaded.", null);
+			var affiliateApplication = AffiliateApplication.FindByName(AffiliateApplicationName);
+			if (affiliateApplication != null)
+			{
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}''s {nameof(ConfigStore)} is being loaded...", null);
+				WriteObject(affiliateApplication.ConfigStores.Default);
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}''s {nameof(ConfigStore)} has been loaded.", null);
+			}
+			else
+			{
+				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplicationName}' was not found.", null);
+			}
 		}
 
 		#endregion
-
-		[Alias("Application")]
-		[Parameter(Mandatory = true)]
-		[ValidateNotNull]
-		public AffiliateApplication AffiliateApplication { get; set; }
 	}
 }

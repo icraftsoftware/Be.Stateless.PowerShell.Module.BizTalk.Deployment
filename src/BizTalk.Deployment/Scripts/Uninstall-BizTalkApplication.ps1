@@ -33,7 +33,7 @@ param(
 
     [Parameter()]
     [switch]
-    $SkipMgmtDbDeployment,
+    $SkipSharedResourceDeployment,
 
     [Parameter()]
     [switch]

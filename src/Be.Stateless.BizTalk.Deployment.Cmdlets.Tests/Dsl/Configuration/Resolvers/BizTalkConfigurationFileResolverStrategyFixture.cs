@@ -1,6 +1,6 @@
-#region Copyright & License
+ï»¿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright Â© 2012 - 2021 FranÃ§ois Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Xunit;
 
@@ -42,6 +43,7 @@ namespace Be.Stateless.BizTalk.Dsl.Configuration.Resolvers
 			new BizTalkConfigurationFileResolverStrategy().CanResolve(moniker).Should().BeTrue();
 		}
 
+		[SuppressMessage("ReSharper", "StringLiteralTypo")]
 		[Fact]
 		public void ResolveMultipleFiles()
 		{
@@ -51,6 +53,7 @@ namespace Be.Stateless.BizTalk.Dsl.Configuration.Resolvers
 					@"C:\Program Files (x86)\Microsoft BizTalk Server\BTSNTSvc64.exe.config");
 		}
 
+		[SuppressMessage("ReSharper", "StringLiteralTypo")]
 		[Fact]
 		public void ResolveSingleFile()
 		{

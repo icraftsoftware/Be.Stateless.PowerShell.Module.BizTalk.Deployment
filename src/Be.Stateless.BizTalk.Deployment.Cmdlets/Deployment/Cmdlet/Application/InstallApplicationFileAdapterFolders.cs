@@ -18,30 +18,41 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
+using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
 using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Extensions;
+using Be.Stateless.BizTalk.Install.Command.Application;
+using Be.Stateless.BizTalk.Install.Command.Dispatcher;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
-	[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Cmdlet.")]
+	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[Cmdlet(VerbsLifecycle.Install, Nouns.ApplicationFileAdapterFolders)]
 	[OutputType(typeof(void))]
-	public class InstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet
+	public class InstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet, ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderSetupCommand>
 	{
-		#region Base Class Member Overrides
+		#region ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderSetupCommand> Members
 
-		protected override void ProcessRecord()
+		void ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderSetupCommand>.Setup(DispatchedApplicationFileAdapterFolderSetupCommand dispatchedCommand)
 		{
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} file adapters' folders are being installed...", null);
-			ApplicationBindingCommandFactory
-				.CreateApplicationFileAdapterFolderSetupCommand(ResolvedApplicationBindingType)
-				.Initialize(this)
-				.Execute(msg => WriteInformation(msg, null));
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} file adapters' folders have been installed.", null);
+			Setup(dispatchedCommand);
+			dispatchedCommand.Users = Users;
 		}
 
 		#endregion
 
+		#region Base Class Member Overrides
+
+		protected override void ProcessRecord()
+		{
+			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationFileAdapterFolderSetupCommand>.Create(this))
+			{
+				dispatcher.Run();
+			}
+		}
+
+		#endregion
+
+		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
 		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]

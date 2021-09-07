@@ -16,12 +16,15 @@
 
 #endregion
 
-using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using System.Management.Automation;
-using Be.Stateless.BizTalk.Dsl.Environment.Settings;
-using Be.Stateless.BizTalk.Settings.Sso;
-using Be.Stateless.Linq.Extensions;
+using System.Reflection;
+using Be.Stateless.BizTalk.Install.Command;
+using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Sso;
+using Be.Stateless.BizTalk.Management.Automation;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 {
@@ -30,51 +33,64 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
 	[Cmdlet(VerbsData.Update, Nouns.AffiliateApplicationStore)]
 	[OutputType(typeof(void))]
-	public class UpdateAffiliateApplicationStore : PSCmdlet
+	public class UpdateAffiliateApplicationStore : PSCmdlet, ISetupDispatchedCommand<DispatchedAffiliateApplicationStoreUpdateCommand>, IProvideAssemblyResolutionProbingPaths
 	{
+		#region IProvideAssemblyResolutionProbingPaths Members
+
+		string[] IProvideAssemblyResolutionProbingPaths.AssemblyResolutionProbingPaths => _assemblyResolutionProbingPaths ??= this.ResolvePaths(AssemblyProbingFolderPaths)
+			.Prepend(Path.GetDirectoryName(this.ResolvePath(EnvironmentSettingsAssemblyFilePath)))
+			.Prepend(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+			.ToArray();
+
+		#endregion
+
+		#region ISetupDispatchedCommand<DispatchedAffiliateApplicationStoreUpdateCommand> Members
+
+		void ISetupDispatchedCommand<DispatchedAffiliateApplicationStoreUpdateCommand>.Setup(DispatchedAffiliateApplicationStoreUpdateCommand dispatchedCommand)
+		{
+			dispatchedCommand.AffiliateApplicationName = AffiliateApplicationName;
+			dispatchedCommand.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
+			dispatchedCommand.EnvironmentSettingsAssemblyFilePath = this.ResolvePath(EnvironmentSettingsAssemblyFilePath);
+			dispatchedCommand.TargetEnvironment = TargetEnvironment;
+		}
+
+		#endregion
+
 		#region Base Class Member Overrides
 
 		[SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
 		protected override void ProcessRecord()
 		{
-			if (string.Compare(AffiliateApplication.Name, EnvironmentSettings.ApplicationName, StringComparison.OrdinalIgnoreCase) != 0)
-				throw new InvalidOperationException(
-					$"{nameof(AffiliateApplication)} name '{AffiliateApplication.Name}' does not match {nameof(EnvironmentSettings)} one '{EnvironmentSettings.ApplicationName}'.");
-
-			if (EnvironmentSettings is IProvideSsoSettings ssoSettingProvider)
+			using (var dispatcher = IsolatedCommandDispatcher<DispatchedAffiliateApplicationStoreUpdateCommand>.Create(this))
 			{
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplication.Name}''s {nameof(ConfigStore)} is being updated...", null);
-
-				WriteVerbose($"Loading existing{nameof(ConfigStore)}.");
-				var configStore = AffiliateApplication.ConfigStores.Default;
-				ssoSettingProvider.SsoSettings.ForEach(
-					kvp => {
-						WriteVerbose($"Adding property '{kvp.Key}' to {nameof(ConfigStore)}.");
-						configStore.Properties.Add(kvp.Key, kvp.Value);
-					});
-				WriteVerbose($"Saving {nameof(ConfigStore)} changes.");
-				configStore.Save();
-
-				WriteInformation($"SSO {nameof(AffiliateApplication)} '{AffiliateApplication.Name}''s {nameof(ConfigStore)} has been updated.", null);
-			}
-			else
-			{
-				WriteInformation(
-					$"SSO {nameof(AffiliateApplication)} '{AffiliateApplication.Name}''s {nameof(ConfigStore)} update is being skipped: {nameof(EnvironmentSettings)} does not provide any SSO Settings.",
-					null);
+				dispatcher.Run();
 			}
 		}
 
 		#endregion
 
-		[Alias("Application")]
+		[Alias("Name")]
 		[Parameter(Mandatory = true)]
-		[ValidateNotNull]
-		public AffiliateApplication AffiliateApplication { get; set; }
+		[ValidateNotNullOrEmpty]
+		public string AffiliateApplicationName { get; set; }
 
-		[Alias("Settings")]
-		[Parameter(Mandatory = true)]
+		[Parameter(Mandatory = false)]
+		[ValidateNotNullOrEmpty]
+		public string[] AssemblyProbingFolderPaths { get; set; }
+
+		[Parameter(Mandatory = false)]
 		[ValidateNotNull]
-		public IEnvironmentSettings EnvironmentSettings { get; set; }
+		public string EnvironmentSettingOverridesTypeName { get; set; }
+
+		[Alias("Path")]
+		[Parameter(Mandatory = true)]
+		[ValidateNotNullOrEmpty]
+		public string EnvironmentSettingsAssemblyFilePath { get; set; }
+
+		[Parameter(Mandatory = true)]
+		[ValidateNotNullOrEmpty]
+		public string TargetEnvironment { get; set; }
+
+		private string[] _assemblyResolutionProbingPaths;
 	}
 }

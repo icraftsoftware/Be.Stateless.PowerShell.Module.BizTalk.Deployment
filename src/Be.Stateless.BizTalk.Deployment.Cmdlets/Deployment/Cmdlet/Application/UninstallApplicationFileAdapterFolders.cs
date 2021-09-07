@@ -18,28 +18,44 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
+using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
 using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Extensions;
+using Be.Stateless.BizTalk.Install.Command.Application;
+using Be.Stateless.BizTalk.Install.Command.Dispatcher;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[Cmdlet(VerbsLifecycle.Uninstall, Nouns.ApplicationFileAdapterFolders)]
 	[OutputType(typeof(void))]
-	public class UninstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet
+	public class UninstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet, ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderTeardownCommand>
 	{
+		#region ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderTeardownCommand> Members
+
+		void ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderTeardownCommand>.Setup(DispatchedApplicationFileAdapterFolderTeardownCommand dispatchedCommand)
+		{
+			Setup(dispatchedCommand);
+			dispatchedCommand.Recurse = Recurse.IsPresent && Recurse.ToBool();
+		}
+
+		#endregion
+
 		#region Base Class Member Overrides
 
 		protected override void ProcessRecord()
 		{
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} file adapters' folders are being uninstalled...", null);
-			ApplicationBindingCommandFactory
-				.CreateApplicationFileAdapterFolderTeardownCommand(ResolvedApplicationBindingType)
-				.Initialize(this)
-				.Execute(msg => WriteInformation(msg, null));
-			WriteInformation($"BizTalk Application {ResolvedApplicationBindingType.FullName} file adapters' folders have been uninstalled.", null);
+			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationFileAdapterFolderTeardownCommand>.Create(this))
+			{
+				dispatcher.Run();
+			}
 		}
 
 		#endregion
+
+		[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
+		[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
+		[Parameter(Mandatory = false)]
+		[ValidateNotNullOrEmpty]
+		public SwitchParameter Recurse { get; set; }
 	}
 }

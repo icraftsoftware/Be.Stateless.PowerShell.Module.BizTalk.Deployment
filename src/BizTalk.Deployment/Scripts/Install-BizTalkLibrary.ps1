@@ -31,6 +31,10 @@ param(
 
     [Parameter()]
     [switch]
+    $SkipSharedResourceDeployment,
+
+    [Parameter()]
+    [switch]
     $SkipInstallUtil,
 
     [Parameter()]
@@ -45,7 +49,6 @@ begin {
     Set-StrictMode -Version Latest
     Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     $script:Manifest = $Manifest
-    $script:SkipMgmtDbDeployment = $false
 }
 end {
     try {
