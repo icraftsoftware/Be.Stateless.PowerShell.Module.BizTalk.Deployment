@@ -16,8 +16,11 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Be.Stateless.BizTalk.Install.Command.Binding;
+using Be.Stateless.Linq.Extensions;
 
 namespace Be.Stateless.BizTalk.Install.Command.Application
 {
@@ -29,12 +32,12 @@ namespace Be.Stateless.BizTalk.Install.Command.Application
 		protected override void Execute(IOutputAppender outputAppender)
 		{
 			outputAppender.WriteInformation($"BizTalk Application {ApplicationBindingType.FullName} bound hosts are being enumerated...");
-			outputAppender.WriteObject(
-				CommandFactory
+			var hosts = CommandFactory
 					.CreateApplicationHostEnumerationCommand(ApplicationBindingType)
 					.InitializeParameters(this)
-					.Execute(outputAppender.WriteInformation),
-				true);
+					.Execute(outputAppender.WriteInformation) as IEnumerable<string>
+				?? throw new InvalidOperationException("ApplicationHostEnumerationCommand result is not enumerable.");
+			hosts.ForEach(outputAppender.WriteObject);
 			outputAppender.WriteInformation($"BizTalk Application {ApplicationBindingType.FullName} bound hosts have been enumerated.");
 		}
 
