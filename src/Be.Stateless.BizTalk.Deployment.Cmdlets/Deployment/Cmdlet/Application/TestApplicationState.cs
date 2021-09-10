@@ -33,7 +33,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationStateValidationCommand>.Create(this))
+			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationStateValidationCommand>.Create(this))
 			{
 				dispatcher.Run();
 			}

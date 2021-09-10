@@ -44,7 +44,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationBindingGenerationCommand>.Create(this))
+			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationBindingGenerationCommand>.Create(this))
 			{
 				dispatcher.Run();
 			}

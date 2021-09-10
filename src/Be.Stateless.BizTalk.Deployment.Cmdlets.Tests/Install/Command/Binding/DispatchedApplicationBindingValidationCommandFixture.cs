@@ -38,7 +38,7 @@ namespace Be.Stateless.BizTalk.Install.Command.Binding
 		[Fact(Skip = "Figure a way to provide the binding assembly on disk on the build server too!")]
 		public void ExecuteCoreSucceeds()
 		{
-			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationBindingValidationCommand>.Create(_outputAppender, this, AssemblyResolutionProbingPaths))
+			using (var dispatcher = new IsolatedCommandDispatcher<DispatchedApplicationBindingValidationCommand>(_outputAppender, this, AssemblyResolutionProbingPaths))
 			{
 				dispatcher.Run();
 			}

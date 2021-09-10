@@ -44,7 +44,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = IsolatedCommandDispatcher<DispatchedApplicationFileAdapterFolderTeardownCommand>.Create(this))
+			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationFileAdapterFolderTeardownCommand>.Create(this))
 			{
 				dispatcher.Run();
 			}

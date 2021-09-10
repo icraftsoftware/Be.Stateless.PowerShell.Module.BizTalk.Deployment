@@ -38,15 +38,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.21171.29951" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21163.21265" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21250.37111" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.21250.37111" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21250.37111" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21250.35996" />
     <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21250.23893" />
+    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21171.58430" />
+    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.Components" Version="2.0.21173.34896" />
+    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.MicroComponents" Version="2.0.21215.44110" />
     <PackageReference Include="Be.Stateless.BizTalk.Settings" Version="2.0.21172.21079" />
+    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.21215.39558" />
+    <PackageReference Include="Be.Stateless.BizTalk.Xml" Version="2.0.21171.56884" />
     <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.0.21176.38813" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.0.21005.38790" />
+    <PackageReference Include="Be.Stateless.Reflection" Version="2.0.21071.48539" />
+    <PackageReference Include="Be.Stateless.Security" Version="2.0.21071.48839" />
     <PackageReference Include="Be.Stateless.Stream" Version="2.0.21212.92" />
     <PackageReference Include="Be.Stateless.Xml" Version="2.0.21104.42878" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">

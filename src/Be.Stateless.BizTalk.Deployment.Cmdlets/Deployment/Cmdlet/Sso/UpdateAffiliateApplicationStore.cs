@@ -61,7 +61,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 		[SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = IsolatedCommandDispatcher<DispatchedAffiliateApplicationStoreUpdateCommand>.Create(this))
+			using (var dispatcher = CommandDispatcherFactory<DispatchedAffiliateApplicationStoreUpdateCommand>.Create(this))
 			{
 				dispatcher.Run();
 			}

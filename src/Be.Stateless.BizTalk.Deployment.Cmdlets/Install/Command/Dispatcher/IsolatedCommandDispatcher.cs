@@ -18,61 +18,35 @@
 
 using System;
 using System.IO;
-using System.Management.Automation;
 using System.Reflection;
-using Be.Stateless.BizTalk.Deployment.Cmdlet;
 
 namespace Be.Stateless.BizTalk.Install.Command.Dispatcher
 {
-	internal class IsolatedCommandDispatcher<T> : IDisposable
-		where T : DispatchedCommand, IDispatchedCommand
+	internal class IsolatedCommandDispatcher<T> : CommandDispatcher<T>
+		where T : MarshalByRefObject, IDispatchedCommand, new()
 	{
-		internal static IsolatedCommandDispatcher<T> Create<TS>(TS cmdlet)
-			where TS : PSCmdlet, IProvideAssemblyResolutionProbingPaths, ISetupDispatchedCommand<T>
-		{
-			return Create(new CmdletOutputProxy(cmdlet), cmdlet, cmdlet.AssemblyResolutionProbingPaths);
-		}
-
-		internal static IsolatedCommandDispatcher<T> Create(
-			IOutputAppender outputAppender,
-			ISetupDispatchedCommand<T> dispatchedCommandSetupper,
-			string[] assemblyResolutionProbingPaths)
-		{
-			if (dispatchedCommandSetupper == null) throw new ArgumentNullException(nameof(dispatchedCommandSetupper));
-			if (outputAppender == null) throw new ArgumentNullException(nameof(outputAppender));
-
-			var dispatcher = new IsolatedCommandDispatcher<T>(outputAppender, assemblyResolutionProbingPaths);
-			dispatchedCommandSetupper.Setup(dispatcher._dispatchedCommand);
-			return dispatcher;
-		}
-
-		private IsolatedCommandDispatcher(IOutputAppender outputAppender, string[] assemblyResolutionProbingPaths)
+		internal IsolatedCommandDispatcher(IOutputAppender outputAppender, ISetupDispatchedCommand<T> dispatchedCommandSetupper, string[] assemblyResolutionProbingPaths)
+			: base(outputAppender, assemblyResolutionProbingPaths)
 		{
 			var setupInformation = AppDomain.CurrentDomain.SetupInformation;
 			setupInformation.ApplicationBase = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			_appDomain = AppDomain.CreateDomain($"Isolated {typeof(T).Name}", null, setupInformation);
-			_dispatchedCommand = (T) _appDomain.CreateInstanceAndUnwrap(typeof(T).Assembly.FullName, typeof(T).FullName!);
-			_assemblyResolutionProbingPaths = assemblyResolutionProbingPaths;
-			_outputAppender = outputAppender;
+			DispatchedCommand = (T) _appDomain.CreateInstanceAndUnwrap(typeof(T).Assembly.FullName, typeof(T).FullName!);
+			dispatchedCommandSetupper.Setup(DispatchedCommand);
 		}
 
-		#region IDisposable Members
+		#region Base Class Member Overrides
 
-		public void Dispose()
+		protected override void Dispose(bool disposing)
 		{
-			if (_appDomain != null) AppDomain.Unload(_appDomain);
+			if (disposing)
+			{
+				if (_appDomain != null) AppDomain.Unload(_appDomain);
+			}
 		}
 
 		#endregion
 
-		public void Run()
-		{
-			_dispatchedCommand.Execute(_outputAppender, _assemblyResolutionProbingPaths);
-		}
-
 		private readonly AppDomain _appDomain;
-		private readonly string[] _assemblyResolutionProbingPaths;
-		private readonly T _dispatchedCommand;
-		private readonly IOutputAppender _outputAppender;
 	}
 }

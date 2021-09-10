@@ -21,9 +21,9 @@ using Be.Stateless.BizTalk.Install.Command;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 {
-	internal class CmdletOutputProxy : MarshalByRefObject, IOutputAppender
+	internal class PowerShellOutputAppender : MarshalByRefObject, IOutputAppender
 	{
-		internal CmdletOutputProxy(System.Management.Automation.Cmdlet cmdlet)
+		internal PowerShellOutputAppender(System.Management.Automation.Cmdlet cmdlet)
 		{
 			_cmdlet = cmdlet ?? throw new ArgumentNullException(nameof(cmdlet));
 		}
