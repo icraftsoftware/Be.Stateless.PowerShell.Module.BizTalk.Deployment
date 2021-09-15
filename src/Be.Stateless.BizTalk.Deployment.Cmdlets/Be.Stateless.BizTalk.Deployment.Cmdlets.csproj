@@ -40,11 +40,11 @@
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.21171.29951" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21163.21265" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21250.37111" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.21250.37111" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21250.37111" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21250.35996" />
-    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21250.23893" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21266.18806" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.21266.18806" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21266.18806" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21266.16947" />
+    <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21266.16505" />
     <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21171.58430" />
     <PackageReference Include="Be.Stateless.BizTalk.Pipeline.Components" Version="2.0.21173.34896" />
     <PackageReference Include="Be.Stateless.BizTalk.Pipeline.MicroComponents" Version="2.0.21215.44110" />

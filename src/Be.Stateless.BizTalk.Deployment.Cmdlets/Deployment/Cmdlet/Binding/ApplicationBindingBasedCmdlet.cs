@@ -22,15 +22,16 @@ using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
 using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Binding;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 using Be.Stateless.BizTalk.Management.Automation;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 {
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
+	[SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "Cmdlet API.")]
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
-	public abstract class ApplicationBindingBasedCmdlet : PSCmdlet, ISetupDispatchedCommand<DispatchedApplicationBindingBasedCommand>, IProvideAssemblyResolutionProbingPaths
+	public abstract class ApplicationBindingBasedCmdlet : PSCmdlet, ISetupCommandProxy<ApplicationBindingBasedCommandProxy>, IProvideAssemblyResolutionProbingPaths
 	{
 		#region IProvideAssemblyResolutionProbingPaths Members
 
@@ -41,14 +42,14 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 
 		#endregion
 
-		#region ISetupDispatchedCommand<DispatchedApplicationBindingBasedCommand> Members
+		#region ISetupCommandProxy<ApplicationBindingBasedCommandProxy> Members
 
-		void ISetupDispatchedCommand<DispatchedApplicationBindingBasedCommand>.Setup(DispatchedApplicationBindingBasedCommand dispatchedCommand)
+		void ISetupCommandProxy<ApplicationBindingBasedCommandProxy>.Setup(ApplicationBindingBasedCommandProxy commandProxy)
 		{
-			dispatchedCommand.ApplicationBindingAssemblyFilePath = this.ResolvePath(ApplicationBindingAssemblyFilePath);
-			dispatchedCommand.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
-			dispatchedCommand.ExcelSettingOverridesFolderPath = this.ResolvePath(ExcelSettingOverridesFolderPath);
-			dispatchedCommand.TargetEnvironment = TargetEnvironment;
+			commandProxy.ApplicationBindingAssemblyFilePath = this.ResolvePath(ApplicationBindingAssemblyFilePath);
+			commandProxy.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
+			commandProxy.ExcelSettingOverridesFolderPath = this.ResolvePath(ExcelSettingOverridesFolderPath);
+			commandProxy.TargetEnvironment = TargetEnvironment;
 		}
 
 		#endregion
@@ -70,13 +71,17 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 		[ValidateNotNullOrEmpty]
 		public string ExcelSettingOverridesFolderPath { get; set; }
 
+		[Parameter(Mandatory = false)]
+		[ValidateNotNullOrEmpty]
+		public SwitchParameter NoLock { get; set; }
+
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
 		public string TargetEnvironment { get; set; }
 
-		internal void Setup(DispatchedApplicationBindingBasedCommand dispatchedCommand)
+		internal void Setup(ApplicationBindingBasedCommandProxy commandProxy)
 		{
-			((ISetupDispatchedCommand<DispatchedApplicationBindingBasedCommand>) this).Setup(dispatchedCommand);
+			((ISetupCommandProxy<ApplicationBindingBasedCommandProxy>) this).Setup(commandProxy);
 		}
 
 		private string[] _assemblyResolutionProbingPaths;

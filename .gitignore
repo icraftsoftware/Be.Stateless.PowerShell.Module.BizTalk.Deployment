@@ -23,11 +23,7 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-#[Bb]in/
-**/BizTalk.Deployment/bin/*.dll
-!**/BizTalk.Deployment/bin/Microsoft.BizTalk.Adapter.Admin.dll
-!**/BizTalk.Deployment/bin/Microsoft.BizTalk.PipelineOM.dll
-!**/BizTalk.Deployment/bin/PipelineObjects.dll
+[Bb]in/
 [Oo]bj/
 [Ll]og/
 

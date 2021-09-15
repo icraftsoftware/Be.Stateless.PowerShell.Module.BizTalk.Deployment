@@ -17,7 +17,7 @@
 #endregion
 
 using System;
-using Be.Stateless.BizTalk.Install.Command;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 {
@@ -33,16 +33,6 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 		public void WriteInformation(string message)
 		{
 			_cmdlet.WriteInformation(message, null);
-		}
-
-		public void WriteObject(object @object)
-		{
-			_cmdlet.WriteObject(@object);
-		}
-
-		public void WriteObject(object @object, bool enumerateCollection)
-		{
-			_cmdlet.WriteObject(@object, enumerateCollection);
 		}
 
 		public void WriteVerbose(string message)

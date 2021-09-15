@@ -16,11 +16,13 @@
 
 #endregion
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
-using Be.Stateless.BizTalk.Install.Command.Application;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
+using Be.Stateless.Extensions;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
@@ -33,9 +35,19 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationStateValidationCommand>.Create(this))
+			WriteVerbose("Testing BizTalk Application's expected state...");
+			try
 			{
-				dispatcher.Run();
+				using (var dispatcher = CommandDispatcherFactory<ApplicationStateValidationCommandProxy>.Create(this, NoLock))
+				{
+					dispatcher.Run();
+				}
+				WriteObject(true);
+			}
+			catch (Exception exception) when (!exception.IsFatal())
+			{
+				WriteVerbose(exception.ToString());
+				WriteObject(false);
 			}
 		}
 

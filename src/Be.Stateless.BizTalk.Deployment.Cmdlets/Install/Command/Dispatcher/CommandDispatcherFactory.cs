@@ -19,23 +19,24 @@
 using System;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Deployment.Cmdlet;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Install.Command.Dispatcher
 {
 	internal static class CommandDispatcherFactory<T>
-		where T : MarshalByRefObject, IDispatchedCommand, new()
+		where T : CommandProxy, new()
 	{
-		internal static CommandDispatcher<T> Create<TS>(TS cmdlet, bool isolated = false)
-			where TS : PSCmdlet, IProvideAssemblyResolutionProbingPaths, ISetupDispatchedCommand<T>
+		internal static CommandDispatcher<T> Create<TS>(TS cmdlet, SwitchParameter noLockSwitch)
+			where TS : PSCmdlet, IProvideAssemblyResolutionProbingPaths, ISetupCommandProxy<T>
 		{
 			if (cmdlet == null) throw new ArgumentNullException(nameof(cmdlet));
 
 			var assemblyResolutionProbingPaths = cmdlet.AssemblyResolutionProbingPaths;
-			var dispatchedCommandSetupper = (ISetupDispatchedCommand<T>) cmdlet;
+			var commandProxySetupper = (ISetupCommandProxy<T>) cmdlet;
 			var outputAppender = new PowerShellOutputAppender(cmdlet);
-			return isolated
-				? new IsolatedCommandDispatcher<T>(outputAppender, dispatchedCommandSetupper, assemblyResolutionProbingPaths)
-				: new CommandDispatcher<T>(outputAppender, dispatchedCommandSetupper, assemblyResolutionProbingPaths);
+			return noLockSwitch.IsPresent && noLockSwitch.ToBool()
+				? new IsolatedCommandDispatcher<T>(outputAppender, commandProxySetupper, assemblyResolutionProbingPaths)
+				: new CommandDispatcher<T>(outputAppender, commandProxySetupper, assemblyResolutionProbingPaths);
 		}
 	}
 }

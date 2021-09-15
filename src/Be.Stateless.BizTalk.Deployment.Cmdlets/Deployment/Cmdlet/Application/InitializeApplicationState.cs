@@ -19,8 +19,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
-using Be.Stateless.BizTalk.Install.Command.Application;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
@@ -33,7 +33,8 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationStateInitializationCommand>.Create(this))
+			WriteInformation("Initializing BizTalk Application ...", null);
+			using (var dispatcher = CommandDispatcherFactory<ApplicationStateInitializationCommandProxy>.Create(this, NoLock))
 			{
 				dispatcher.Run();
 			}

@@ -25,23 +25,13 @@ using Be.Stateless.BizTalk.Settings.Sso;
 using Be.Stateless.Extensions;
 using Be.Stateless.Linq.Extensions;
 
-namespace Be.Stateless.BizTalk.Install.Command.Sso
+namespace Be.Stateless.BizTalk.Install.Command.Proxy
 {
+	// TODO to be moved to Dsl.Binding repo once NoLock is working... but don't know in which assembly yet
 	[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Instantiated by IsolatedCommandDispatcher.")]
-	public class DispatchedAffiliateApplicationStoreUpdateCommand : DispatchedCommand
+	public class AffiliateApplicationStoreUpdateCommandProxy : CommandProxy
 	{
 		#region Base Class Member Overrides
-
-		[SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly")]
-		protected override void BeforeExecute(IOutputAppender outputAppender)
-		{
-			if (AffiliateApplicationName.IsNullOrEmpty()) throw new ArgumentNullException(nameof(AffiliateApplicationName));
-			if (EnvironmentSettingsAssemblyFilePath.IsNullOrEmpty()) throw new ArgumentNullException(nameof(EnvironmentSettingsAssemblyFilePath));
-			if (TargetEnvironment.IsNullOrEmpty()) throw new ArgumentNullException(nameof(TargetEnvironment));
-
-			DeploymentContext.TargetEnvironment = TargetEnvironment;
-			if (!EnvironmentSettingOverridesTypeName.IsNullOrEmpty()) DeploymentContext.EnvironmentSettingOverridesType = ResolveEnvironmentSettingOverridesType(outputAppender);
-		}
 
 		protected override void Execute(IOutputAppender outputAppender)
 		{
@@ -75,6 +65,17 @@ namespace Be.Stateless.BizTalk.Install.Command.Sso
 			}
 		}
 
+		[SuppressMessage("Usage", "CA2208:Instantiate argument exceptions correctly")]
+		protected override void Prepare(IOutputAppender outputAppender)
+		{
+			if (AffiliateApplicationName.IsNullOrEmpty()) throw new ArgumentNullException(nameof(AffiliateApplicationName));
+			if (EnvironmentSettingsAssemblyFilePath.IsNullOrEmpty()) throw new ArgumentNullException(nameof(EnvironmentSettingsAssemblyFilePath));
+			if (TargetEnvironment.IsNullOrEmpty()) throw new ArgumentNullException(nameof(TargetEnvironment));
+
+			DeploymentContext.TargetEnvironment = TargetEnvironment;
+			if (!EnvironmentSettingOverridesTypeName.IsNullOrEmpty()) DeploymentContext.EnvironmentSettingOverridesType = ResolveEnvironmentSettingOverridesType(outputAppender);
+		}
+
 		#endregion
 
 		public string AffiliateApplicationName { get; set; }
@@ -87,9 +88,10 @@ namespace Be.Stateless.BizTalk.Install.Command.Sso
 
 		private IEnvironmentSettings ResolveEnvironmentSettings(IOutputAppender outputAppender)
 		{
-			outputAppender.WriteInformation($"Resolving {nameof(IEnvironmentSettings)}-derived type in assembly '{EnvironmentSettingsAssemblyFilePath}'...");
+			outputAppender.WriteInformation($"Resolving {nameof(IEnvironmentSettings)}-derived singleton in assembly '{EnvironmentSettingsAssemblyFilePath}'...");
 			var environmentSettings = AssemblyLoader.Load(EnvironmentSettingsAssemblyFilePath).GetEnvironmentSettingsSingleton(true);
-			outputAppender.WriteInformation($"Resolved {nameof(IEnvironmentSettings)}-derived type: '{environmentSettings.GetType().AssemblyQualifiedName}'.");
+			outputAppender.WriteInformation(
+				$"Resolved {nameof(IEnvironmentSettings)}-derived singleton '{environmentSettings.GetType().AssemblyQualifiedName}' in assembly '{environmentSettings.GetType().Assembly.Location}'.");
 			return environmentSettings;
 		}
 

@@ -17,18 +17,18 @@
 #endregion
 
 using System;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Install.Command.Dispatcher
 {
 	internal class CommandDispatcher<T> : IDisposable
-		where T : MarshalByRefObject, IDispatchedCommand, new()
+		where T : CommandProxy, new()
 	{
-		internal CommandDispatcher(IOutputAppender outputAppender, ISetupDispatchedCommand<T> dispatchedCommandSetupper, string[] assemblyResolutionProbingPaths)
+		internal CommandDispatcher(IOutputAppender outputAppender, ISetupCommandProxy<T> commandProxySetupper, string[] assemblyResolutionProbingPaths)
 			: this(outputAppender, assemblyResolutionProbingPaths)
 		{
-			if (dispatchedCommandSetupper == null) throw new ArgumentNullException(nameof(dispatchedCommandSetupper));
-			DispatchedCommand = new();
-			dispatchedCommandSetupper.Setup(DispatchedCommand);
+			CommandProxy = new();
+			commandProxySetupper.Setup(CommandProxy);
 		}
 
 		protected CommandDispatcher(IOutputAppender outputAppender, string[] assemblyResolutionProbingPaths)
@@ -47,11 +47,17 @@ namespace Be.Stateless.BizTalk.Install.Command.Dispatcher
 
 		#endregion
 
-		protected T DispatchedCommand { get; set; }
+		protected T CommandProxy { get; set; }
 
 		public void Run()
 		{
-			DispatchedCommand.Execute(_outputAppender, _assemblyResolutionProbingPaths);
+			CommandProxy.Execute(_outputAppender, _assemblyResolutionProbingPaths);
+		}
+
+		public TR Run<TR>(Func<T, TR> result)
+		{
+			Run();
+			return result(CommandProxy);
 		}
 
 		protected virtual void Dispose(bool disposing) { }

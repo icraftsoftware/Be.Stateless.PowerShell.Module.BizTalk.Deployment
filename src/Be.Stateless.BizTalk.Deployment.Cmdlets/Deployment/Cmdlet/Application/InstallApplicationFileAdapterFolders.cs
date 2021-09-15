@@ -20,22 +20,22 @@ using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
 using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Application;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[Cmdlet(VerbsLifecycle.Install, Nouns.ApplicationFileAdapterFolders)]
 	[OutputType(typeof(void))]
-	public class InstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet, ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderSetupCommand>
+	public class InstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet, ISetupCommandProxy<ApplicationFileAdapterFolderSetupCommandProxy>
 	{
-		#region ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderSetupCommand> Members
+		#region ISetupCommandProxy<ApplicationFileAdapterFolderSetupCommandProxy> Members
 
-		void ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderSetupCommand>.Setup(DispatchedApplicationFileAdapterFolderSetupCommand dispatchedCommand)
+		void ISetupCommandProxy<ApplicationFileAdapterFolderSetupCommandProxy>.Setup(ApplicationFileAdapterFolderSetupCommandProxy commandProxy)
 		{
-			Setup(dispatchedCommand);
-			dispatchedCommand.Users = Users;
+			Setup(commandProxy);
+			commandProxy.Users = Users;
 		}
 
 		#endregion
@@ -44,7 +44,8 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationFileAdapterFolderSetupCommand>.Create(this))
+			WriteInformation("Creating BizTalk Application file adapters' folders...", null);
+			using (var dispatcher = CommandDispatcherFactory<ApplicationFileAdapterFolderSetupCommandProxy>.Create(this, NoLock))
 			{
 				dispatcher.Run();
 			}

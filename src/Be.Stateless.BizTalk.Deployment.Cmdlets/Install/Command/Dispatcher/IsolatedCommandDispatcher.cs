@@ -19,30 +19,28 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Install.Command.Dispatcher
 {
 	internal class IsolatedCommandDispatcher<T> : CommandDispatcher<T>
-		where T : MarshalByRefObject, IDispatchedCommand, new()
+		where T : CommandProxy, new()
 	{
-		internal IsolatedCommandDispatcher(IOutputAppender outputAppender, ISetupDispatchedCommand<T> dispatchedCommandSetupper, string[] assemblyResolutionProbingPaths)
+		internal IsolatedCommandDispatcher(IOutputAppender outputAppender, ISetupCommandProxy<T> commandProxySetupper, string[] assemblyResolutionProbingPaths)
 			: base(outputAppender, assemblyResolutionProbingPaths)
 		{
 			var setupInformation = AppDomain.CurrentDomain.SetupInformation;
 			setupInformation.ApplicationBase = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			_appDomain = AppDomain.CreateDomain($"Isolated {typeof(T).Name}", null, setupInformation);
-			DispatchedCommand = (T) _appDomain.CreateInstanceAndUnwrap(typeof(T).Assembly.FullName, typeof(T).FullName!);
-			dispatchedCommandSetupper.Setup(DispatchedCommand);
+			CommandProxy = (T) _appDomain.CreateInstanceAndUnwrap(typeof(T).Assembly.FullName, typeof(T).FullName!);
+			commandProxySetupper.Setup(CommandProxy);
 		}
 
 		#region Base Class Member Overrides
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
-			{
-				if (_appDomain != null) AppDomain.Unload(_appDomain);
-			}
+			if (disposing && _appDomain != null) AppDomain.Unload(_appDomain);
 		}
 
 		#endregion

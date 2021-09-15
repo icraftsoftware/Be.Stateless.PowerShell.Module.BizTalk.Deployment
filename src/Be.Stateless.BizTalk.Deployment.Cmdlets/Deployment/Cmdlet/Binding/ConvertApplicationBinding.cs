@@ -19,8 +19,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Binding;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 using Be.Stateless.BizTalk.Management.Automation;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
@@ -28,14 +28,14 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[Cmdlet(VerbsData.Convert, Nouns.ApplicationBinding)]
 	[OutputType(typeof(void))]
-	public class ConvertApplicationBinding : ApplicationBindingBasedCmdlet, ISetupDispatchedCommand<DispatchedApplicationBindingGenerationCommand>
+	public class ConvertApplicationBinding : ApplicationBindingBasedCmdlet, ISetupCommandProxy<ApplicationBindingGenerationCommandProxy>
 	{
-		#region ISetupDispatchedCommand<DispatchedApplicationBindingGenerationCommand> Members
+		#region ISetupCommandProxy<ApplicationBindingGenerationCommandProxy> Members
 
-		void ISetupDispatchedCommand<DispatchedApplicationBindingGenerationCommand>.Setup(DispatchedApplicationBindingGenerationCommand dispatchedCommand)
+		void ISetupCommandProxy<ApplicationBindingGenerationCommandProxy>.Setup(ApplicationBindingGenerationCommandProxy commandProxy)
 		{
-			Setup(dispatchedCommand);
-			dispatchedCommand.OutputFilePath = this.ResolvePath(OutputFilePath);
+			Setup(commandProxy);
+			commandProxy.OutputFilePath = this.ResolvePath(OutputFilePath);
 		}
 
 		#endregion
@@ -44,7 +44,8 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationBindingGenerationCommand>.Create(this))
+			WriteInformation("Generating BizTalk Application XML bindings...", null);
+			using (var dispatcher = CommandDispatcherFactory<ApplicationBindingGenerationCommandProxy>.Create(this, NoLock))
 			{
 				dispatcher.Run();
 			}

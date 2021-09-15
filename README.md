@@ -1,8 +1,8 @@
 # Be.Stateless.PowerShell.Module.BizTalk.Deployment
 
 [![Build Status](https://dev.azure.com/icraftsoftware/be.stateless/_apis/build/status/Be.Stateless.PowerShell.Module.BizTalk.Deployment%20Manual%20Release?branchName=master)](https://dev.azure.com/icraftsoftware/be.stateless/_build/latest?definitionId=30&branchName=master)
-[![GitHub Release](https://img.shields.io/github/v/release/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment?label=Release)](https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/releases/latest)
-[![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/BizTalk.Deployment.svg?style=flat)](https://www.powershellgallery.com/packages/BizTalk.Deployment/)
+[![GitHub Release](https://img.shields.io/github/v/release/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment?label=Release&logo=github)](https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/releases/latest)
+[![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/BizTalk.Deployment.svg?style=flat&logo=powershell)](https://www.powershellgallery.com/packages/BizTalk.Deployment)
 
 Commands to deploy Microsoft BizTalk Server Applications supported by a deployment framework featuring a declarative task model.
 

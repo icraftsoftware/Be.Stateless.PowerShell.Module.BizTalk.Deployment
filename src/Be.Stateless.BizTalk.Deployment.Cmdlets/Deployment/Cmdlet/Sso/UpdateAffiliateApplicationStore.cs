@@ -1,4 +1,4 @@
-﻿#region Copyright & License
+#region Copyright & License
 
 // Copyright © 2012 - 2021 François Chabot
 // 
@@ -23,7 +23,7 @@ using System.Management.Automation;
 using System.Reflection;
 using Be.Stateless.BizTalk.Install.Command;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
-using Be.Stateless.BizTalk.Install.Command.Sso;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 using Be.Stateless.BizTalk.Management.Automation;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
@@ -33,7 +33,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
 	[Cmdlet(VerbsData.Update, Nouns.AffiliateApplicationStore)]
 	[OutputType(typeof(void))]
-	public class UpdateAffiliateApplicationStore : PSCmdlet, ISetupDispatchedCommand<DispatchedAffiliateApplicationStoreUpdateCommand>, IProvideAssemblyResolutionProbingPaths
+	public class UpdateAffiliateApplicationStore : PSCmdlet, ISetupCommandProxy<AffiliateApplicationStoreUpdateCommandProxy>, IProvideAssemblyResolutionProbingPaths
 	{
 		#region IProvideAssemblyResolutionProbingPaths Members
 
@@ -44,14 +44,14 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 
 		#endregion
 
-		#region ISetupDispatchedCommand<DispatchedAffiliateApplicationStoreUpdateCommand> Members
+		#region ISetupCommandProxy<AffiliateApplicationStoreUpdateCommandProxy> Members
 
-		void ISetupDispatchedCommand<DispatchedAffiliateApplicationStoreUpdateCommand>.Setup(DispatchedAffiliateApplicationStoreUpdateCommand dispatchedCommand)
+		void ISetupCommandProxy<AffiliateApplicationStoreUpdateCommandProxy>.Setup(AffiliateApplicationStoreUpdateCommandProxy commandProxy)
 		{
-			dispatchedCommand.AffiliateApplicationName = AffiliateApplicationName;
-			dispatchedCommand.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
-			dispatchedCommand.EnvironmentSettingsAssemblyFilePath = this.ResolvePath(EnvironmentSettingsAssemblyFilePath);
-			dispatchedCommand.TargetEnvironment = TargetEnvironment;
+			commandProxy.AffiliateApplicationName = AffiliateApplicationName;
+			commandProxy.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
+			commandProxy.EnvironmentSettingsAssemblyFilePath = this.ResolvePath(EnvironmentSettingsAssemblyFilePath);
+			commandProxy.TargetEnvironment = TargetEnvironment;
 		}
 
 		#endregion
@@ -61,7 +61,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 		[SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = CommandDispatcherFactory<DispatchedAffiliateApplicationStoreUpdateCommand>.Create(this))
+			using (var dispatcher = CommandDispatcherFactory<AffiliateApplicationStoreUpdateCommandProxy>.Create(this, NoLock))
 			{
 				dispatcher.Run();
 			}
@@ -86,6 +86,10 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Sso
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
 		public string EnvironmentSettingsAssemblyFilePath { get; set; }
+
+		[Parameter(Mandatory = false)]
+		[ValidateNotNullOrEmpty]
+		public SwitchParameter NoLock { get; set; }
 
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]

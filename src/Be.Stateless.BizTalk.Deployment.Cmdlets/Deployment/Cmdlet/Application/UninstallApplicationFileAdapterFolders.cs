@@ -20,22 +20,22 @@ using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
 using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Application;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
 	[Cmdlet(VerbsLifecycle.Uninstall, Nouns.ApplicationFileAdapterFolders)]
 	[OutputType(typeof(void))]
-	public class UninstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet, ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderTeardownCommand>
+	public class UninstallApplicationFileAdapterFolders : ApplicationBindingBasedCmdlet, ISetupCommandProxy<ApplicationFileAdapterFolderTeardownCommandProxy>
 	{
-		#region ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderTeardownCommand> Members
+		#region ISetupCommandProxy<ApplicationFileAdapterFolderTeardownCommandProxy> Members
 
-		void ISetupDispatchedCommand<DispatchedApplicationFileAdapterFolderTeardownCommand>.Setup(DispatchedApplicationFileAdapterFolderTeardownCommand dispatchedCommand)
+		void ISetupCommandProxy<ApplicationFileAdapterFolderTeardownCommandProxy>.Setup(ApplicationFileAdapterFolderTeardownCommandProxy commandProxy)
 		{
-			Setup(dispatchedCommand);
-			dispatchedCommand.Recurse = Recurse.IsPresent && Recurse.ToBool();
+			Setup(commandProxy);
+			commandProxy.Recurse = Recurse.IsPresent && Recurse.ToBool();
 		}
 
 		#endregion
@@ -44,7 +44,8 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationFileAdapterFolderTeardownCommand>.Create(this))
+			WriteInformation("Deleting BizTalk Application file adapters' folders...", null);
+			using (var dispatcher = CommandDispatcherFactory<ApplicationFileAdapterFolderTeardownCommandProxy>.Create(this, NoLock))
 			{
 				dispatcher.Run();
 			}

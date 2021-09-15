@@ -16,10 +16,13 @@
 
 #endregion
 
+using Be.Stateless.BizTalk.Install.Command.Proxy;
+
 namespace Be.Stateless.BizTalk.Install.Command
 {
-	internal interface IDispatchedCommand
+	internal interface ISetupCommandProxy<in T>
+		where T : CommandProxy
 	{
-		void Execute(IOutputAppender outputAppender, string[] assemblyResolutionProbingPaths);
+		void Setup(T commandProxy);
 	}
 }

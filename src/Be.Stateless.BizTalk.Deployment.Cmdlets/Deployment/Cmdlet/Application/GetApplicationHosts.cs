@@ -19,8 +19,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Management.Automation;
 using Be.Stateless.BizTalk.Deployment.Cmdlet.Binding;
-using Be.Stateless.BizTalk.Install.Command.Application;
 using Be.Stateless.BizTalk.Install.Command.Dispatcher;
+using Be.Stateless.BizTalk.Install.Command.Proxy;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 {
@@ -33,9 +33,10 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Application
 
 		protected override void ProcessRecord()
 		{
-			using (var dispatcher = CommandDispatcherFactory<DispatchedApplicationHostEnumerationCommand>.Create(this))
+			WriteVerbose("Enumerating BizTalk Application's bound hosts...");
+			using (var dispatcher = CommandDispatcherFactory<ApplicationHostEnumerationCommandProxy>.Create(this, NoLock))
 			{
-				dispatcher.Run();
+				WriteObject(dispatcher.Run(he => he.Hosts), true);
 			}
 		}
 
