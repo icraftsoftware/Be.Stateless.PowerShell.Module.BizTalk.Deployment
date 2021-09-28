@@ -1,4 +1,4 @@
-#region Copyright & License
+﻿#region Copyright & License
 
 # Copyright © 2012 - 2021 François Chabot
 #
@@ -20,12 +20,12 @@ Set-StrictMode -Version Latest
 
 function Get-AssemblyName {
     [CmdletBinding()]
-    [OutputType([psobject[]])]
+    [OutputType([PSObject[]])]
     param(
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( { Test-Path -Path $_ } )]
-        [psobject[]]
+        [PSObject[]]
         $Path,
 
         [Parameter(Mandatory = $false)]
@@ -58,22 +58,46 @@ function Install-GacAssembly {
         [ValidateNotNullOrEmpty()]
         [ValidateScript( { Test-Path -Path $_ } )]
         [string]
-        $Path
+        $Path,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $InstallReference
     )
     Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+    $arguments = @{  }
     $name = Get-AssemblyName -Path $Path
+    $pathFileVersion = Get-Item -Path $Path | Select-Object -ExpandProperty VersionInfo | Select-Object -ExpandProperty FileVersion
     if (Test-GacAssembly -AssemblyName $name) {
         $gacFileVersion = Gac\Get-GacAssemblyFile -AssemblyName $name | Select-Object -ExpandProperty VersionInfo | Select-Object -ExpandProperty FileVersion
-        $pathFileVersion = Get-Item -Path $Path | Select-Object -ExpandProperty VersionInfo | Select-Object -ExpandProperty FileVersion
-        if ($pathFileVersion -gt $gacFileVersion) {
-            Write-Verbose -Message "Installing a more recent version of the assembly file in GAC [$pathFileVersion > $gacFileVersion]."
-            Gac\Add-GacAssembly -LiteralPath $Path -Force -Verbose:($VerbosePreference -eq 'Continue')
+        if ($pathFileVersion -ge $gacFileVersion) {
+            Write-Verbose -Message "Installing same or newer version of the assembly file in GAC [$pathFileVersion >= $gacFileVersion]."
+            $arguments.LiteralPath = $Path
         } else {
-            Write-Verbose -Message 'An equivalent or more recent version of the assembly file is already installed in GAC.'
+            Write-Verbose -Message "Installing same version of the assembly file in GAC though an older version was given [$pathFileVersion < $gacFileVersion]."
+            $arguments.LiteralPath = Gac\Get-GacAssemblyFile -AssemblyName $name | Select-Object -ExpandProperty FullName
         }
     } else {
-        Gac\Add-GacAssembly -LiteralPath $Path -Force -Verbose:($VerbosePreference -eq 'Continue')
+        Write-Verbose -Message "Installing new assembly file in GAC [$pathFileVersion]."
+        $arguments.LiteralPath = $Path
     }
+    if (-not [string]::IsNullOrEmpty($InstallReference)) { $arguments.InstallReference = New-GacAssemblyInstallReference -InstallReference $InstallReference }
+    Gac\Add-GacAssembly @arguments -Force -Verbose:($VerbosePreference -eq 'Continue')
+}
+
+function New-GacAssemblyInstallReference {
+    [CmdletBinding()]
+    [OutputType([PowerShellGac.InstallReference])]
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $InstallReference
+    )
+    Gac\New-GacAssemblyInstallReference -Type Opaque `
+        -Identifier $InstallReference `
+        -Description 'Installed by BizTalk.Deployment PowerShell Module.'
 }
 
 function Test-GacAssembly {
@@ -108,10 +132,19 @@ function Test-GacAssemblyInstallReference {
         [ValidateNotNullOrEmpty()]
         [ValidateScript( { Test-Path -Path $_ } )]
         [string]
-        $Path
+        $Path,
+
+        [Parameter(Mandatory = $false, ParameterSetName = 'name')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'path')]
+        [ValidateNotNull()]
+        [PowerShellGac.InstallReference]
+        $InstallReference
     )
     if ($PSCmdlet.ParameterSetName -eq 'path') { $AssemblyName = Get-AssemblyName -Path $Path }
-    [bool](Gac\Get-GacAssemblyInstallReference -AssemblyName $AssemblyName)
+    Gac\Get-GacAssemblyInstallReference -AssemblyName $AssemblyName |
+        <# let it thru any pending InstallReference if none was given to filter on, or only the one equal to the given one otherwise, see https://stackoverflow.com/a/47577074/1789441 #>
+        Where-Object { ($null -eq $InstallReference) -or -not(Compare-Object -ReferenceObject $_ -DifferenceObject $InstallReference -Property $InstallReference.PSObject.Properties.Name) } |
+        Test-Any
 }
 
 function Uninstall-GacAssembly {
@@ -122,17 +155,39 @@ function Uninstall-GacAssembly {
         [ValidateNotNullOrEmpty()]
         [ValidateScript( { Test-Path -Path $_ } )]
         [string]
-        $Path
+        $Path,
+
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $InstallReference
     )
     Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
-    $name = Get-AssemblyName -Path $Path
-    if (Test-GacAssembly -AssemblyName $name) {
-        if (Test-GacAssemblyInstallReference -AssemblyName $name) {
-            Write-Verbose -Message 'The assembly is referenced by an installer and cannot be uninstalled from GAC.'
+    $arguments = @{ AssemblyName = Get-AssemblyName -Path $Path }
+    if (Test-GacAssembly @arguments) {
+        if ([string]::IsNullOrEmpty($InstallReference)) {
+            if (Test-GacAssemblyInstallReference @arguments) {
+                Write-Verbose -Message 'The assembly cannot be uninstalled from GAC because it has pending InstallReferences and none was given.'
+            } else {
+                Write-Verbose -Message 'Uninstalling assembly without pending InstallReferences from GAC.'
+                Gac\Remove-GacAssembly @arguments -Verbose:($VerbosePreference -eq 'Continue')
+            }
         } else {
-            Gac\Remove-GacAssembly -AssemblyName $name -Verbose:($VerbosePreference -eq 'Continue')
+            $arguments.InstallReference = New-GacAssemblyInstallReference -InstallReference $InstallReference
+            if (Test-GacAssemblyInstallReference @arguments) {
+                # Twisted logic and ErrorAction due to https://github.com/LTruijens/powershell-gac/issues/2
+                Write-Verbose -Message "Uninstalling assembly from GAC or removing pending InstallReference '$InstallReference'."
+                Gac\Remove-GacAssembly @arguments -Verbose:($VerbosePreference -eq 'Continue') -ErrorAction SilentlyContinue
+                # ensure assembly has been removed from gac and if not try again without silencing any error in a last paranoiac attempt
+                if (Test-GacAssemblyInstallReference @arguments) {
+                    Write-Warning -Message "Failed to uninstall assembly from GAC or to remove pending InstallReference '$InstallReference'. Trying again..."
+                    Gac\Remove-GacAssembly @arguments -Verbose:($VerbosePreference -eq 'Continue')
+                }
+            } else {
+                Write-Verbose -Message 'The assembly cannot be uninstalled from GAC because the given InstallReference is not pending.'
+            }
         }
     } else {
-        Write-Verbose -Message 'The assembly is already uninstalled from GAC.'
+        Write-Verbose -Message 'The assembly is not installed in the GAC.'
     }
 }

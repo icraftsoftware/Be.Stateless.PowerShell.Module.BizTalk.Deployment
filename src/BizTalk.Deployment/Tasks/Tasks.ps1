@@ -1,4 +1,4 @@
-#region Copyright & License
+﻿#region Copyright & License
 
 # Copyright © 2012 - 2021 François Chabot
 #
@@ -26,6 +26,7 @@ Set-StrictMode -Version Latest
 . $PSScriptRoot\Tasks.Bam.ps1
 . $PSScriptRoot\Tasks.Bts.ps1
 . $PSScriptRoot\Tasks.EventLogSources.ps1
+. $PSScriptRoot\Tasks.Files.ps1
 . $PSScriptRoot\Tasks.Installers.ps1
 . $PSScriptRoot\Tasks.Sql.ps1
 . $PSScriptRoot\Tasks.SsoConfigStores.ps1
@@ -35,6 +36,7 @@ Set-StrictMode -Version Latest
 # Synopsis: Deploy a Whole Microsoft BizTalk Server Application or Library Solution
 task Deploy Undeploy, `
     Deploy-EventLogSources, `
+    Deploy-Files, `
     Deploy-Assemblies, `
     Deploy-WindowsServices, `
     Deploy-XmlConfigurations, `
@@ -58,6 +60,7 @@ task Undeploy -If { -not $SkipUndeploy } `
     Undeploy-XmlConfigurations, `
     Undeploy-WindowsServices, `
     Undeploy-Assemblies, `
+    Undeploy-Files, `
     Undeploy-EventLogSources
 
 task Add-DatabaseDeploymentTasks `

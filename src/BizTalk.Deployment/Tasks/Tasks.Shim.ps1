@@ -1,4 +1,4 @@
-#region Copyright & License
+﻿#region Copyright & License
 
 # Copyright © 2012 - 2021 François Chabot
 #
@@ -49,12 +49,12 @@ function Get-TaskResourceGroup {
         $ThrowOnError
     )
     if ($Manifest.ContainsKey($Name)) {
-        Write-Verbose -Message "Found ResourceGroup $Name in `$Manifest."
+        Write-Verbose -Message "ResourceGroup '$Name' was found in Manifest."
         @($Manifest.$Name | Where-Object { -not(Get-Member -InputObject $_ -Name Condition) -or $_.Condition() })
     } elseif ($ThrowOnError) {
-        throw "Resource group '$Name' has not been defined."
+        throw "No ResourceGroup '$Name' was found in Manifest."
     } else {
-        Write-Verbose -Message "Could not find ResourceGroup $Name in `$Manifest."
+        Write-Verbose -Message "No ResourceGroup '$Name' was found in Manifest."
         @()
     }
 }

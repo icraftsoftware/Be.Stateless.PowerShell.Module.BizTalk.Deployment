@@ -1,4 +1,4 @@
-#region Copyright & License
+﻿#region Copyright & License
 
 # Copyright © 2012 - 2021 François Chabot
 #
@@ -24,7 +24,9 @@ Set-StrictMode -Version Latest
 task Deploy-Assemblies {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        Install-GacAssembly -Path $_.Path
+        $arguments = @{ Path = $_.Path }
+        if (Test-Member -InputObject $_ -Name InstallReference) { $arguments.InstallReference = $_.InstallReference }
+        Install-GacAssembly @arguments
     }
 }
 
@@ -32,6 +34,8 @@ task Deploy-Assemblies {
 task Undeploy-Assemblies -If { -not $SkipUndeploy } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        Uninstall-GacAssembly -Path $_.Path
+        $arguments = @{ Path = $_.Path }
+        if (Test-Member -InputObject $_ -Name InstallReference) { $arguments.InstallReference = $_.InstallReference }
+        Uninstall-GacAssembly @arguments
     }
 }

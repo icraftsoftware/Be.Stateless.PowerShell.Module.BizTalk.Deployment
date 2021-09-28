@@ -1,4 +1,4 @@
-#region Copyright & License
+﻿#region Copyright & License
 
 # Copyright © 2012 - 2021 François Chabot
 #
@@ -73,7 +73,7 @@ function Invoke-SqlScript {
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNull()]
-        [hashtable]
+        [HashTable]
         $Variables
     )
     $arguments = @{

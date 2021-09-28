@@ -1,4 +1,4 @@
-#region Copyright & License
+﻿#region Copyright & License
 
 # Copyright © 2012 - 2020 François Chabot
 #
@@ -20,7 +20,7 @@ Set-StrictMode -Version Latest
 
 function ConvertTo-BindingBasedCmdletArguments {
     [CmdletBinding()]
-    [OutputType([hashtable])]
+    [OutputType([HashTable])]
     param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]

@@ -1,4 +1,4 @@
-#region Copyright & License
+﻿#region Copyright & License
 
 # Copyright © 2012 - 2021 François Chabot
 #
@@ -21,7 +21,7 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [ValidateScript( { $_.Properties.Type -eq 'Library' } )]
-    [hashtable[]]
+    [HashTable[]]
     $Manifest,
 
     [Parameter(Mandatory = $true)]
