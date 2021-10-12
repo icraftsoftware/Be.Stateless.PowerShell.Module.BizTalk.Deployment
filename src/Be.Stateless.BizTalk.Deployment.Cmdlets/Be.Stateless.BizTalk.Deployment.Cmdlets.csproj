@@ -40,21 +40,21 @@
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.21284.24948" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21284.50613" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21284.52503" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.21284.52503" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21284.52503" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21284.51348" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21285.44387" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.21285.44387" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21285.44387" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21285.44011" />
     <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21281.40704" />
-    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21284.33059" />
-    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.Components" Version="2.0.21284.50440" />
-    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.MicroComponents" Version="2.0.21284.33952" />
-    <PackageReference Include="Be.Stateless.BizTalk.Settings" Version="2.0.21284.30909" />
-    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.21284.32100" />
-    <PackageReference Include="Be.Stateless.BizTalk.Xml" Version="2.0.21284.31631" />
+    <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21285.39917" />
+    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.Components" Version="2.0.21285.43232" />
+    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.MicroComponents" Version="2.0.21285.41095" />
+    <PackageReference Include="Be.Stateless.BizTalk.Settings" Version="2.0.21285.38408" />
+    <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.0.21285.39338" />
+    <PackageReference Include="Be.Stateless.BizTalk.Xml" Version="2.0.21285.38612" />
     <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.0.21284.31509" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.0.21281.26117" />
     <PackageReference Include="Be.Stateless.Reflection" Version="2.0.21281.37160" />
-    <PackageReference Include="Be.Stateless.Runtime" Version="2.0.21284.30001" />
+    <PackageReference Include="Be.Stateless.Runtime" Version="2.0.21285.37924" />
     <PackageReference Include="Be.Stateless.Security" Version="2.0.21281.38867" />
     <PackageReference Include="Be.Stateless.Stream" Version="2.0.21281.39270" />
     <PackageReference Include="Be.Stateless.Xml" Version="2.0.21281.40683" />
