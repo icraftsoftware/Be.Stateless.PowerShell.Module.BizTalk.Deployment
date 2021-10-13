@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Deploy application's SSO config stores
-task Deploy-SsoConfigStores -If { -not $SkipSharedResourceDeployment } `
+task Deploy-SsoConfigStores -If { -not $SkipSharedResources } `
     Undeploy-SsoConfigStores, `
     Add-SsoConfigStores, `
     Update-SsoConfigStores
@@ -51,7 +51,7 @@ task Update-SsoConfigStores {
 }
 
 # Synopsis: Undeploy application's SSO config stores
-task Undeploy-SsoConfigStores -If { (-not $SkipUndeploy) -and (-not $SkipSharedResourceDeployment) } `
+task Undeploy-SsoConfigStores -If { (-not $SkipUninstall) -and (-not $SkipSharedResources) } `
     Remove-SsoConfigStores
 
 # Synopsis: Remove application's SSO config stores

@@ -50,7 +50,7 @@ task Invoke-XmlConfigurationActions {
 }
 
 # Synopsis: Remove XML configuration specifications
-task Revert-XmlConfigurations -If { -not $SkipUndeploy } {
+task Revert-XmlConfigurations -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Get-ChildItem -Path "$($_.Path).*.undo" -File | Sort-Object -Descending | ForEach-Object -Process {
             Write-Build DarkGreen $_

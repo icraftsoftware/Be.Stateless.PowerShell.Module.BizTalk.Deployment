@@ -22,7 +22,7 @@ Set-StrictMode -Version Latest
 task Deploy-Schemas {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        if ($SkipSharedResourceDeployment) {
+        if ($SkipSharedResources) {
             Install-GacAssembly -Path $_.Path
         } else {
             Add-BizTalkResource -Path $_.Path -ApplicationName $ApplicationName
@@ -31,7 +31,7 @@ task Deploy-Schemas {
 }
 
 # Synopsis: Remove Microsoft BizTalk Server Schemas' Containing Assemblies from the GAC
-task Undeploy-Schemas -If { -not $SkipUndeploy } {
+task Undeploy-Schemas -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         Uninstall-GacAssembly -Path $_.Path

@@ -45,7 +45,7 @@ task Patch-BizTalkApplication `
     Restart-BizTalkHostInstances
 
 # Synopsis: Undeploy a Microsoft BizTalk Server Application
-task Undeploy-BizTalkApplication -If { -not $SkipUndeploy } `
+task Undeploy-BizTalkApplication -If { -not $SkipUninstall } `
     Stop-Application, `
     Undeploy-BizTalkArtifacts, `
     Remove-BizTalkApplication, `
@@ -61,11 +61,11 @@ task Deploy-BizTalkArtifacts `
     Deploy-Orchestrations, `
     Deploy-Bindings, `
     Register-ProcessDescriptors, `
-    Deploy-FileAdapterPaths
+    Deploy-FileAdapterFolders
 
 # Synopsis: Undeploy all Microsoft BizTalk Server Artifacts
-task Undeploy-BizTalkArtifacts -If { -not $SkipUndeploy } `
-    Undeploy-FileAdapterPaths, `
+task Undeploy-BizTalkArtifacts -If { -not $SkipUninstall } `
+    Undeploy-FileAdapterFolders, `
     Unregister-ProcessDescriptors, `
     Undeploy-Orchestrations, `
     Undeploy-Pipelines, `
@@ -75,7 +75,7 @@ task Undeploy-BizTalkArtifacts -If { -not $SkipUndeploy } `
     Undeploy-Schemas
 
 # Synopsis: Restart the Microsoft BizTalk Server Host Instances of either a BizTalk Application or the BizTalk Group
-task Restart-BizTalkHostInstances -If { -not $SkipSharedResourceDeployment } `
+task Restart-BizTalkHostInstances -If { -not $SkipSharedResources } `
     Restart-BizTalkHostInstancesForApplication, `
     Restart-BizTalkHostInstancesForGroup
 

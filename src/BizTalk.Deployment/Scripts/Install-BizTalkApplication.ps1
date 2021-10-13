@@ -26,36 +26,39 @@ param(
     [HashTable[]]
     $Manifest,
 
+    [Parameter()]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $FileAdapterFolderUsers = @("$($Env:COMPUTERNAME)\BizTalk Application Users", 'BUILTIN\Users'),
+
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [string]
     $TargetEnvironment,
 
     [Parameter()]
-    [switch]
-    $SkipSharedResourceDeployment,
-
-    [Parameter()]
-    [switch]
-    $SkipInstallUtil,
-
-    [Parameter()]
-    [switch]
-    $SkipUndeploy,
-
-    [Parameter()]
-    [switch]
-    $TerminateServiceInstances,
-
-    [Parameter()]
     [scriptblock[]]
-    $Tasks = ([scriptblock] { })
+    $Tasks = ([scriptblock] { }),
 
-    # TODO re-expose manifests' param as dynamic params
+    [Parameter()]
+    [switch]
+    $SkipFileAdapterFolders,
 
-    # TODO config store admins
-    # TODO config store users
-    # TODO file adapter users
+    [Parameter()]
+    [switch]
+    $SkipInstallers,
+
+    [Parameter()]
+    [switch]
+    $SkipSharedResources,
+
+    [Parameter()]
+    [switch]
+    $SkipUninstall,
+
+    [Parameter()]
+    [switch]
+    $TerminateServiceInstances
 )
 begin {
     Set-StrictMode -Version Latest

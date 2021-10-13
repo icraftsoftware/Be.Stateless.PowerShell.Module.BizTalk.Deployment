@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Deploy business activity models and their indexes
-task Deploy-BamConfiguration -If ( (-not $SkipSharedResourceDeployment) -and ($Manifest.Properties.Type -eq 'Application') ) -Before Enter-DatabaseDeployment `
+task Deploy-BamConfiguration -If ( (-not $SkipSharedResources) -and ($Manifest.Properties.Type -eq 'Application') ) -Before Enter-DatabaseDeployment `
     Undeploy-BamConfiguration, `
     Deploy-BamActivityModels, `
     Deploy-BamIndexes
@@ -41,7 +41,7 @@ task Deploy-BamIndexes {
 }
 
 # Synopsis: Undeploy business activity models
-task Undeploy-BamConfiguration -If ( (-not $SkipUndeploy) -and (-not $SkipSharedResourceDeployment) -and ($Manifest.Properties.Type -eq 'Application') ) -After Exit-DatabaseUndeployment `
+task Undeploy-BamConfiguration -If ( (-not $SkipUninstall) -and (-not $SkipSharedResources) -and ($Manifest.Properties.Type -eq 'Application') ) -After Exit-DatabaseUndeployment `
     Undeploy-BamActivityModels
 
 # Synopsis: Undeploy business activity models

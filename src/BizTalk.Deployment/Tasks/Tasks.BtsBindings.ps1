@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Deploy Microsoft BizTalk Server Application Bindings
-task Deploy-Bindings -If { -not $SkipSharedResourceDeployment } `
+task Deploy-Bindings -If { -not $SkipSharedResources } `
     Convert-Bindings, `
     Import-Bindings
 
@@ -42,17 +42,15 @@ task Import-Bindings {
 }
 
 # Synopsis: Create FILE Adapter-based Receive Locations' and Send Ports' Folders
-task Deploy-FileAdapterPaths {
+task Deploy-FileAdapterFolders -If { -not $SkipFileAdapterFolders } {
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
-        # TODO $FileAdapterFolderUsers is a global variable ; it should be bound to some resource
-        # Users = if ($FileAdapterFolderUsers | Test-Any) { $FileAdapterFolderUsers } else { @("$($Env:COMPUTERNAME)\BizTalk Application Users", 'BUILTIN\Users') }
-        Install-ApplicationFileAdapterFolders @arguments -Users @("$($Env:COMPUTERNAME)\BizTalk Application Users", 'BUILTIN\Users')
+        Install-ApplicationFileAdapterFolders @arguments -Users $FileAdapterFolderUsers
     }
 }
 # Synopsis: Remove FILE Adapter-based Receive Locations' and Send Ports' Folders
-task Undeploy-FileAdapterPaths -If { -not $SkipUndeploy } {
+task Undeploy-FileAdapterFolders -If { -not $SkipFileAdapterFolders -and -not $SkipUninstall } {
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_

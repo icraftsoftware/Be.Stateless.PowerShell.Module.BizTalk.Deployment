@@ -23,15 +23,15 @@ task Deploy-Components Undeploy-Components, {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         Install-GacAssembly -Path $_.Path
-        if (-not $SkipInstallUtil) { Invoke-Tool -Command { InstallUtil /ShowCallStack `"$($_.Path)`" } }
+        if (-not $SkipInstallers) { Invoke-Tool -Command { InstallUtil /ShowCallStack `"$($_.Path)`" } }
     }
 }
 
 # Synopsis: Run Components' Uninstaller and Remove Them from the GAC
-task Undeploy-Components -If { -not $SkipUndeploy } {
+task Undeploy-Components -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        if (-not $SkipInstallUtil) { Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack `"$($_.Path)`" } }
+        if (-not $SkipInstallers) { Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack `"$($_.Path)`" } }
         Uninstall-GacAssembly -Path $_.Path
     }
 }

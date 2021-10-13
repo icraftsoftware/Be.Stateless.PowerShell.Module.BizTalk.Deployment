@@ -37,7 +37,7 @@ task Deploy-Files {
 }
 
 # Synopsis: Delete Files
-task Undeploy-Files -If { -not $SkipUndeploy } {
+task Undeploy-Files -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         foreach ($destination in $_.Destination) {
             $arguments = @{

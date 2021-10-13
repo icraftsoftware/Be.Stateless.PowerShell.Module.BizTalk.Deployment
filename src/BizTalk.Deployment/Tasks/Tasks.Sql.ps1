@@ -19,11 +19,11 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Deploy SQL databases and execute SQL deployment scripts
-task Deploy-SqlDatabases -If { -not $SkipSharedResourceDeployment } `
+task Deploy-SqlDatabases -If { -not $SkipSharedResources } `
     Invoke-SqlDeploymentScripts
 
 # Synopsis: Undeploy SQL databases and execute SQL undeployment scripts
-task Undeploy-SqlDatabases -If { (-not $SkipUndeploy) -and (-not $SkipSharedResourceDeployment) } `
+task Undeploy-SqlDatabases -If { (-not $SkipUninstall) -and (-not $SkipSharedResources) } `
     Invoke-SqlUndeploymentScripts
 
 # Synopsis: Execute SQL deployment scripts
@@ -40,7 +40,7 @@ task Invoke-SqlDeploymentScripts {
 }
 
 # Synopsis: Execute SQL undeployment scripts
-task Invoke-SqlUndeploymentScripts -If { -not $SkipUndeploy } {
+task Invoke-SqlUndeploymentScripts -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         $location = Get-Location

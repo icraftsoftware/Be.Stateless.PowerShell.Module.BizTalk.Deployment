@@ -16,7 +16,6 @@
 
 #endregion
 
-# TODO https://stackoverflow.com/questions/26910789/is-it-possible-to-reuse-a-param-block-across-multiple-functions
 [CmdletBinding()]
 [OutputType([void])]
 param(
@@ -32,30 +31,32 @@ param(
     $TargetEnvironment,
 
     [Parameter()]
-    [switch]
-    $SkipSharedResourceDeployment,
-
-    [Parameter()]
-    [switch]
-    $SkipInstallUtil,
-
-    [Parameter()]
-    [switch]
-    $TerminateServiceInstances,
-
-    [Parameter()]
     [scriptblock[]]
-    $Tasks = ([scriptblock] { })
+    $Tasks = ([scriptblock] { }),
+
+    [Parameter()]
+    [switch]
+    $SkipFileAdapterFolders,
+
+    [Parameter()]
+    [switch]
+    $SkipInstallers,
+
+    [Parameter()]
+    [switch]
+    $SkipSharedResources,
+
+    [Parameter()]
+    [switch]
+    $TerminateServiceInstances
 )
 begin {
     Set-StrictMode -Version Latest
     Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     $script:Manifest = $Manifest
-    $script:SkipUndeploy = $false
+    $script:SkipUninstall = $false
 }
 end {
-    # https://github.com/nightroman/Invoke-Build/issues/78, Script block as `File`
-    # https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Inline
     try {
         Invoke-Build Undeploy {
             . BizTalk.Deployment.Tasks

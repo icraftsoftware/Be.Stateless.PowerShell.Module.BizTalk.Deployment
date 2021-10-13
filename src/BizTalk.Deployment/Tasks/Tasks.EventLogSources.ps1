@@ -29,7 +29,7 @@ task Deploy-EventLogSources {
 }
 
 # Synopsis: Remove Windows EventLog Sources
-task Undeploy-EventLogSources -If { -not $SkipUndeploy } {
+task Undeploy-EventLogSources -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Name
         if ([System.Diagnostics.EventLog]::SourceExists($_.Name)) {

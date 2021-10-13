@@ -28,7 +28,7 @@ task Deploy-PipelineComponents {
 }
 
 # Synopsis: Undeploy Microsoft BizTalk Server Pipeline Components and Remove Them from the GAC
-task Undeploy-PipelineComponents -If { -not $SkipUndeploy } {
+task Undeploy-PipelineComponents -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         $pc = [System.IO.Path]::Combine($env:BTSINSTALLPATH, 'Pipeline Components', [System.IO.Path]::GetFileName($_.Path))

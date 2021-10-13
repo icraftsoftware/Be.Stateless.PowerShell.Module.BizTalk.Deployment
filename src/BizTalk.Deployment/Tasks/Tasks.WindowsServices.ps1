@@ -39,7 +39,7 @@ task Deploy-WindowsServices Undeploy-WindowsServices, {
 }
 
 # Synopsis: Undeploy Windows Services
-task Undeploy-WindowsServices -If { -not $SkipUndeploy } {
+task Undeploy-WindowsServices -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         # https://stackoverflow.com/questions/4967496/check-if-a-windows-service-exists-and-delete-in-powershell
@@ -61,7 +61,7 @@ task Start-WindowsServices {
 }
 
 # Synopsis: Stop Windows Services
-task Stop-WindowsServices -If { -not $SkipUndeploy } {
+task Stop-WindowsServices -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         if (Test-WindowsService -Name $_.Name) {

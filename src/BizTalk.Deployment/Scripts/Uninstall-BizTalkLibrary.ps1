@@ -31,22 +31,22 @@ param(
     $TargetEnvironment,
 
     [Parameter()]
-    [switch]
-    $SkipSharedResourceDeployment,
-
-    [Parameter()]
-    [switch]
-    $SkipInstallUtil,
-
-    [Parameter()]
     [scriptblock[]]
-    $Tasks = ([scriptblock] { })
+    $Tasks = ([scriptblock] { }),
+
+    [Parameter()]
+    [switch]
+    $SkipInstallers,
+
+    [Parameter()]
+    [switch]
+    $SkipSharedResources
 )
 begin {
     Set-StrictMode -Version Latest
     Resolve-ActionPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
     $script:Manifest = $Manifest
-    $script:SkipUndeploy = $false
+    $script:SkipUninstall = $false
 }
 end {
     try {

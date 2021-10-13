@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Create a Microsoft BizTalk Server Application
-task Add-BizTalkApplication -If { -not $SkipSharedResourceDeployment } `
+task Add-BizTalkApplication -If { -not $SkipSharedResources } `
     Remove-BizTalkApplication, `
     Add-BizTalkApplicationIfNonExistent
 
@@ -39,14 +39,14 @@ task Add-BizTalkApplicationIfNonExistent -If { Test-ManifestApplication -Absent 
 }
 
 # Synopsis: Delete a Microsoft BizTalk Server Application
-task Remove-BizTalkApplication -If { (-not $SkipSharedResourceDeployment) -and (Test-ManifestApplication) } {
+task Remove-BizTalkApplication -If { (-not $SkipSharedResources) -and (Test-ManifestApplication) } {
     Write-Build DarkGreen "Removing Microsoft BizTalk Server Application '$ApplicationName'"
     Remove-BizTalkApplication -Name $ApplicationName
 }
 
 # Synopsis: Start a Microsoft BizTalk Server Application
 # the task is not named Start-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
-task Start-Application -If { (-not $SkipSharedResourceDeployment) -and (Test-ManifestApplication) } {
+task Start-Application -If { (-not $SkipSharedResources) -and (Test-ManifestApplication) } {
     Write-Build DarkGreen "Starting Microsoft BizTalk Server Application '$ApplicationName'"
     Get-TaskResourceGroup -Name Bindings | ForEach-Object -Process {
         $arguments = ConvertTo-BindingBasedCmdletArguments -Binding $_
@@ -56,7 +56,7 @@ task Start-Application -If { (-not $SkipSharedResourceDeployment) -and (Test-Man
 
 # Synopsis: Stop a Microsoft BizTalk Server Application
 # the task is not named Stop-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
-task Stop-Application -If { (-not $SkipSharedResourceDeployment) -and (Test-ManifestApplication) } {
+task Stop-Application -If { (-not $SkipSharedResources) -and (Test-ManifestApplication) } {
     Write-Build DarkGreen "Stopping Microsoft BizTalk Server Application '$ApplicationName'"
     Stop-BizTalkApplication -Name $ApplicationName -TerminateServiceInstances:$TerminateServiceInstances
 }

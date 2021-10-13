@@ -51,7 +51,7 @@ task Patch { $Script:SkipSharedResourceDeployment = $true }, `
     Patch-BizTalkApplication
 
 # Synopsis: Undeploy a Whole Microsoft BizTalk Server Application or Library Solution
-task Undeploy -If { -not $SkipUndeploy } `
+task Undeploy -If { -not $SkipUninstall } `
     Stop-WindowsServices, `
     Undeploy-Installers, `
     Add-BtsUndeploymentTasks, `

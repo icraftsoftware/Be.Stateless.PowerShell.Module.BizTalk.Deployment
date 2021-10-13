@@ -15,6 +15,7 @@
 # limitations under the License.
 
 #endregion
+
 [CmdletBinding()]
 [OutputType([void])]
 param(
@@ -30,20 +31,20 @@ param(
     $TargetEnvironment,
 
     [Parameter()]
-    [switch]
-    $SkipSharedResourceDeployment,
-
-    [Parameter()]
-    [switch]
-    $SkipInstallUtil,
-
-    [Parameter()]
-    [switch]
-    $SkipUndeploy,
-
-    [Parameter()]
     [scriptblock[]]
-    $Tasks = ([scriptblock] { })
+    $Tasks = ([scriptblock] { }),
+
+    [Parameter()]
+    [switch]
+    $SkipInstallers,
+
+    [Parameter()]
+    [switch]
+    $SkipSharedResources,
+
+    [Parameter()]
+    [switch]
+    $SkipUninstall
 )
 begin {
     Set-StrictMode -Version Latest

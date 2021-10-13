@@ -31,7 +31,7 @@ task Deploy-Assemblies {
 }
 
 # Synopsis: Remove Assemblies from the GAC
-task Undeploy-Assemblies -If { -not $SkipUndeploy } {
+task Undeploy-Assemblies -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         $arguments = @{ Path = $_.Path }

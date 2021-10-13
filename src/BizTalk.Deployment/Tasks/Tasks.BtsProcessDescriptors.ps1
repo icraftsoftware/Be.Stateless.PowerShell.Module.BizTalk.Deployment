@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Register Microsoft BizTalk Server Process Descriptors
-task Register-ProcessDescriptors -If { -not $SkipSharedResourceDeployment } {
+task Register-ProcessDescriptors -If { -not $SkipSharedResources } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         Invoke-Tool -Command { InstallUtil /ShowCallStack /DataSource=`"$($_.DatabaseServer)`" `"$($_.Path)`" }
@@ -27,7 +27,7 @@ task Register-ProcessDescriptors -If { -not $SkipSharedResourceDeployment } {
 }
 
 # Synopsis: Unregister Microsoft BizTalk Server Process Descriptors
-task Unregister-ProcessDescriptors -If { (-not $SkipUndeploy) -and (-not $SkipSharedResourceDeployment) } {
+task Unregister-ProcessDescriptors -If { (-not $SkipUninstall) -and (-not $SkipSharedResources) } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
         Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack /DataSource=`"$($_.DatabaseServer)`" `"$($_.Path)`" }
