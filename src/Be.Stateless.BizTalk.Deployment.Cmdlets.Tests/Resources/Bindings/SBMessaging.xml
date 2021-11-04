@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ReSharper disable MarkupTextTypo -->
+<BindingInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Assembly="Microsoft.BizTalk.Deployment, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" Version="3.5.1.0" BindingStatus="PartiallyBound" BoundEndpoints="275" TotalEndpoints="277">
+  <Timestamp>2021-11-03T14:20:19.3885621+01:00</Timestamp>
+  <SendPortCollection>
+    <SendPort Name="Common.Stakeholders.Stakeholders.SP1.StakeholderRepository.Any.SB-Messaging.XML" IsStatic="true" IsTwoWay="false" BindingOption="0">
+      <Description xsi:nil="true" />
+      <TransmitPipeline Name="Be.Stateless.BizTalk.MicroPipelines.XmlTransmit" FullyQualifiedName="Be.Stateless.BizTalk.MicroPipelines.XmlTransmit, Be.Stateless.BizTalk.Pipelines, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3707daa0b119fc14" Type="2" TrackingOption="None" Description="" />
+      <SendPipelineData>&lt;Root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;&lt;Stages&gt;&lt;Stage CategoryId="9d0e4101-4cce-4536-83fa-4a5040674ad6"&gt;&lt;Components&gt;&lt;Component Name="Be.Stateless.BizTalk.Component.FailedMessageRoutingEnablerComponent"&gt;&lt;Properties /&gt;&lt;/Component&gt;&lt;Component Name="Be.Stateless.BizTalk.Component.MicroPipelineComponent"&gt;&lt;Properties&gt;&lt;Components vt="8"&gt;&amp;lt;mComponents&amp;gt;&amp;lt;mComponent name="Be.Stateless.BizTalk.MicroComponent.ContextBuilder, Be.Stateless.BizTalk.Pipeline.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3707daa0b119fc14"&amp;gt;&amp;lt;Builder&amp;gt;Org.Anization.Common.Stakeholders.Resolvers.Send.StakeholderRepositoryResolver, Org.Anization.Common.Stakeholders.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ab00cd00ef00ab00&amp;lt;/Builder&amp;gt;&amp;lt;ExecutionMode&amp;gt;Immediate&amp;lt;/ExecutionMode&amp;gt;&amp;lt;/mComponent&amp;gt;&amp;lt;mComponent name="Be.Stateless.BizTalk.MicroComponent.XsltRunner, Be.Stateless.BizTalk.Pipeline.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3707daa0b119fc14"&amp;gt;&amp;lt;Encoding&amp;gt;utf-8&amp;lt;/Encoding&amp;gt;&amp;lt;Map /&amp;gt;&amp;lt;/mComponent&amp;gt;&amp;lt;/mComponents&amp;gt;&lt;/Components&gt;&lt;/Properties&gt;&lt;/Component&gt;&lt;/Components&gt;&lt;/Stage&gt;&lt;Stage CategoryId="9d0e4107-4cce-4536-83fa-4a5040674ad6"&gt;&lt;Components&gt;&lt;Component Name="Microsoft.BizTalk.Component.XmlAsmComp"&gt;&lt;Properties /&gt;&lt;/Component&gt;&lt;/Components&gt;&lt;/Stage&gt;&lt;Stage CategoryId="9d0e4108-4cce-4536-83fa-4a5040674ad6"&gt;&lt;Components&gt;&lt;Component Name="Be.Stateless.BizTalk.Component.MicroPipelineComponent"&gt;&lt;Properties&gt;&lt;Components vt="8"&gt;&amp;lt;mComponents&amp;gt;&amp;lt;mComponent name="Be.Stateless.BizTalk.MicroComponent.ContextPropertyExtractor, Be.Stateless.BizTalk.Pipeline.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3707daa0b119fc14"&amp;gt;&amp;lt;Extractors /&amp;gt;&amp;lt;/mComponent&amp;gt;&amp;lt;mComponent name="Be.Stateless.BizTalk.MicroComponent.SBMessagingContextPropagator, Be.Stateless.BizTalk.Pipeline.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3707daa0b119fc14" /&amp;gt;&amp;lt;mComponent name="Be.Stateless.BizTalk.MicroComponent.ActivityTracker, Be.Stateless.BizTalk.Pipeline.Components, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3707daa0b119fc14"&amp;gt;&amp;lt;TrackingContextCacheDuration&amp;gt;00:01:00&amp;lt;/TrackingContextCacheDuration&amp;gt;&amp;lt;TrackingModes&amp;gt;Step&amp;lt;/TrackingModes&amp;gt;&amp;lt;/mComponent&amp;gt;&amp;lt;/mComponents&amp;gt;&lt;/Components&gt;&lt;/Properties&gt;&lt;/Component&gt;&lt;/Components&gt;&lt;/Stage&gt;&lt;/Stages&gt;&lt;/Root&gt;</SendPipelineData>
+      <PrimaryTransport>
+        <Address>sb://anization-stakeholderrepository-prd.servicebus.windows.net/stakeholders-in</Address>
+        <TransportType Name="SB-Messaging" Capabilities="523" ConfigurationClsid="9c458d4a-a73c-4cb3-89c4-86ae0103de2f" />
+        <TransportTypeData>&lt;CustomProps&gt;&lt;DefaultReplyTo vt="8" /&gt;&lt;IssuerSecret vt="1" /&gt;&lt;DefaultReplyToSessionId vt="8" /&gt;&lt;DefaultTimeToLive vt="8"&gt;10.00:00:00&lt;/DefaultTimeToLive&gt;&lt;StsUri vt="8"&gt;https://&amp;lt;Namespace&amp;gt;-sb.accesscontrol.windows.net/&lt;/StsUri&gt;&lt;SharedAccessKeyName vt="8"&gt;SenderAccessKey&lt;/SharedAccessKeyName&gt;&lt;DefaultSessionId vt="8" /&gt;&lt;UseAcsAuthentication vt="11"&gt;0&lt;/UseAcsAuthentication&gt;&lt;DefaultCorrelationId vt="8" /&gt;&lt;SharedAccessKey vt="1" /&gt;&lt;BatchFlushInterval vt="8"&gt;00:00:00&lt;/BatchFlushInterval&gt;&lt;OpenTimeout vt="8"&gt;00:01:00&lt;/OpenTimeout&gt;&lt;DefaultLabel vt="8" /&gt;&lt;DefaultScheduledEnqueueTimeUtc vt="7"&gt;11/12/2019 13:09:51&lt;/DefaultScheduledEnqueueTimeUtc&gt;&lt;IssuerName vt="8" /&gt;&lt;DefaultMessageId vt="8" /&gt;&lt;UseSasAuthentication vt="11"&gt;-1&lt;/UseSasAuthentication&gt;&lt;CloseTimeout vt="8"&gt;00:01:00&lt;/CloseTimeout&gt;&lt;SendTimeout vt="8"&gt;00:01:00&lt;/SendTimeout&gt;&lt;CustomBrokeredPropertyNamespace vt="8"&gt;urn:schemas.stateless.be:biztalk:properties:brokered:2019:01&lt;/CustomBrokeredPropertyNamespace&gt;&lt;/CustomProps&gt;</TransportTypeData>
+        <RetryCount>3</RetryCount>
+        <RetryInterval>15</RetryInterval>
+        <ServiceWindowEnabled>false</ServiceWindowEnabled>
+        <FromTime>2000-01-01T00:00:00</FromTime>
+        <ToTime>2000-01-01T23:59:59</ToTime>
+        <Primary>true</Primary>
+        <OrderedDelivery>false</OrderedDelivery>
+        <DeliveryNotification>1</DeliveryNotification>
+        <SendHandler Name="TxHost_B2B" HostTrusted="false">
+          <TransportType Name="SB-Messaging" Capabilities="523" ConfigurationClsid="9c458d4a-a73c-4cb3-89c4-86ae0103de2f" />
+        </SendHandler>
+      </PrimaryTransport>
+      <ReceivePipelineData xsi:nil="true" />
+      <Tracking>0</Tracking>
+      <Filter>&lt;Filter&gt;&lt;Group&gt;&lt;Statement Property="BTS.MessageType" Operator="0" Value="http://shemas.anization.net/stakeholders/sap-ds/stakeholders/events/1.0#Stakeholder" /&gt;&lt;/Group&gt;&lt;/Filter&gt;</Filter>
+      <Transforms />
+      <OrderedDelivery>false</OrderedDelivery>
+      <Priority>5</Priority>
+      <StopSendingOnFailure>false</StopSendingOnFailure>
+      <RouteFailedMessage>false</RouteFailedMessage>
+      <ApplicationName>Common.Stakeholders</ApplicationName>
+    </SendPort>
+  </SendPortCollection>
+</BindingInfo>

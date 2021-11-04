@@ -17,7 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="6.1.0" />
+    <PackageReference Include="FluentAssertions" Version="6.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="xunit.core" Version="2.4.1" />
@@ -29,6 +29,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Be.Stateless.BizTalk.Deployment.Cmdlets\Be.Stateless.BizTalk.Deployment.Cmdlets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Bindings\SBMessaging.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Bindings\SBMessaging.xml" />
   </ItemGroup>
 
 </Project>

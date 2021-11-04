@@ -30,7 +30,7 @@ using Be.Stateless.Xml.Extensions;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 {
-	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
+	[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
 	[Cmdlet(VerbsData.Expand, Nouns.ApplicationBinding)]
@@ -95,22 +95,40 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 			}
 		}
 
-		private void UnescapeXmlTree(XmlNode node)
+		internal void UnescapeXmlTree(XmlNode node)
 		{
 			// to be unescaped, a text node must be a node's only child
 			if (node.ChildNodes.Count == 1 && node.ChildNodes[0].NodeType == XmlNodeType.Text)
 			{
 				// as text node cannot have any child, this ongoing recursive iteration step can be ended if it does not need to be
-				// unescaped --- this is a small optimization that is not required and merely avoids the following foreach loop
-				if (!node.InnerXml.Contains("&lt;")) return;
-				const string xmlProcessingInstructionPattern = @"<\?xml .+\?>\s*";
-				node.InnerXml = Regex.Replace(node.InnerText, xmlProcessingInstructionPattern, string.Empty);
+				// unescaped --- this is a small optimization that is not required and merely avoids the subsequent foreach loop.
+				// notice that we make sure there is either an unescaped closing or a self-closing tag in the text and not just
+				// escaped opening or closing angular brackets ---i.e. &lt; or &gt;--- the absence of any closing tag denotes with
+				// certainty an invalid XML fragment but their presence bears no guarantee though.
+				if (!node.InnerXml.Contains("&lt;/") && !node.InnerXml.Contains("/&gt;")) return;
+				var text = node.InnerText;
+				try
+				{
+					const string xmlProcessingInstructionPattern = @"<\?xml .+\?>\s*";
+					node.InnerXml = Regex.Replace(text, xmlProcessingInstructionPattern, string.Empty);
+				}
+				catch (XmlException exception)
+				{
+					WriteWarning($"Some, probably invalid, XML fragment could not be expanded properly.\r\n{exception}");
+					node.InnerText = text;
+					return;
+				}
 			}
 			// also try to unescape current node's newly created XML subtree if it was a text node that has just been unescaped
 			foreach (XmlNode childNode in node.ChildNodes)
 			{
 				UnescapeXmlTree(childNode);
 			}
+		}
+
+		internal new virtual void WriteWarning(string message)
+		{
+			base.WriteWarning(message);
 		}
 
 		private static XslCompiledTransform _trimmingXslt;
