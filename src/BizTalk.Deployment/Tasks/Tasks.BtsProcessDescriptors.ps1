@@ -22,7 +22,7 @@ Set-StrictMode -Version Latest
 task Register-ProcessDescriptors -If { -not $SkipSharedResources } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        Invoke-Tool -Command { InstallUtil /ShowCallStack /DataSource=`"$($_.DatabaseServer)`" `"$($_.Path)`" }
+        Invoke-Tool -Command { InstallUtil /ShowCallStack /DataSource=`"$((Get-BizTalkGroupSettings).MgmtDbServerName)`" `"$($_.Path)`" }
     }
 }
 
@@ -30,6 +30,6 @@ task Register-ProcessDescriptors -If { -not $SkipSharedResources } {
 task Unregister-ProcessDescriptors -If { (-not $SkipUninstall) -and (-not $SkipSharedResources) } {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack /DataSource=`"$($_.DatabaseServer)`" `"$($_.Path)`" }
+        Invoke-Tool -Command { InstallUtil /uninstall /ShowCallStack /DataSource=`"$((Get-BizTalkGroupSettings).MgmtDbServerName)`" `"$($_.Path)`" }
     }
 }
