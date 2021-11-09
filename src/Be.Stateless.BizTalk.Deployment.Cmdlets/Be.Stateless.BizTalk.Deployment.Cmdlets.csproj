@@ -58,11 +58,11 @@
     <PackageReference Include="Be.Stateless.Security" Version="2.0.21281.38867" />
     <PackageReference Include="Be.Stateless.Stream" Version="2.0.21281.39270" />
     <PackageReference Include="Be.Stateless.Xml" Version="2.0.21281.40683" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.PowerShell.5.1.ReferenceAssemblies" Version="1.0.0" />
   </ItemGroup>
 
