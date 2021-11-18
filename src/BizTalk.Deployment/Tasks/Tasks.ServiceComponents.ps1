@@ -30,6 +30,12 @@ task Deploy-ServiceComponents {
 task Undeploy-ServiceComponents {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
+        try {
+            Invoke-Tool -Command { RegSvcs /exapp `"$($_.Path)`" }
+        }
+        catch {
+            if( $LASTEXITCODE -eq 1 ){ return }
+        }
         Invoke-Tool -Command { RegSvcs /u `"$($_.Path)`" }
     }
 }
