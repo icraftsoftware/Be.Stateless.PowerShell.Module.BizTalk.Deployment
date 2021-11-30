@@ -32,7 +32,7 @@ task Undeploy-XmlConfigurations `
 task Apply-XmlConfigurations {
     $Resources | ForEach-Object -Process {
         Write-Build DarkGreen $_.Path
-        Get-ConfigurationSpecification -Path $_.Path -ConfigurationFileResolvers $([Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy]::new()) | Merge-ConfigurationSpecification -CreateBackup -CreateUndo
+        Merge-ConfigurationSpecification -Path $_.Path -CreateBackup -CreateUndo -ConfigurationFileResolvers $([Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy]::new())
     }
 }
 
@@ -54,7 +54,7 @@ task Revert-XmlConfigurations -If { -not $SkipUninstall } {
     $Resources | ForEach-Object -Process {
         Get-ChildItem -Path "$($_.Path).*.undo" -File | Sort-Object -Descending | ForEach-Object -Process {
             Write-Build DarkGreen $_
-            Get-ConfigurationSpecification -Path $_ -ConfigurationFileResolvers $([Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy]::new()) | Merge-ConfigurationSpecification -CreateBackup
+            Merge-ConfigurationSpecification -Path $_ -ConfigurationFileResolvers $([Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy]::new())
             Remove-Item -Path $_ -Force
         }
     }
