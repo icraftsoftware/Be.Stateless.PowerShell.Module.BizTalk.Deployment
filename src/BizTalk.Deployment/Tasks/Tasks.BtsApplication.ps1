@@ -25,6 +25,9 @@ task Add-BizTalkApplication -If { -not $SkipSharedResources } `
 
 # Synopsis: Create a Microsoft BizTalk Server Application with References to Its Dependant Microsoft BizTalk Server Applications if It Does Not Already Exist
 task Add-BizTalkApplicationIfNonExistent -If { Test-ManifestApplication -Absent } {
+    if ($Manifest.Properties.WeakReferences | Test-Any) {
+        $Manifest.Properties.WeakReferences | ForEach-Object -Process { Assert-BizTalkApplication -Name $_ }
+    }
     $arguments = @{ Name = $ApplicationName }
     if (![string]::IsNullOrWhiteSpace($Manifest.Properties.Description)) {
         $arguments.Description = $Manifest.Properties.Description
