@@ -57,6 +57,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 		[ValidateNotNullOrEmpty]
 		public string InputFilePath { get; set; }
 
+		[Alias("Destination")]
 		[Parameter(Mandatory = false)]
 		[ValidateNotNullOrEmpty]
 		public string OutputFilePath { get; set; }
