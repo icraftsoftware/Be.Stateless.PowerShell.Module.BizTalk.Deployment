@@ -37,7 +37,7 @@
    )
    RequiredModules       = @(
       @{ ModuleName = 'BizTalk.Administration'; ModuleVersion = '1.0.21343.31351'; GUID = 'de802b43-c7a6-4580-a34b-ac805bbf813e' }
-      @{ ModuleName = 'Dsl.Configuration'; ModuleVersion = '2.0.21333.44731'; GUID = '99128609-dd5b-43d7-b834-6bc0ca537f02' }
+      @{ ModuleName = 'Dsl.Configuration'; ModuleVersion = '2.0.21350.41992'; GUID = '99128609-dd5b-43d7-b834-6bc0ca537f02' }
       @{ ModuleName = 'Gac'; ModuleVersion = '1.0.1'; GUID = '2f3a501f-882b-43c4-aaeb-3ffc9fea932c' }
       @{ ModuleName = 'InvokeBuild'; ModuleVersion = '5.8.6'; GUID = 'a0319025-5f1f-47f0-ae8d-9c7e151a5aae' }
       @{ ModuleName = 'Resource.Manifest'; ModuleVersion = '1.0.21342.43636'; GUID = '07e35b0e-3441-46b4-82e6-d8daafb837bd' }
