@@ -23,7 +23,6 @@ Set-StrictMode -Version Latest
 
 . $PSScriptRoot\Tasks.BtsApplication.ps1
 . $PSScriptRoot\Tasks.BtsBindings.ps1
-. $PSScriptRoot\Tasks.BtsComponents.ps1
 . $PSScriptRoot\Tasks.BtsMaps.ps1
 . $PSScriptRoot\Tasks.BtsOrchestrations.ps1
 . $PSScriptRoot\Tasks.BtsPipelineComponents.ps1
@@ -55,7 +54,6 @@ task Undeploy-BizTalkApplication -If { -not $SkipUninstall } `
 task Deploy-BizTalkArtifacts `
     Deploy-Schemas, `
     Deploy-Maps, `
-    Deploy-Components, `
     Deploy-PipelineComponents, `
     Deploy-Pipelines, `
     Deploy-Orchestrations, `
@@ -70,7 +68,6 @@ task Undeploy-BizTalkArtifacts -If { -not $SkipUninstall } `
     Undeploy-Orchestrations, `
     Undeploy-Pipelines, `
     Undeploy-PipelineComponents, `
-    Undeploy-Components, `
     Undeploy-Maps, `
     Undeploy-Schemas
 
