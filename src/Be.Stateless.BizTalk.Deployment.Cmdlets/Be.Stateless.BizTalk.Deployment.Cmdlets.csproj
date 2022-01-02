@@ -25,6 +25,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Deployment\Cmdlet\Application\GetApplicationHosts.cs" />
+    <Compile Remove="Deployment\Cmdlet\Application\InitializeApplicationState.cs" />
+    <Compile Remove="Deployment\Cmdlet\Application\InstallApplicationFileAdapterFolders.cs" />
+    <Compile Remove="Deployment\Cmdlet\Application\TestApplicationState.cs" />
+    <Compile Remove="Deployment\Cmdlet\Application\UninstallApplicationFileAdapterFolders.cs" />
+    <Compile Remove="Deployment\Cmdlet\Binding\TestApplicationBinding.cs" />
+    <Compile Remove="Deployment\Cmdlet\PowerShellOutputAppender.cs" />
+    <Compile Remove="Deployment\Cmdlet\Sso\UpdateAffiliateApplicationStore.cs" />
+    <Compile Remove="Install\Command\Dispatcher\CommandDispatcher.cs" />
+    <Compile Remove="Install\Command\Dispatcher\CommandDispatcherFactory.cs" />
+    <Compile Remove="Install\Command\Dispatcher\IProvideAssemblyResolutionProbingPaths.cs" />
+    <Compile Remove="Install\Command\Dispatcher\IsolatedCommandDispatcher.cs" />
+    <Compile Remove="Install\Command\ISetupCommandProxy.cs" />
+    <Compile Remove="Install\Command\Proxy\AffiliateApplicationStoreUpdateCommandProxy.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Deployment\Cmdlet\ExpandApplicationBinding.Trimmer.xslt" />
   </ItemGroup>
 
@@ -35,14 +52,28 @@
   <ItemGroup>
     <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
     <None Include="..\..\.editorconfig" Link=".editorconfig" />
+    <None Include="Deployment\Cmdlet\Application\GetApplicationHosts.cs" />
+    <None Include="Deployment\Cmdlet\Application\InitializeApplicationState.cs" />
+    <None Include="Deployment\Cmdlet\Application\InstallApplicationFileAdapterFolders.cs" />
+    <None Include="Deployment\Cmdlet\Application\TestApplicationState.cs" />
+    <None Include="Deployment\Cmdlet\Application\UninstallApplicationFileAdapterFolders.cs" />
+    <None Include="Deployment\Cmdlet\Binding\TestApplicationBinding.cs" />
+    <None Include="Deployment\Cmdlet\PowerShellOutputAppender.cs" />
+    <None Include="Deployment\Cmdlet\Sso\UpdateAffiliateApplicationStore.cs" />
+    <None Include="Install\Command\Dispatcher\CommandDispatcher.cs" />
+    <None Include="Install\Command\Dispatcher\CommandDispatcherFactory.cs" />
+    <None Include="Install\Command\Dispatcher\IProvideAssemblyResolutionProbingPaths.cs" />
+    <None Include="Install\Command\Dispatcher\IsolatedCommandDispatcher.cs" />
+    <None Include="Install\Command\ISetupCommandProxy.cs" />
+    <None Include="Install\Command\Proxy\AffiliateApplicationStoreUpdateCommandProxy.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.0.21360.32031" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.0.21284.50613" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.21361.6491" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.21361.6491" />
-    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.21361.6491" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.0.22002.34563" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.0.22002.34563" />
+    <PackageReference Include="Be.Stateless.BizTalk.Dsl.Environment.Settings" Version="2.0.22002.34563" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Pipeline" Version="2.0.21347.21495" />
     <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.0.21281.40704" />
     <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.0.21360.39271" />

@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,42 +17,27 @@
 #endregion
 
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using System.Management.Automation;
-using System.Reflection;
-using Be.Stateless.BizTalk.Install.Command;
-using Be.Stateless.BizTalk.Install.Command.Dispatcher;
-using Be.Stateless.BizTalk.Install.Command.Proxy;
-using Be.Stateless.BizTalk.Management.Automation;
 
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 {
 	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Cmdlet API.")]
 	[SuppressMessage("ReSharper", "MemberCanBeProtected.Global", Justification = "Cmdlet API.")]
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
-	public abstract class ApplicationBindingBasedCmdlet : PSCmdlet, ISetupCommandProxy<ApplicationBindingBasedCommandProxy>, IProvideAssemblyResolutionProbingPaths
+	public abstract class ApplicationBindingBasedCmdlet : PSCmdlet
 	{
-		#region IProvideAssemblyResolutionProbingPaths Members
+		//string[] IProvideAssemblyResolutionProbingPaths.AssemblyResolutionProbingPaths => _assemblyResolutionProbingPaths ??= this.ResolvePaths(AssemblyProbingFolderPaths)
+		//	.Prepend(Path.GetDirectoryName(this.ResolvePath(ApplicationBindingAssemblyFilePath)))
+		//	.Prepend(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+		//	.ToArray();
 
-		string[] IProvideAssemblyResolutionProbingPaths.AssemblyResolutionProbingPaths => _assemblyResolutionProbingPaths ??= this.ResolvePaths(AssemblyProbingFolderPaths)
-			.Prepend(Path.GetDirectoryName(this.ResolvePath(ApplicationBindingAssemblyFilePath)))
-			.Prepend(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-			.ToArray();
-
-		#endregion
-
-		#region ISetupCommandProxy<ApplicationBindingBasedCommandProxy> Members
-
-		void ISetupCommandProxy<ApplicationBindingBasedCommandProxy>.Setup(ApplicationBindingBasedCommandProxy commandProxy)
-		{
-			commandProxy.ApplicationBindingAssemblyFilePath = this.ResolvePath(ApplicationBindingAssemblyFilePath);
-			commandProxy.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
-			commandProxy.ExcelSettingOverridesFolderPath = this.ResolvePath(ExcelSettingOverridesFolderPath);
-			commandProxy.TargetEnvironment = TargetEnvironment;
-		}
-
-		#endregion
+		// TODO void ISetupCommandProxy<ApplicationBindingBasedCommandProxy>.Setup(ApplicationBindingBasedCommandProxy commandProxy)
+		//{
+		//	commandProxy.ApplicationBindingAssemblyFilePath = this.ResolvePath(ApplicationBindingAssemblyFilePath);
+		//	commandProxy.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
+		//	commandProxy.ExcelSettingOverridesFolderPath = this.ResolvePath(ExcelSettingOverridesFolderPath);
+		//	commandProxy.TargetEnvironment = TargetEnvironment;
+		//}
 
 		[Alias("Path")]
 		[Parameter(Mandatory = true)]
@@ -77,13 +62,19 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
+		// TODO [ValidateSet()]
 		public string TargetEnvironment { get; set; }
 
-		internal void Setup(ApplicationBindingBasedCommandProxy commandProxy)
-		{
-			((ISetupCommandProxy<ApplicationBindingBasedCommandProxy>) this).Setup(commandProxy);
-		}
+		//internal void Setup(ApplicationBindingBasedCommandProxy commandProxy)
+		//{
+		//	((ISetupCommandProxy<ApplicationBindingBasedCommandProxy>) this).Setup(commandProxy);
+		//}
 
-		private string[] _assemblyResolutionProbingPaths;
+		//private string[] _assemblyResolutionProbingPaths;
+
+		protected void WriteInformation(string message)
+		{
+			WriteInformation(message, null);
+		}
 	}
 }
