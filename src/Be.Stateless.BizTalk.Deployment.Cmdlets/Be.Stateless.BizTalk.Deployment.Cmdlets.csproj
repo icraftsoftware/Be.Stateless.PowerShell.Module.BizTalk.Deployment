@@ -26,19 +26,31 @@
 
   <ItemGroup>
     <Compile Remove="Deployment\Cmdlet\Application\GetApplicationHosts.cs" />
+    <None Include="Deployment\Cmdlet\Application\GetApplicationHosts.cs" />
     <Compile Remove="Deployment\Cmdlet\Application\InitializeApplicationState.cs" />
+    <None Include="Deployment\Cmdlet\Application\InitializeApplicationState.cs" />
     <Compile Remove="Deployment\Cmdlet\Application\InstallApplicationFileAdapterFolders.cs" />
+    <None Include="Deployment\Cmdlet\Application\InstallApplicationFileAdapterFolders.cs" />
     <Compile Remove="Deployment\Cmdlet\Application\TestApplicationState.cs" />
+    <None Include="Deployment\Cmdlet\Application\TestApplicationState.cs" />
     <Compile Remove="Deployment\Cmdlet\Application\UninstallApplicationFileAdapterFolders.cs" />
+    <None Include="Deployment\Cmdlet\Application\UninstallApplicationFileAdapterFolders.cs" />
     <Compile Remove="Deployment\Cmdlet\Binding\TestApplicationBinding.cs" />
-    <Compile Remove="Deployment\Cmdlet\PowerShellOutputAppender.cs" />
+    <None Include="Deployment\Cmdlet\Binding\TestApplicationBinding.cs" />
     <Compile Remove="Deployment\Cmdlet\Sso\UpdateAffiliateApplicationStore.cs" />
+    <None Include="Deployment\Cmdlet\Sso\UpdateAffiliateApplicationStore.cs" />
     <Compile Remove="Install\Command\Dispatcher\CommandDispatcher.cs" />
+    <None Include="Install\Command\Dispatcher\CommandDispatcher.cs" />
     <Compile Remove="Install\Command\Dispatcher\CommandDispatcherFactory.cs" />
+    <None Include="Install\Command\Dispatcher\CommandDispatcherFactory.cs" />
     <Compile Remove="Install\Command\Dispatcher\IProvideAssemblyResolutionProbingPaths.cs" />
+    <None Include="Install\Command\Dispatcher\IProvideAssemblyResolutionProbingPaths.cs" />
     <Compile Remove="Install\Command\Dispatcher\IsolatedCommandDispatcher.cs" />
+    <None Include="Install\Command\Dispatcher\IsolatedCommandDispatcher.cs" />
     <Compile Remove="Install\Command\ISetupCommandProxy.cs" />
+    <None Include="Install\Command\ISetupCommandProxy.cs" />
     <Compile Remove="Install\Command\Proxy\AffiliateApplicationStoreUpdateCommandProxy.cs" />
+    <None Include="Install\Command\Proxy\AffiliateApplicationStoreUpdateCommandProxy.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,20 +64,6 @@
   <ItemGroup>
     <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
     <None Include="..\..\.editorconfig" Link=".editorconfig" />
-    <None Include="Deployment\Cmdlet\Application\GetApplicationHosts.cs" />
-    <None Include="Deployment\Cmdlet\Application\InitializeApplicationState.cs" />
-    <None Include="Deployment\Cmdlet\Application\InstallApplicationFileAdapterFolders.cs" />
-    <None Include="Deployment\Cmdlet\Application\TestApplicationState.cs" />
-    <None Include="Deployment\Cmdlet\Application\UninstallApplicationFileAdapterFolders.cs" />
-    <None Include="Deployment\Cmdlet\Binding\TestApplicationBinding.cs" />
-    <None Include="Deployment\Cmdlet\PowerShellOutputAppender.cs" />
-    <None Include="Deployment\Cmdlet\Sso\UpdateAffiliateApplicationStore.cs" />
-    <None Include="Install\Command\Dispatcher\CommandDispatcher.cs" />
-    <None Include="Install\Command\Dispatcher\CommandDispatcherFactory.cs" />
-    <None Include="Install\Command\Dispatcher\IProvideAssemblyResolutionProbingPaths.cs" />
-    <None Include="Install\Command\Dispatcher\IsolatedCommandDispatcher.cs" />
-    <None Include="Install\Command\ISetupCommandProxy.cs" />
-    <None Include="Install\Command\Proxy\AffiliateApplicationStoreUpdateCommandProxy.cs" />
   </ItemGroup>
 
   <ItemGroup>

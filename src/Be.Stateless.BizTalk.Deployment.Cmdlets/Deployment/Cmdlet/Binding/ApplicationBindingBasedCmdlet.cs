@@ -26,19 +26,6 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Cmdlet API.")]
 	public abstract class ApplicationBindingBasedCmdlet : PSCmdlet
 	{
-		//string[] IProvideAssemblyResolutionProbingPaths.AssemblyResolutionProbingPaths => _assemblyResolutionProbingPaths ??= this.ResolvePaths(AssemblyProbingFolderPaths)
-		//	.Prepend(Path.GetDirectoryName(this.ResolvePath(ApplicationBindingAssemblyFilePath)))
-		//	.Prepend(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-		//	.ToArray();
-
-		// TODO void ISetupCommandProxy<ApplicationBindingBasedCommandProxy>.Setup(ApplicationBindingBasedCommandProxy commandProxy)
-		//{
-		//	commandProxy.ApplicationBindingAssemblyFilePath = this.ResolvePath(ApplicationBindingAssemblyFilePath);
-		//	commandProxy.EnvironmentSettingOverridesTypeName = EnvironmentSettingOverridesTypeName;
-		//	commandProxy.ExcelSettingOverridesFolderPath = this.ResolvePath(ExcelSettingOverridesFolderPath);
-		//	commandProxy.TargetEnvironment = TargetEnvironment;
-		//}
-
 		[Alias("Path")]
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
@@ -64,13 +51,6 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 		[ValidateNotNullOrEmpty]
 		// TODO [ValidateSet()]
 		public string TargetEnvironment { get; set; }
-
-		//internal void Setup(ApplicationBindingBasedCommandProxy commandProxy)
-		//{
-		//	((ISetupCommandProxy<ApplicationBindingBasedCommandProxy>) this).Setup(commandProxy);
-		//}
-
-		//private string[] _assemblyResolutionProbingPaths;
 
 		protected void WriteInformation(string message)
 		{

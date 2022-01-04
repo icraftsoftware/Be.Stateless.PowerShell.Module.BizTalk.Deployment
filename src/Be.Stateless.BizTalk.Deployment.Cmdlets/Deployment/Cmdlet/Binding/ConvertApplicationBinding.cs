@@ -17,11 +17,14 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
+using System.Text;
 using Be.Stateless.BizTalk.Dsl;
 using Be.Stateless.BizTalk.Dsl.Binding;
 using Be.Stateless.BizTalk.Dsl.Binding.Extensions;
@@ -40,32 +43,60 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 	{
 		#region Base Class Member Overrides
 
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		protected override void ProcessRecord()
 		{
-			WriteInformation("Converting Code-First BizTalk Application Bindings to XML...", null);
+			var applicationBindingAssemblyFilePath = this.ResolvePath(ApplicationBindingAssemblyFilePath);
+			var assemblyProbingFolderPaths = this.ResolvePaths(AssemblyProbingFolderPaths);
+			var excelSettingOverridesFolderPath = this.ResolvePath(ExcelSettingOverridesFolderPath);
+			var outputFilePath = this.ResolvePath(OutputFilePath);
 
-			var resolvedApplicationBindingAssemblyFilePath = this.ResolvePath(ApplicationBindingAssemblyFilePath);
-			var assemblyResolutionProbingPaths = this.ResolvePaths(AssemblyProbingFolderPaths)
-				.Prepend(Path.GetDirectoryName(resolvedApplicationBindingAssemblyFilePath))
-				.Prepend(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-				.ToArray();
-
-			using (new BizTalkAssemblyResolver(WriteVerbose, true, assemblyResolutionProbingPaths))
+			if (NoLock)
 			{
-				WriteInformation($"Resolving ApplicationBindingType in assembly '{resolvedApplicationBindingAssemblyFilePath}'...");
-				var applicationBindingType = AssemblyLoader.Load(resolvedApplicationBindingAssemblyFilePath).GetApplicationBindingType(true);
-				WriteInformation($"Resolved ApplicationBindingType '{applicationBindingType.AssemblyQualifiedName}' in assembly '{applicationBindingType.Assembly.Location}'.");
-				if (!EnvironmentSettingOverridesTypeName.IsNullOrEmpty())
-				{
-					WriteInformation($"Resolving EnvironmentSettingOverridesType '{EnvironmentSettingOverridesTypeName}'...");
-					DeploymentContext.EnvironmentSettingOverridesType = Type.GetType(EnvironmentSettingOverridesTypeName, true);
-					WriteInformation($"Resolved EnvironmentSettingOverridesType in assembly '{DeploymentContext.EnvironmentSettingOverridesType.Assembly.Location}'.");
-				}
-				if (!ExcelSettingOverridesFolderPath.IsNullOrEmpty()) DeploymentContext.ExcelSettingOverridesFolderPath = this.ResolvePath(ExcelSettingOverridesFolderPath);
-				DeploymentContext.TargetEnvironment = TargetEnvironment;
+				WriteInformation("Dispatching Code-First BizTalk Application Bindings Conversion to XML in Isolated Process...");
+				var tmpOutputFilePath = Path.GetTempFileName();
+				var builder = new StringBuilder();
+				builder.AppendLine("& {");
+				builder.AppendLine($"  Import-Module -Name '{Assembly.GetExecutingAssembly().Location}'");
+				builder.AppendLine("  $arguments = @{");
+				builder.AppendLine($"    ApplicationBindingAssemblyFilePath = '{applicationBindingAssemblyFilePath}'");
+				if (assemblyProbingFolderPaths.Any()) builder.AppendLine($"    AssemblyProbingFolderPaths = @('{string.Join("','", assemblyProbingFolderPaths)}')");
+				if (!EnvironmentSettingOverridesTypeName.IsNullOrEmpty()) builder.AppendLine($"    EnvironmentSettingOverridesTypeName = '{EnvironmentSettingOverridesTypeName}'");
+				if (!excelSettingOverridesFolderPath.IsNullOrEmpty()) builder.AppendLine($"    ExcelSettingOverridesFolderPath = '{excelSettingOverridesFolderPath}'");
+				builder.AppendLine($"    OutputFilePath = '{tmpOutputFilePath}'");
+				builder.AppendLine($"    TargetEnvironment = '{TargetEnvironment}'");
+				builder.AppendLine("  }");
+				// TODO ?? InformationAction + Verbose
+				builder.AppendLine("  Convert-ApplicationBinding @arguments -InformationAction Continue -Verbose");
+				// TODO append following line unless -Keep or -Interactive or -??? to be used to troubleshoot
+				builder.AppendLine("  if ($?) { Exit 0 }");
+				builder.Append('}');
+				var command = builder.ToString();
+				// TODO ?? debug or verbose
+				WriteDebug(command);
 
-				var applicationBinding = (IVisitable<IApplicationBindingVisitor>) Activator.CreateInstance(applicationBindingType);
-				applicationBinding.GetApplicationBindingInfoSerializer().Save(this.ResolvePath(OutputFilePath));
+				var startInfo = new ProcessStartInfo {
+					Arguments = $"-NoExit -NoLogo -NoProfile -EncodedCommand {Convert.ToBase64String(Encoding.Unicode.GetBytes(command))}",
+					FileName = "PowerShell.exe",
+					WorkingDirectory = Path.GetDirectoryName(applicationBindingAssemblyFilePath)!
+				};
+				Process.Start(startInfo)!.WaitForExit();
+				var fileInfo = new FileInfo(tmpOutputFilePath);
+				if (!fileInfo.Exists || fileInfo.Length < 1)
+					throw new InvalidOperationException("Code-First BizTalk Application Bindings Conversion to XML failed in Isolated Process.");
+				File.Delete(outputFilePath);
+				File.Move(tmpOutputFilePath, outputFilePath);
+			}
+			else
+			{
+				WriteInformation("Converting Code-First BizTalk Application Bindings to XML...", null);
+				ProcessRecord(
+					applicationBindingAssemblyFilePath,
+					assemblyProbingFolderPaths,
+					EnvironmentSettingOverridesTypeName,
+					excelSettingOverridesFolderPath,
+					outputFilePath,
+					TargetEnvironment);
 			}
 		}
 
@@ -76,5 +107,37 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 		[Parameter(Mandatory = true)]
 		[ValidateNotNullOrEmpty]
 		public string OutputFilePath { get; set; }
+
+		private void ProcessRecord(
+			string applicationBindingAssemblyFilePath,
+			IEnumerable<string> assemblyProbingFolderPaths,
+			string environmentSettingOverridesTypeName,
+			string excelSettingOverridesFolderPath,
+			string outputFilePath,
+			string targetEnvironment)
+		{
+			var probingFolderPaths = assemblyProbingFolderPaths
+				.Prepend(Path.GetDirectoryName(applicationBindingAssemblyFilePath))
+				// TODO ?? .Prepend(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+				.ToArray();
+
+			using (new BizTalkAssemblyResolver(WriteVerbose, true, probingFolderPaths))
+			{
+				WriteInformation($"Resolving ApplicationBindingType in assembly '{applicationBindingAssemblyFilePath}'...");
+				var applicationBindingType = AssemblyLoader.Load(applicationBindingAssemblyFilePath).GetApplicationBindingType(true);
+				WriteInformation($"Resolved ApplicationBindingType '{applicationBindingType.AssemblyQualifiedName}' in assembly '{applicationBindingType.Assembly.Location}'.");
+				if (!environmentSettingOverridesTypeName.IsNullOrEmpty())
+				{
+					WriteInformation($"Resolving EnvironmentSettingOverridesType '{EnvironmentSettingOverridesTypeName}'...");
+					DeploymentContext.EnvironmentSettingOverridesType = Type.GetType(environmentSettingOverridesTypeName, true);
+					WriteInformation($"Resolved EnvironmentSettingOverridesType in assembly '{DeploymentContext.EnvironmentSettingOverridesType.Assembly.Location}'.");
+				}
+				if (!excelSettingOverridesFolderPath.IsNullOrEmpty()) DeploymentContext.ExcelSettingOverridesFolderPath = excelSettingOverridesFolderPath;
+				DeploymentContext.TargetEnvironment = targetEnvironment;
+
+				var applicationBinding = (IVisitable<IApplicationBindingVisitor>) Activator.CreateInstance(applicationBindingType);
+				applicationBinding.GetApplicationBindingInfoSerializer().Save(outputFilePath);
+			}
+		}
 	}
 }
