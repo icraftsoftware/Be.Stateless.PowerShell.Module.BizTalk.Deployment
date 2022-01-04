@@ -65,18 +65,18 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 				if (!excelSettingOverridesFolderPath.IsNullOrEmpty()) builder.AppendLine($"    ExcelSettingOverridesFolderPath = '{excelSettingOverridesFolderPath}'");
 				builder.AppendLine($"    OutputFilePath = '{tmpOutputFilePath}'");
 				builder.AppendLine($"    TargetEnvironment = '{TargetEnvironment}'");
+				var boundParameters = MyInvocation.BoundParameters;
+				//if (boundParameters.TryGetValue("InformationAction", out var ia)) builder.AppendLine($"    InformationAction = '{ia}'");
+				if (boundParameters.TryGetValue("Verbose", out var v) && v is SwitchParameter flag && flag.ToBool()) builder.AppendLine("    Verbose = $true");
 				builder.AppendLine("  }");
-				// TODO ?? InformationAction + Verbose
-				builder.AppendLine("  Convert-ApplicationBinding @arguments -InformationAction Continue -Verbose");
-				// TODO append following line unless -Keep or -Interactive or -??? to be used to troubleshoot
-				builder.AppendLine("  if ($?) { Exit 0 }");
+				builder.AppendLine("  Convert-ApplicationBinding @arguments -InformationAction Continue");
+				if (!NoExit) builder.AppendLine("  if ($?) { Exit 0 }");
 				builder.Append('}');
 				var command = builder.ToString();
-				// TODO ?? debug or verbose
 				WriteDebug(command);
 
 				var startInfo = new ProcessStartInfo {
-					Arguments = $"-NoExit -NoLogo -NoProfile -EncodedCommand {Convert.ToBase64String(Encoding.Unicode.GetBytes(command))}",
+					Arguments = (NoExit ? "-NoExit " : "") + $"-NoLogo -NoProfile -EncodedCommand {Convert.ToBase64String(Encoding.Unicode.GetBytes(command))}",
 					FileName = "PowerShell.exe",
 					WorkingDirectory = Path.GetDirectoryName(applicationBindingAssemblyFilePath)!
 				};
@@ -89,7 +89,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 			}
 			else
 			{
-				WriteInformation("Converting Code-First BizTalk Application Bindings to XML...", null);
+				WriteInformation("Converting Code-First BizTalk Application Bindings to XML...");
 				ProcessRecord(
 					applicationBindingAssemblyFilePath,
 					assemblyProbingFolderPaths,

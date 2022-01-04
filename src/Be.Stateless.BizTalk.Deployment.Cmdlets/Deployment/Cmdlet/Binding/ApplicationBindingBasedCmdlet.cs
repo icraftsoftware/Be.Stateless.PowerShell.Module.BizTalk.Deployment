@@ -45,6 +45,12 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 
 		[Parameter(Mandatory = false)]
 		[ValidateNotNullOrEmpty]
+		// TODO parameter set
+		public SwitchParameter NoExit { get; set; }
+
+		[Parameter(Mandatory = false)]
+		[ValidateNotNullOrEmpty]
+		// TODO parameter set
 		public SwitchParameter NoLock { get; set; }
 
 		[Parameter(Mandatory = true)]
