@@ -37,7 +37,7 @@ using Be.Stateless.Extensions;
 namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 {
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Cmdlet.")]
-	[Cmdlet(VerbsData.Convert, Nouns.ApplicationBinding)]
+	[Cmdlet(VerbsData.Convert, Nouns.ApplicationBinding, DefaultParameterSetName = SAME_PROCESS_PARAMETER_SET_NAME)]
 	[OutputType(typeof(void))]
 	public class ConvertApplicationBinding : ApplicationBindingBasedCmdlet
 	{
@@ -66,7 +66,6 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 				builder.AppendLine($"    OutputFilePath = '{tmpOutputFilePath}'");
 				builder.AppendLine($"    TargetEnvironment = '{TargetEnvironment}'");
 				var boundParameters = MyInvocation.BoundParameters;
-				//if (boundParameters.TryGetValue("InformationAction", out var ia)) builder.AppendLine($"    InformationAction = '{ia}'");
 				if (boundParameters.TryGetValue("Verbose", out var v) && v is SwitchParameter flag && flag.ToBool()) builder.AppendLine("    Verbose = $true");
 				builder.AppendLine("  }");
 				builder.AppendLine("  Convert-ApplicationBinding @arguments -InformationAction Continue");
