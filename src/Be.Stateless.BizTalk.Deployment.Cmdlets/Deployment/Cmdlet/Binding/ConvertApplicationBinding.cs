@@ -58,20 +58,22 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet.Binding
 				var builder = new StringBuilder();
 				builder.AppendLine("& {");
 				builder.AppendLine($"  Import-Module -Name '{Assembly.GetExecutingAssembly().Location}'");
-				builder.AppendLine("  $arguments = @{");
-				builder.AppendLine($"    ApplicationBindingAssemblyFilePath = '{applicationBindingAssemblyFilePath}'");
-				if (assemblyProbingFolderPaths.Any()) builder.AppendLine($"    AssemblyProbingFolderPaths = @('{string.Join("','", assemblyProbingFolderPaths)}')");
-				if (!EnvironmentSettingOverridesTypeName.IsNullOrEmpty()) builder.AppendLine($"    EnvironmentSettingOverridesTypeName = '{EnvironmentSettingOverridesTypeName}'");
-				if (!excelSettingOverridesFolderPath.IsNullOrEmpty()) builder.AppendLine($"    ExcelSettingOverridesFolderPath = '{excelSettingOverridesFolderPath}'");
-				builder.AppendLine($"    OutputFilePath = '{tmpOutputFilePath}'");
-				builder.AppendLine($"    TargetEnvironment = '{TargetEnvironment}'");
-				var boundParameters = MyInvocation.BoundParameters;
-				if (boundParameters.TryGetValue("Verbose", out var v) && v is SwitchParameter flag && flag.ToBool()) builder.AppendLine("    Verbose = $true");
-				builder.AppendLine("  }");
-				builder.AppendLine("  Convert-ApplicationBinding @arguments -InformationAction Continue");
-				if (!NoExit) builder.AppendLine("  if ($?) { Exit 0 }");
+
+				builder.Append($"  {MyInvocation.MyCommand.Name}");
+				builder.Append($" -ApplicationBindingAssemblyFilePath '{applicationBindingAssemblyFilePath}'");
+				if (assemblyProbingFolderPaths.Any()) builder.Append($" -AssemblyProbingFolderPaths '{string.Join("','", assemblyProbingFolderPaths)}'");
+				if (!EnvironmentSettingOverridesTypeName.IsNullOrEmpty()) builder.Append($" -EnvironmentSettingOverridesTypeName '{EnvironmentSettingOverridesTypeName}'");
+				// TODO ?? discard whole ExcelSettings and ExcelSettingOverridesFolderPath feature ??
+				if (!excelSettingOverridesFolderPath.IsNullOrEmpty()) builder.Append($" -ExcelSettingOverridesFolderPath '{excelSettingOverridesFolderPath}'");
+				builder.Append($" -OutputFilePath '{tmpOutputFilePath}'");
+				builder.Append($" -TargetEnvironment '{TargetEnvironment}'");
+				builder.Append(" -InformationAction Continue");
+				if (MyInvocation.BoundParameters.TryGetValue("Verbose", out var v) && v is SwitchParameter flag && flag) builder.Append(" -Verbose");
+				builder.AppendLine();
 				builder.Append('}');
+
 				var command = builder.ToString();
+				// TODO ?? ShouldProcess instead of WriteDebug ??
 				WriteDebug(command);
 
 				var startInfo = new ProcessStartInfo {
