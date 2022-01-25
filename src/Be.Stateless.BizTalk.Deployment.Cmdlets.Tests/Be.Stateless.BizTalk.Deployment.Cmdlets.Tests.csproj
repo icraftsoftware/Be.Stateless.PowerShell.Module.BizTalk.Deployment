@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <RootNamespace>Be.Stateless.BizTalk</RootNamespace>
+    <AssemblyName>Be.Stateless.BizTalk.Deployment.Cmdlets.Tests</AssemblyName>
+    <Description>Unit tests for PowerShell commands assisting BizTalk.Deployment module in operating SSO Stores and BizTalk.Factory C#-embedded Domain Specific Languages (DSL) dedicated to Microsoft BizTalk Server.</Description>
+    <IsPublishable>false</IsPublishable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\.settings\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.Components" Version="2.1.22025.28847" />
+    <PackageReference Include="Be.Stateless.BizTalk.Pipelines" Version="2.1.22025.39770" />
+    <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.1.22025.23462" />
+    <PackageReference Include="Be.Stateless.Reflection" Version="2.1.22025.20814" />
+    <PackageReference Include="Be.Stateless.Stream" Version="2.1.22025.21947" />
+    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="BizTalk.Server.2020.Utilities" Version="1.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.msbuild" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="6.3.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="Microsoft.PowerShell.5.1.ReferenceAssemblies" Version="1.0.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="xunit.core" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Be.Stateless.BizTalk.Deployment.Cmdlets\Be.Stateless.BizTalk.Deployment.Cmdlets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Bindings\SBMessaging.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Bindings\SBMessaging.xml" />
+  </ItemGroup>
+
+</Project>
