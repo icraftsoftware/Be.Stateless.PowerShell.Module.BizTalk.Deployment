@@ -20,25 +20,27 @@ using Be.Stateless.BizTalk.Dsl.Binding.Adapter;
 
 namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 {
-	public abstract class FileAdapterFolderVisitor : ApplicationBindingVisitor
+	public abstract class FileAdapterFolderVisitor : IApplicationBindingVisitor
 	{
-		#region Base Class Member Overrides
+		#region IApplicationBindingVisitor Members
 
-		protected override void VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
+		void IApplicationBindingVisitor.VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
 			where TNamingConvention : class { }
 
-		protected override void VisitOrchestration(IOrchestrationBinding orchestrationBinding) { }
+		void IApplicationBindingVisitor.VisitReferencedApplicationBinding(IVisitable<IApplicationBindingVisitor> referencedApplicationBinding) { }
 
-		protected override void VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation)
+		void IApplicationBindingVisitor.VisitOrchestration(IOrchestrationBinding orchestrationBinding) { }
+
+		void IApplicationBindingVisitor.VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation)
 			where TNamingConvention : class
 		{
 			if (receiveLocation.Transport.Adapter is FileAdapter.Inbound fileAdapter) VisitDirectory(fileAdapter.ReceiveFolder);
 		}
 
-		protected override void VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort)
+		void IApplicationBindingVisitor.VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort)
 			where TNamingConvention : class { }
 
-		protected override void VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort)
+		void IApplicationBindingVisitor.VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort)
 			where TNamingConvention : class
 		{
 			if (sendPort.Transport.Adapter is FileAdapter.Outbound fileAdapter) VisitDirectory(fileAdapter.DestinationFolder);

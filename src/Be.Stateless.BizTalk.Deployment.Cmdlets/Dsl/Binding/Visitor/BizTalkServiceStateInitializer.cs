@@ -42,7 +42,7 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 	/// </list>
 	/// </remarks>
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Public API.")]
-	public sealed class BizTalkServiceStateInitializer : ApplicationBindingVisitor, IDisposable
+	public sealed class BizTalkServiceStateInitializer : IApplicationBindingVisitor, IDisposable
 	{
 		public BizTalkServiceStateInitializer(BizTalkServiceInitializationOptions options, Action<string> logAppender)
 		{
@@ -50,18 +50,9 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			_logAppender = logAppender;
 		}
 
-		#region IDisposable Members
+		#region IApplicationBindingVisitor Members
 
-		public void Dispose()
-		{
-			_application?.Dispose();
-		}
-
-		#endregion
-
-		#region Base Class Member Overrides
-
-		protected override void VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
+		void IApplicationBindingVisitor.VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
 			where TNamingConvention : class
 		{
 			if (applicationBinding == null) throw new ArgumentNullException(nameof(applicationBinding));
@@ -69,7 +60,9 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			_application = BizTalkServerGroup.Applications[name];
 		}
 
-		protected override void VisitOrchestration(IOrchestrationBinding orchestrationBinding)
+		void IApplicationBindingVisitor.VisitReferencedApplicationBinding(IVisitable<IApplicationBindingVisitor> referencedApplicationBinding) { }
+
+		void IApplicationBindingVisitor.VisitOrchestration(IOrchestrationBinding orchestrationBinding)
 		{
 			if (orchestrationBinding == null) throw new ArgumentNullException(nameof(orchestrationBinding));
 			if (!_options.RequireOrchestrationInitialization()) return;
@@ -92,7 +85,7 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			}
 		}
 
-		protected override void VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation)
+		void IApplicationBindingVisitor.VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation)
 			where TNamingConvention : class
 		{
 			if (receiveLocation == null) throw new ArgumentNullException(nameof(receiveLocation));
@@ -111,7 +104,7 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			}
 		}
 
-		protected override void VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort)
+		void IApplicationBindingVisitor.VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort)
 			where TNamingConvention : class
 		{
 			if (receivePort == null) throw new ArgumentNullException(nameof(receivePort));
@@ -121,7 +114,7 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			_receivePort = _application.ReceivePorts[name];
 		}
 
-		protected override void VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort)
+		void IApplicationBindingVisitor.VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort)
 			where TNamingConvention : class
 		{
 			if (sendPort == null) throw new ArgumentNullException(nameof(sendPort));
@@ -144,6 +137,15 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			{
 				_logAppender?.Invoke($"Send port '{name}' is already in the expected {sendPort.State} state.");
 			}
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		public void Dispose()
+		{
+			_application?.Dispose();
 		}
 
 		#endregion

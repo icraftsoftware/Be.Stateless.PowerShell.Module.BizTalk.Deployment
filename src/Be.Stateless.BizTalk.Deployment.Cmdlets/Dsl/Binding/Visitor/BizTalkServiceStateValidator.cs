@@ -42,20 +42,11 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 	/// </list>
 	/// </remarks>
 	[SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Public API.")]
-	public sealed class BizTalkServiceStateValidator : ApplicationBindingVisitor, IDisposable
+	public sealed class BizTalkServiceStateValidator : IApplicationBindingVisitor, IDisposable
 	{
-		#region IDisposable Members
+		#region IApplicationBindingVisitor Members
 
-		public void Dispose()
-		{
-			_application?.Dispose();
-		}
-
-		#endregion
-
-		#region Base Class Member Overrides
-
-		protected override void VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
+		void IApplicationBindingVisitor.VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
 			where TNamingConvention : class
 		{
 			if (applicationBinding == null) throw new ArgumentNullException(nameof(applicationBinding));
@@ -63,7 +54,9 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			_application = BizTalkServerGroup.Applications[name];
 		}
 
-		protected override void VisitOrchestration(IOrchestrationBinding orchestrationBinding)
+		void IApplicationBindingVisitor.VisitReferencedApplicationBinding(IVisitable<IApplicationBindingVisitor> referencedApplicationBinding) { }
+
+		void IApplicationBindingVisitor.VisitOrchestration(IOrchestrationBinding orchestrationBinding)
 		{
 			if (orchestrationBinding == null) throw new ArgumentNullException(nameof(orchestrationBinding));
 			var name = orchestrationBinding.Type.FullName;
@@ -72,7 +65,7 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 				throw new InvalidOperationException($"Orchestration '{name}' is not in the expected {orchestrationBinding.State} state, but in the {orchestration.Status} state.");
 		}
 
-		protected override void VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation)
+		void IApplicationBindingVisitor.VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation)
 			where TNamingConvention : class
 		{
 			if (receiveLocation == null) throw new ArgumentNullException(nameof(receiveLocation));
@@ -82,7 +75,7 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 				throw new InvalidOperationException($"Receive location '{name}' is not {(receiveLocation.Enabled ? "enabled" : "disabled")} as expected.");
 		}
 
-		protected override void VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort)
+		void IApplicationBindingVisitor.VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort)
 			where TNamingConvention : class
 		{
 			if (receivePort == null) throw new ArgumentNullException(nameof(receivePort));
@@ -90,7 +83,7 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			_receivePort = _application.ReceivePorts[name];
 		}
 
-		protected override void VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort)
+		void IApplicationBindingVisitor.VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort)
 			where TNamingConvention : class
 		{
 			if (sendPort == null) throw new ArgumentNullException(nameof(sendPort));
@@ -98,6 +91,15 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 			var sp = _application.SendPorts[name];
 			if (sp.Status != (PortStatus) sendPort.State)
 				throw new InvalidOperationException($"Send port '{name}' is not in the expected {sendPort.State} state, but in the {sp.Status} state.");
+		}
+
+		#endregion
+
+		#region IDisposable Members
+
+		public void Dispose()
+		{
+			_application?.Dispose();
 		}
 
 		#endregion

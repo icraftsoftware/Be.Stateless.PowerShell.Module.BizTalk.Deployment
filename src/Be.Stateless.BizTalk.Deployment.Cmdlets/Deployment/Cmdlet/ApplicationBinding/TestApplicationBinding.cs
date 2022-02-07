@@ -46,7 +46,7 @@ namespace Be.Stateless.BizTalk.Deployment.Cmdlet
 		{
 			try
 			{
-				applicationBinding.Accept(new EnvironmentOverrideApplicator());
+				applicationBinding.Accept(new ApplicationBindingValidator());
 				WriteObject(true);
 			}
 			catch (Exception exception) when (!exception.IsFatal())

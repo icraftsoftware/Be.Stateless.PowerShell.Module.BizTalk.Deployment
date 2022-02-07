@@ -22,8 +22,35 @@ using System.Linq;
 
 namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 {
-	public class BizTalkHostEnumerator : ApplicationBindingVisitor, IEnumerable<string>
+	public class BizTalkHostEnumerator : IApplicationBindingVisitor, IEnumerable<string>
 	{
+		#region IApplicationBindingVisitor Members
+
+		void IApplicationBindingVisitor.VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
+			where TNamingConvention : class { }
+
+		void IApplicationBindingVisitor.VisitReferencedApplicationBinding(IVisitable<IApplicationBindingVisitor> referencedApplicationBinding) { }
+
+		void IApplicationBindingVisitor.VisitOrchestration(IOrchestrationBinding orchestrationBinding)
+		{
+			_hosts.Add(orchestrationBinding.ResolveHost());
+		}
+
+		void IApplicationBindingVisitor.VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort) where TNamingConvention : class { }
+
+		void IApplicationBindingVisitor.VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation) where TNamingConvention : class
+		{
+			_hosts.Add(receiveLocation.Transport.ResolveHost());
+		}
+
+		void IApplicationBindingVisitor.VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort) where TNamingConvention : class
+		{
+			_hosts.Add(sendPort.Transport.ResolveHost());
+			if (sendPort.BackupTransport.IsValueCreated) _hosts.Add(sendPort.BackupTransport.Value.ResolveHost());
+		}
+
+		#endregion
+
 		#region IEnumerable<string> Members
 
 		public IEnumerator<string> GetEnumerator()
@@ -34,34 +61,6 @@ namespace Be.Stateless.BizTalk.Dsl.Binding.Visitor
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
-		}
-
-		#endregion
-
-		#region Base Class Member Overrides
-
-		protected override void VisitApplicationBinding<TNamingConvention>(IApplicationBinding<TNamingConvention> applicationBinding)
-			where TNamingConvention : class { }
-
-		protected override void VisitOrchestration(IOrchestrationBinding orchestrationBinding)
-		{
-			_hosts.Add(orchestrationBinding.ResolveHost());
-		}
-
-		protected override void VisitReceiveLocation<TNamingConvention>(IReceiveLocation<TNamingConvention> receiveLocation)
-			where TNamingConvention : class
-		{
-			_hosts.Add(receiveLocation.Transport.ResolveHost());
-		}
-
-		protected override void VisitReceivePort<TNamingConvention>(IReceivePort<TNamingConvention> receivePort)
-			where TNamingConvention : class { }
-
-		protected override void VisitSendPort<TNamingConvention>(ISendPort<TNamingConvention> sendPort)
-			where TNamingConvention : class
-		{
-			_hosts.Add(sendPort.Transport.ResolveHost());
-			if (sendPort.BackupTransport.IsValueCreated) _hosts.Add(sendPort.BackupTransport.Value.ResolveHost());
 		}
 
 		#endregion
