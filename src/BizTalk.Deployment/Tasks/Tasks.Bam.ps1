@@ -27,7 +27,7 @@ task Deploy-BamConfiguration -If ( (-not $SkipSharedResources) -and ($Manifest.P
 # Synopsis: Deploy business activity models
 task Deploy-BamActivityModels {
    $Resources | ForEach-Object -Process {
-      Write-Build DarkGreen "Deploying BAM Activity Model '$($_.Name)'"
+      Write-Build DarkGreen "BAM Activity Model '$($_.Name)'"
       Invoke-Tool -Command { BM update-all -DefinitionFile:`"$($_.Path)`" }
    }
 }
@@ -35,7 +35,7 @@ task Deploy-BamActivityModels {
 # Synopsis: Create indexes for business activity models
 task Deploy-BamIndexes {
    $Resources | ForEach-Object -Process {
-      Write-Build DarkGreen "Creating BAM Index '$($_.Activity)'.'$($_.Name)'"
+      Write-Build DarkGreen "BAM Index '$($_.Activity)'.'$($_.Name)'"
       Invoke-Tool -Command { BM create-index -Activity:`"$($_.Activity)`" -IndexName:`"IX_$($_.Name)`" -Checkpoint:`"$($_.Name)`" }
    }
 }
@@ -47,7 +47,7 @@ task Undeploy-BamConfiguration -If ( (-not $SkipUninstall) -and (-not $SkipShare
 # Synopsis: Undeploy business activity models
 task Undeploy-BamActivityModels {
    $Resources | ForEach-Object -Process {
-      Write-Build DarkGreen "Undeploying BAM Activity Model '$($_.Name)'"
+      Write-Build DarkGreen "BAM Activity Model '$($_.Name)'"
       Invoke-Tool -Command { BM remove-all -DefinitionFile:`"$($_.Path)`" }
    }
 }

@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Be.Stateless.BizTalk.Pipeline.Components" Version="2.1.22025.28847" />
     <PackageReference Include="Be.Stateless.BizTalk.Pipelines" Version="2.1.22025.39770" />
-    <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.1.22025.23462" />
+    <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.1.22047.28674" />
     <PackageReference Include="Be.Stateless.Reflection" Version="2.1.22025.20814" />
     <PackageReference Include="Be.Stateless.Stream" Version="2.1.22025.21947" />
     <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.3">
@@ -30,7 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="6.4.0" />
+    <PackageReference Include="FluentAssertions" Version="6.5.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="Microsoft.PowerShell.5.1.ReferenceAssemblies" Version="1.0.0" />
     <PackageReference Include="Moq" Version="4.16.1" />

@@ -19,11 +19,11 @@
 Set-StrictMode -Version Latest
 
 # Synopsis: Deploy SQL databases and execute SQL deployment scripts
-task Deploy-SqlDatabases -If { -not $SkipSharedResources } `
+task Deploy-SqlDatabases -If { -not $SkipSharedResources -and (Test-PseudoResourceGroup -Name SqlDatabases) } `
    Invoke-SqlDeploymentScripts
 
 # Synopsis: Undeploy SQL databases and execute SQL undeployment scripts
-task Undeploy-SqlDatabases -If { (-not $SkipUninstall) -and (-not $SkipSharedResources) } `
+task Undeploy-SqlDatabases -If { (-not $SkipUninstall) -and (-not $SkipSharedResources) -and (Test-PseudoResourceGroup -Name SqlDatabases) } `
    Invoke-SqlUndeploymentScripts
 
 # Synopsis: Execute SQL deployment scripts

@@ -20,6 +20,8 @@ Set-StrictMode -Version Latest
 
 . $PSScriptRoot\Tasks.BtsApplication.ps1
 . $PSScriptRoot\Tasks.BtsBindings.ps1
+. $PSScriptRoot\Tasks.BtsFileAdapterFolders.ps1
+. $PSScriptRoot\Tasks.BtsHostInstances.ps1
 . $PSScriptRoot\Tasks.BtsMaps.ps1
 . $PSScriptRoot\Tasks.BtsOrchestrations.ps1
 . $PSScriptRoot\Tasks.BtsPipelineComponents.ps1
@@ -32,18 +34,18 @@ task Deploy-BizTalkApplication `
    Undeploy-BizTalkApplication, `
    Add-BizTalkApplication, `
    Deploy-BizTalkArtifacts, `
-   Start-Application, `
+   Start-BizTalkApplication, `
    Restart-BizTalkHostInstances
 
 # Synopsis: Patch a Microsoft BizTalk Server Application's Binaries
 task Patch-BizTalkApplication `
    Deploy-BizTalkArtifacts, `
-   Start-Application, `
+   Start-BizTalkApplication, `
    Restart-BizTalkHostInstances
 
 # Synopsis: Undeploy a Microsoft BizTalk Server Application
 task Undeploy-BizTalkApplication -If { -not $SkipUninstall } `
-   Stop-Application, `
+   Stop-BizTalkApplication, `
    Undeploy-BizTalkArtifacts, `
    Remove-BizTalkApplication, `
    Restart-BizTalkHostInstances
@@ -68,29 +70,3 @@ task Undeploy-BizTalkArtifacts -If { -not $SkipUninstall } `
    Undeploy-PipelineComponents, `
    Undeploy-Maps, `
    Undeploy-Schemas
-
-# Synopsis: Restart the Microsoft BizTalk Server Host Instances of either a BizTalk Application or the BizTalk Group
-task Restart-BizTalkHostInstances -If { (-not $SkipHostInstanceRestart) -and (-not $SkipSharedResources) } `
-   Restart-BizTalkHostInstancesForApplication, `
-   Restart-BizTalkHostInstancesForGroup
-
-# Synopsis: Restart the Microsoft BizTalk Server Host Instances of a BizTalk Application
-task Restart-BizTalkHostInstancesForApplication -If { Get-ResourceGroup -Name Bindings | Test-Any } {
-   Get-ResourceGroup -Name Bindings | ForEach-Object -Process {
-      $arguments = ConvertTo-ApplicationBindingCmdletArguments -Binding $_
-      Get-ApplicationHosts @arguments | ForEach-Object -Process {
-         Get-BizTalkHost -Name $_ | Where-Object -FilterScript { Test-BizTalkHost -Host $_ -Type InProcess } | Get-BizTalkHostInstance | ForEach-Object -Process {
-            Write-Build DarkGreen $_.HostName on $_.RunningServer
-            Restart-BizTalkHostInstance -HostInstance $_
-         }
-      }
-   }
-}
-
-# Synopsis: Restart the Microsoft BizTalk Server Host Instances of the BizTalk Group
-task Restart-BizTalkHostInstancesForGroup -If { Get-ResourceGroup -Name Bindings | Test-None } {
-   Get-BizTalkHost | Where-Object -FilterScript { Test-BizTalkHost -Host $_ -Type InProcess } | Get-BizTalkHostInstance | ForEach-Object -Process {
-      Write-Build DarkGreen $_.HostName on $_.RunningServer
-      Restart-BizTalkHostInstance -HostInstance $_
-   }
-}

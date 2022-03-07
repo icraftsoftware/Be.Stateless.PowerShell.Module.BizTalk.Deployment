@@ -28,8 +28,12 @@ task Deploy-Files {
          }
          Write-Build DarkGreen $arguments.Destination
          $directory = Split-Path -Path $arguments.Destination -Parent
-         if (-not(Test-Path -LiteralPath $directory)) {
-            New-Item -Type Directory -Path $directory -Force -Verbose:($VerbosePreference -eq 'Continue') | Out-Null
+         if (-not(Test-Path -LiteralPath $directory -PathType Container)) {
+            New-Item -Path $directory -ItemType Directory -Force -Verbose:($VerbosePreference -eq 'Continue') | Out-Null
+            if (-not(Test-Path -LiteralPath $directory -PathType Container)) {
+               # https://github.com/PowerShell/PowerShell/issues/5290
+               throw "Could not create directory '$directory' because a file at the same location already exists."
+            }
          }
          Copy-Item @arguments -Force -Verbose:($VerbosePreference -eq 'Continue')
       }
@@ -44,7 +48,9 @@ task Undeploy-Files -If { -not $SkipUninstall } {
             LiteralPath = Resolve-Destination -Source $_.Path -Destination $destination
          }
          Write-Build DarkGreen $arguments.LiteralPath
-         if (Test-Path @arguments) {
+         if (Test-Path @arguments -PathType Container) {
+            throw "Cannot undeploy a directory. '$($arguments.LiteralPath)' must be a file path."
+         } elseif (Test-Path @arguments -PathType Leaf) {
             Remove-Item @arguments -Force -Verbose:($VerbosePreference -eq 'Continue')
          }
       }

@@ -11,15 +11,16 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <!-- embed source files that are not tracked by the source control manager in the PDB -->
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <PropertyGroup>
+    <DebugType>none</DebugType>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
+    <PublishDir>$(MSBuildThisFileDirectory)..\BizTalk.Deployment\bin</PublishDir>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
 
@@ -27,18 +28,6 @@
     <DocumentationFile>bin\Release\$(AssemblyName).xml</DocumentationFile>
     <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
-
-  <PropertyGroup>
-    <ExcludedPackages>
-      log4net;
-      Microsoft.PowerShell.5.1.ReferenceAssemblies;
-      System.CodeDom
-    </ExcludedPackages>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Deployment\Cmdlet\ExpandApplicationBinding.Trimmer.xslt" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Deployment\Cmdlet\ExpandApplicationBinding.Trimmer.xslt" />
@@ -50,7 +39,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.1.22038.28359" />
+    <None Include="BizTalk.Deployment.Core.psd1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Be.Stateless.BizTalk.Abstractions" Version="2.1.22046.40892" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Abstractions" Version="2.1.22025.28826" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding" Version="2.1.22038.33899" />
     <PackageReference Include="Be.Stateless.BizTalk.Dsl.Binding.Conventions" Version="2.1.22038.33899" />
@@ -59,11 +54,11 @@
     <PackageReference Include="Be.Stateless.BizTalk.Explorer" Version="2.1.22025.23369" />
     <PackageReference Include="Be.Stateless.BizTalk.Messaging" Version="2.1.22025.26745" />
     <PackageReference Include="Be.Stateless.BizTalk.Pipeline.Components" Version="2.1.22025.28847" />
-    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.MicroComponents" Version="2.1.22025.28006" />
+    <PackageReference Include="Be.Stateless.BizTalk.Pipeline.MicroComponents" Version="2.1.22047.46252" />
     <PackageReference Include="Be.Stateless.BizTalk.Settings" Version="2.1.22025.21655" />
     <PackageReference Include="Be.Stateless.BizTalk.Stream" Version="2.1.22025.26169" />
     <PackageReference Include="Be.Stateless.BizTalk.Xml" Version="2.1.22025.24612" />
-    <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.1.22025.23462" />
+    <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.1.22047.28674" />
     <PackageReference Include="Be.Stateless.Extensions" Version="2.1.22025.20499" />
     <PackageReference Include="Be.Stateless.Reflection" Version="2.1.22025.20814" />
     <PackageReference Include="Be.Stateless.Runtime" Version="2.1.22025.21140" />
@@ -84,14 +79,16 @@
     <PackageReference Include="System.CodeDom" Version="6.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="$(ExcludedPackages)" PrivateAssets="all" IncludeAssets="compile" />
-  </ItemGroup>
+  <PropertyGroup>
+    <ExcludedPackages>
+      log4net;
+      Microsoft.PowerShell.5.1.ReferenceAssemblies;
+      System.CodeDom
+    </ExcludedPackages>
+  </PropertyGroup>
 
   <ItemGroup>
-    <None Update="BizTalk.Deployment.Core.psd1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <PackageReference Update="$(ExcludedPackages)" PrivateAssets="all" IncludeAssets="compile" />
   </ItemGroup>
 
 </Project>

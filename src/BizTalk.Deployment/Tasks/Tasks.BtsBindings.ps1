@@ -40,20 +40,3 @@ task Import-Bindings {
       Invoke-Tool -Command { BTSTask ImportBindings -ApplicationName:`"$ApplicationName`" -Source:`"$($_.Path).xml`" }
    }
 }
-
-# Synopsis: Create FILE Adapter-based Receive Locations' and Send Ports' Folders
-task Deploy-FileAdapterFolders {
-   Get-ResourceGroup -Name Bindings | ForEach-Object -Process {
-      Write-Build DarkGreen $_.Path
-      $arguments = ConvertTo-ApplicationBindingCmdletArguments -Binding $_
-      Install-ApplicationFileAdapterFolders @arguments -User $FileUser
-   }
-}
-# Synopsis: Remove FILE Adapter-based Receive Locations' and Send Ports' Folders
-task Undeploy-FileAdapterFolders -If { -not $SkipUninstall } {
-   Get-ResourceGroup -Name Bindings | ForEach-Object -Process {
-      Write-Build DarkGreen $_.Path
-      $arguments = ConvertTo-ApplicationBindingCmdletArguments -Binding $_
-      Uninstall-ApplicationFileAdapterFolders @arguments -Recurse
-   }
-}

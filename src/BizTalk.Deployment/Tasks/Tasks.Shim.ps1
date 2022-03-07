@@ -23,15 +23,22 @@ Enter-Build {
 }
 
 Enter-BuildTask {
-   # assign task's matching Manifest's Resources to Resources variables
-   $taskObject = $Task.Name -split '-' | Select-Object -Skip 1
+   if ($ExcludeTask | Where-Object -FilterScript { $Task.Name -like $_ } | Test-Any) {
+      Write-Verbose -Message "Excluding Task '$($Task.Name)'."
+      $Task.Jobs = @()
+   }
+}
+
+Enter-BuildJob {
+   # assign task's matching Manifest's ResourceGroup to $Resources variables
+   $taskObject = $Task.Name -split '-', 2 | Select-Object -Skip 1
    if (-not [string]::IsNullOrEmpty($taskObject)) {
       $taskResourceGroup = @(Get-ResourceGroup -Name $taskObject)
       Set-Variable -Name Resources -Option ReadOnly -Scope Local -Value $taskResourceGroup -Force
    }
 }
 
-Exit-BuildTask {
+Exit-BuildJob {
    # ignore error to prevent failure should the variable $Resources not be defined
    Remove-Variable -Name Resources -Scope Local -Force -ErrorAction Ignore
 }

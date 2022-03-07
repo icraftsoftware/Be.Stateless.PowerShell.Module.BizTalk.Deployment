@@ -42,12 +42,17 @@ param(
    [scriptblock[]]
    $Task = ([scriptblock] { }),
 
-   [Alias('Exclude')]
    [Parameter(Mandatory = $false, ParameterSetName = 'manifest-object')]
    [Parameter(Mandatory = $false, ParameterSetName = 'manifest-path')]
    [ValidateNotNullOrEmpty()]
    [string[]]
    $ExcludeResourceGroup = @(),
+
+   [Parameter(Mandatory = $false, ParameterSetName = 'manifest-object')]
+   [Parameter(Mandatory = $false, ParameterSetName = 'manifest-path')]
+   [ValidateNotNullOrEmpty()]
+   [string[]]
+   $ExcludeTask = @(),
 
    [Parameter(Mandatory = $false, ParameterSetName = 'manifest-object')]
    [Parameter(Mandatory = $false, ParameterSetName = 'manifest-path')]

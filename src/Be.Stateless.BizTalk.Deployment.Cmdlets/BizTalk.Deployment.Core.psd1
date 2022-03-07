@@ -59,6 +59,7 @@
          Tags       = @('be.stateless.be', 'icraftsoftware', 'Application', 'BizTalk', 'Deployment', 'DSL', 'Bindings', 'SSO')
          LicenseUri = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/blob/master/LICENSE'
          ProjectUri = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment'
+         Prerelease = 'preview'
       }
    }
    DefaultCommandPrefix  = 'Core'

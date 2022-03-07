@@ -28,21 +28,57 @@ function Get-ResourceGroup {
       $Name,
 
       [Parameter(Mandatory = $false)]
-      [switch]
-      $ThrowOnError
+      [ValidateNotNullOrEmpty()]
+      [string]
+      $PseudoName
    )
-   if ($Manifest.ContainsKey($Name)) {
-      if ($ExcludeResourceGroup -contains $Name) {
-         Write-Verbose -Message "Exclude ResourceGroup '$Name' from Manifest."
-         @()
-      } else {
-         Write-Verbose -Message "Get ResourceGroup '$Name' from Manifest."
-         @($Manifest.$Name | Where-Object { -not(Get-Member -InputObject $_ -Name Condition) -or $_.Condition() })
-      }
-   } elseif ($ThrowOnError) {
-      throw "ResourceGroup '$Name' not found in Manifest."
-   } else {
-      Write-Verbose -Message "No ResourceGroup '$Name' found in Manifest."
+   if (-not [string]::IsNullOrWhiteSpace($PseudoName) -and -not (Test-PseudoResourceGroup -Name $PseudoName)) {
       @()
+   } elseif (-not(Test-ResourceGroup -Name $Name)) {
+      @()
+   } else {
+      if ([string]::IsNullOrWhiteSpace($PseudoName)) {
+         Write-Verbose -Message "Processing ResourceGroup '$Name'."
+      } else {
+         Write-Verbose -Message "Processing Pseudo ResourceGroup '$PseudoName' Through ResourceGroup '$Name'."
+      }
+      @($Manifest.$Name | Where-Object { -not(Get-Member -InputObject $_ -Name Condition) -or $_.Condition() })
+   }
+}
+
+function Test-ResourceGroup {
+   [CmdletBinding()]
+   [OutputType([bool])]
+   param(
+      [Parameter(Mandatory = $true)]
+      [ValidateNotNullOrEmpty()]
+      [string]
+      $Name
+   )
+   if (-not $Manifest.ContainsKey($Name)) {
+      Write-Verbose -Message "No ResourceGroup '$Name' found."
+      $false
+   } elseif ($ExcludeResourceGroup | Where-Object -FilterScript { $Name -like $_ } | Test-Any) {
+      Write-Verbose -Message "Excluding ResourceGroup '$Name'."
+      $false
+   } else {
+      $true
+   }
+}
+
+function Test-PseudoResourceGroup {
+   [CmdletBinding()]
+   [OutputType([bool])]
+   param(
+      [Parameter(Mandatory = $true)]
+      [ValidateNotNullOrEmpty()]
+      [string]
+      $Name
+   )
+   if ($ExcludeResourceGroup | Where-Object -FilterScript { $Name -like $_ } | Test-Any) {
+      Write-Verbose -Message "Excluding Pseudo ResourceGroup '$Name'."
+      $false
+   } else {
+      $true
    }
 }

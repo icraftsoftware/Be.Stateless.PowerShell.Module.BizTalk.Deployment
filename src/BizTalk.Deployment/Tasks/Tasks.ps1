@@ -16,8 +16,6 @@
 
 #endregion
 
-# TODO option switches to skip tasks (e.g. SkipBamDeployment)
-
 Set-StrictMode -Version Latest
 
 . $PSScriptRoot\..\Commands\Assembly\Assembly.ps1
