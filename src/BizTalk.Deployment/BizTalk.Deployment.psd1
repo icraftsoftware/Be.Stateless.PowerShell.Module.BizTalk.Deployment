@@ -32,10 +32,13 @@
       '.\bin\Be.Stateless.Dsl.Configuration.dll'
    )
    RequiredModules       = @(
-      @{ ModuleName = 'Dsl.Configuration' ; ModuleVersion = '2.1.0.0' ; GUID = '99128609-dd5b-43d7-b834-6bc0ca537f02' }
+      # comment out following dependencies to workaround cyclic dependency issue, see https://github.com/PowerShell/PowerShell/issues/2607
+      # @{ ModuleName = 'BizTalk.Administration' ; ModuleVersion = '2.1.0.0' ; GUID = 'de802b43-c7a6-4580-a34b-ac805bbf813e' }
+      @{ ModuleName = 'Dsl.Configuration' ; ModuleVersion = '2.1.22096.35554' ; GUID = '99128609-dd5b-43d7-b834-6bc0ca537f02' }
+      # @{ ModuleName = 'Exec' ; ModuleVersion = '2.1.0.0' ; GUID = '83f4143a-79ee-49ee-a510-7770a0fc1644' }
       @{ ModuleName = 'Gac' ; ModuleVersion = '1.0.1' ; GUID = '2f3a501f-882b-43c4-aaeb-3ffc9fea932c' }
       @{ ModuleName = 'InvokeBuild' ; ModuleVersion = '5.8.6' ; GUID = 'a0319025-5f1f-47f0-ae8d-9c7e151a5aae' }
-      @{ ModuleName = 'Resource.Manifest' ; ModuleVersion = '2.1.0.0' ; GUID = '07e35b0e-3441-46b4-82e6-d8daafb837bd' }
+      # @{ ModuleName = 'Psx' ; ModuleVersion = '2.1.0.0' ; GUID = '217de01f-f2e1-460a-99a4-b8895d0dd071' }
       @{ ModuleName = 'SqlServer' ; ModuleVersion = '21.1.18256' ; GUID = '97c3b589-6545-4107-a061-3fe23a4e9195' }
    )
    AliasesToExport       = @(
@@ -69,7 +72,7 @@
          Tags                       = @('be.stateless.be', 'icraftsoftware', 'Application', 'BizTalk', 'Deployment', 'Declarative', 'SQL')
          LicenseUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/blob/master/LICENSE'
          ProjectUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment'
-         ExternalModuleDependencies = @('BizTalk.Administration', 'Dsl.Configuration', 'Exec', 'Gac', 'InvokeBuild', 'Resource.Manifest', 'Psx', 'SqlServer')
+         ExternalModuleDependencies = @('BizTalk.Administration', 'Dsl.Configuration', 'Exec', 'Gac', 'InvokeBuild', 'Psx', 'SqlServer')
          Prerelease                 = 'preview'
       }
    }

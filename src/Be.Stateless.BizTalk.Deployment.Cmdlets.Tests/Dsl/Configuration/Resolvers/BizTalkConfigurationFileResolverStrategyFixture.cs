@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #endregion
 
 using System.Diagnostics.CodeAnalysis;
+using Be.Stateless.BizTalk.Management;
 using FluentAssertions;
 using Xunit;
 
@@ -44,9 +45,11 @@ namespace Be.Stateless.BizTalk.Dsl.Configuration.Resolvers
 		}
 
 		[SuppressMessage("ReSharper", "StringLiteralTypo")]
-		[Fact]
+		[SkippableFact]
 		public void ResolveMultipleFiles()
 		{
+			Skip.IfNot(BizTalkInstallation.IsInstalled);
+
 			new BizTalkConfigurationFileResolverStrategy().Resolve("global:biztalk.config")
 				.Should().BeEquivalentTo(
 					@"C:\Program Files (x86)\Microsoft BizTalk Server\BTSNTSvc.exe.config",
@@ -54,9 +57,11 @@ namespace Be.Stateless.BizTalk.Dsl.Configuration.Resolvers
 		}
 
 		[SuppressMessage("ReSharper", "StringLiteralTypo")]
-		[Fact]
+		[SkippableFact]
 		public void ResolveSingleFile()
 		{
+			Skip.IfNot(BizTalkInstallation.IsInstalled);
+
 			new BizTalkConfigurationFileResolverStrategy().Resolve("global:32bits:biztalk.config")
 				.Should().BeEquivalentTo(@"C:\Program Files (x86)\Microsoft BizTalk Server\BTSNTSvc.exe.config");
 		}

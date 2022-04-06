@@ -25,14 +25,14 @@ task Deploy-XmlConfigurations `
 
 # Synopsis: Revert XML configuration customizations
 task Undeploy-XmlConfigurations `
-   Revert-XmlConfigurations, `
-   Invoke-XmlUnconfigurationActions
+   Invoke-XmlUnconfigurationActions, `
+   Revert-XmlConfigurations
 
 # Synopsis: Apply XML configuration specifications
 task Apply-XmlConfigurations {
    $Resources | ForEach-Object -Process {
       Write-Build DarkGreen $_.Path
-      Merge-ConfigurationSpecification -Path $_.Path -CreateBackup -CreateUndo -ConfigurationFileResolvers $([Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy]::new())
+      Merge-ConfigurationSpecification -Path $_.Path -CreateBackup -CreateUndo -ConfigurationFileResolvers (New-Object -TypeName Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy)
    }
 }
 
@@ -40,10 +40,15 @@ task Apply-XmlConfigurations {
 task Invoke-XmlConfigurationActions {
    $Resources | ForEach-Object -Process { $_ } -PipelineVariable xca | ForEach-Object -Process {
       Write-Build DarkGreen $xca.Path
+      $arguments = @{
+         ConfigurationFileResolvers = New-Object -TypeName Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy
+         ConfigurationFile          = $xca.Path
+         XPath                      = $xca.XPath
+      }
       switch ($xca.Action) {
-         'Append' { Add-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Name $xca.Name -Attribute $xca.Attribute }
-         'Update' { Set-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Attribute $xca.Attribute }
-         'Delete' { Remove-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath }
+         'Append' { Add-ConfigurationElement @arguments -Name $xca.Name -Attribute $xca.Attribute }
+         'Update' { Set-ConfigurationElement @arguments -Attribute $xca.Attribute }
+         'Delete' { Remove-ConfigurationElement @arguments }
          default { throw "Unknown XML configuration action $($xca.Action)." }
       }
    }
@@ -54,7 +59,7 @@ task Revert-XmlConfigurations -If { -not $SkipUninstall } {
    $Resources | ForEach-Object -Process {
       Get-ChildItem -Path "$($_.Path).*.undo" -File | Sort-Object -Descending | ForEach-Object -Process {
          Write-Build DarkGreen $_
-         Merge-ConfigurationSpecification -Path $_ -ConfigurationFileResolvers $([Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy]::new())
+         Merge-ConfigurationSpecification -Path $_ -ConfigurationFileResolvers (New-Object -TypeName Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy)
          Remove-Item -Path $_ -Force
       }
    }
@@ -64,10 +69,15 @@ task Revert-XmlConfigurations -If { -not $SkipUninstall } {
 task Invoke-XmlUnconfigurationActions {
    $Resources | ForEach-Object -Process { $_ } -PipelineVariable xca | ForEach-Object -Process {
       Write-Build DarkGreen $xca.Path
+      $arguments = @{
+         ConfigurationFileResolvers = New-Object -TypeName Be.Stateless.BizTalk.Dsl.Configuration.Resolvers.BizTalkConfigurationFileResolverStrategy
+         ConfigurationFile          = $xca.Path
+         XPath                      = $xca.XPath
+      }
       switch ($xca.Action) {
-         'Append' { Add-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Name $xca.Name -Attribute $xca.Attribute }
-         'Update' { Set-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath -Attribute $xca.Attribute }
-         'Delete' { Remove-ConfigurationElement -ConfigurationFile $xca.Path -XPath $xca.XPath }
+         'Append' { Add-ConfigurationElement @arguments -Name $xca.Name -Attribute $xca.Attribute }
+         'Update' { Set-ConfigurationElement @arguments -Attribute $xca.Attribute }
+         'Delete' { Remove-ConfigurationElement @arguments }
          default { throw "Unknown XML configuration action $($xca.Action)." }
       }
    }
