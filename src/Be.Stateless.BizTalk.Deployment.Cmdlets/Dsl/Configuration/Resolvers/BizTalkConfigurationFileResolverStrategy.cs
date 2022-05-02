@@ -1,6 +1,6 @@
 ﻿#region Copyright & License
 
-// Copyright © 2012 - 2021 François Chabot
+// Copyright © 2012 - 2022 François Chabot
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -64,6 +64,6 @@ namespace Be.Stateless.BizTalk.Dsl.Configuration.Resolvers
 
 		#endregion
 
-		private static readonly Regex _globalPattern = new(@"^global(?::(?<bitness>(?:32|64)bits))?:(?:biztalk\.config)$");
+		private static readonly Regex _globalPattern = new(@"^global(:(?<bitness>(32|64)bits))?:biztalk\.config$");
 	}
 }
