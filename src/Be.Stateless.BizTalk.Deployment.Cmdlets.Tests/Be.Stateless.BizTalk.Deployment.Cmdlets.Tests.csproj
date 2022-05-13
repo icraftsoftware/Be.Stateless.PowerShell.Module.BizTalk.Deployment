@@ -18,7 +18,7 @@
     <PackageReference Include="Be.Stateless.Dsl.Configuration" Version="2.1.22096.35554" />
     <PackageReference Include="Be.Stateless.Reflection" Version="2.1.22095.30556" />
     <PackageReference Include="Be.Stateless.Stream" Version="2.1.22025.21947" />
-    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.3">
+    <PackageReference Include="BizTalk.Server.2020.Runtime" Version="1.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
