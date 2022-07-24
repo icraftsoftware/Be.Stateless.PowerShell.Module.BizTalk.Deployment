@@ -18,6 +18,36 @@
 
 Set-StrictMode -Version Latest
 
+<#
+.SYNOPSIS
+   Gets the affiliate applications defined in the Enterprise Single Sign-On (SSO) server database.
+.DESCRIPTION
+   Gets the affiliate applications defined in the Enterprise Single Sign-On (SSO) server database. If no name is given, then this command gets the SSO affiliate
+   applications that have been created thanks to BizTalk.Factory's Settings API, i.e. Be.Stateless.BizTalk.Settings.Sso.AffiliateApplication class contained in the
+   Be.Stateless.BizTalk.Settings assembly. If the '*' wildcard is given, then this command returns all the SSO affiliate applications defined in the Enterprise Single
+   Sign-On (SSO) server database, regardless of whether the affiliate application has been defined thanks to BizTalk.Factory API.
+.PARAMETER AffiliateApplicationName
+   The optional name of the affiliate application to return. The wildcard '*' can be passed to return all the affiliate applications defined in the Enterprise
+   Single Sign-On (SSO) server database.
+.OUTPUTS
+   The created affiliate applications.
+.EXAMPLE
+   PS> Get-AffiliateApplication
+
+   Returns all the affiliate applications that have been created by the BizTalk.Factory's Settings API.
+.EXAMPLE
+   PS> Get-AffiliateApplication -Name *
+
+   Returns all the affiliate applications regardless of whether they have been created by the BizTalk.Factory's Settings API.
+.EXAMPLE
+   PS> Get-AffiliateApplication -Name BizTalk.Factory, BizTalk.Factory.Batching
+
+   Returns the affiliate applications that have the given names, regardless of whether they have been created by the BizTalk.Factory's Settings API.
+.LINK
+   https://www.stateless.be/PowerShell/Module/BizTalk/Deployment/AffiliateApplicationCommands.html
+.NOTES
+   © 2022 be.stateless.
+#>
 function Get-AffiliateApplication {
    [CmdletBinding()]
    [OutputType([AffiliateApplication[]])]
@@ -39,6 +69,31 @@ function Get-AffiliateApplication {
    }
 }
 
+<#
+.SYNOPSIS
+   Gets the config stores associated to an affiliate application from the Enterprise Single Sign-On (SSO) server database.
+.DESCRIPTION
+   Gets either the default or any config stores associated to an affiliate application from the Enterprise Single Sign-On (SSO) server database.
+.PARAMETER AffiliateApplicationName
+   The name of the affiliate application.
+.PARAMETER Any
+   Whether to return any config store associated to an affiliate application; only the default one otherwise.
+.OUTPUTS
+   The config store associated to an affiliate application.
+.EXAMPLE
+   PS> Get-AffiliateApplicationStore -Name 'BizTalk.Factory'
+.EXAMPLE
+   PS> Get-AffiliateApplicationStore -Name 'BizTalk.Factory' -Any
+.EXAMPLE
+   PS> New-AffiliateApplication -Name Test
+   PS> $s = Get-AffiliateApplicationStore -Name Test
+   PS> $s.Properties['Name'] = 'Value'
+   PS> $s.Save()
+.LINK
+   https://www.stateless.be/PowerShell/Module/BizTalk/Deployment/AffiliateApplicationCommands.html
+.NOTES
+   © 2022 be.stateless.
+#>
 function Get-AffiliateApplicationStore {
    [CmdletBinding()]
    [OutputType([ConfigStore[]])]
@@ -64,6 +119,29 @@ function Get-AffiliateApplicationStore {
    }
 }
 
+<#
+.SYNOPSIS
+   Creates a new affiliate application in the Enterprise Single Sign-On (SSO) server database.
+.DESCRIPTION
+   Creates a new affiliate application in the Enterprise Single Sign-On (SSO) server database and configure its administrator and user privileges.
+.PARAMETER AffiliateApplicationName
+   The name of the affiliate application to create. The name cannot contain any space.
+.PARAMETER AdministratorGroup
+   The optional name of the group that has administrator privilege on the affiliate application. It defaults to the local group 'BizTalk Server Administrators'.
+.PARAMETER UserGroup
+   The optional name of the group that has user privilege on the affiliate application. It defaults to the local groups 'BizTalk Application Users' and 'BizTalk
+   Isolated Host Users'.
+.OUTPUTS
+   The newly created affiliate application.
+.EXAMPLE
+   PS> New-AffiliateApplication -Name 'BizTalk.Factory'
+.EXAMPLE
+   PS> New-AffiliateApplication -Name 'BizTalk.Factory' -AdministratorGroup 'BizTalk Server Administrators' -UserGroup 'BizTalk Application Users', 'BizTalk Isolated Host Users'
+.LINK
+   https://www.stateless.be/PowerShell/Module/BizTalk/Deployment/AffiliateApplicationCommands.html
+.NOTES
+   © 2022 be.stateless.
+#>
 function New-AffiliateApplication {
    [CmdletBinding()]
    [OutputType([AffiliateApplication])]
@@ -95,6 +173,20 @@ function New-AffiliateApplication {
    $affiliateApplication
 }
 
+<#
+.SYNOPSIS
+   Deletes an affiliate application from the Enterprise Single Sign-On (SSO) server database.
+.DESCRIPTION
+   Deletes an affiliate application from the Enterprise Single Sign-On (SSO) server database.
+.PARAMETER AffiliateApplicationName
+   The name of the affiliate application to delete.
+.EXAMPLE
+   PS> Remove-AffiliateApplication -Name 'BizTalk.Factory'
+.LINK
+   https://www.stateless.be/PowerShell/Module/BizTalk/Deployment/AffiliateApplicationCommands.html
+.NOTES
+   © 2022 be.stateless.
+#>
 function Remove-AffiliateApplication {
    [CmdletBinding()]
    [OutputType([void])]
@@ -115,6 +207,39 @@ function Remove-AffiliateApplication {
    }
 }
 
+<#
+.SYNOPSIS
+   Updates the properties and their values stored in the default config store of an affiliate application from the Enterprise Single Sign-On (SSO) server database.
+.DESCRIPTION
+   Updates the properties and values with the [SsoSetting] attribute qualified properties and values that are defined by the IEnvironmentSettings-derived type contained
+   in the .NET assembly located at EnvironmentSettingsAssemblyFilePath for a given TargetEnvironment. The primary intended use of this command is by the deployment
+   tasks coming with the BizTalk.Deployment module.
+.PARAMETER AffiliateApplicationName
+   The name of the affiliate application.
+.PARAMETER AssemblyProbingFolderPath
+   Optional list of folders where to look into for .NET assemblies required to load the .NET assembly containing the Code-First Microsoft BizTalk Server
+   Application Bindings.
+.PARAMETER EnvironmentSettingsAssemblyFilePath
+   The path to the .NET assembly containing the IEnvironmentSettings-derived type that defines the properties and their values to update the default config store
+   of the affiliate application with.
+.PARAMETER EnvironmentSettingOverridesTypeName
+   Optional full name of the type overriding the default settings upon which the application binding assembly depends.
+.PARAMETER Isolated
+   Whether to load the .NET assembly containing the IEnvironmentSettings-derived type in a separate process so as not to lock it.
+.PARAMETER TargetEnvironment
+   The target environment for which to produce the XML BizTalk Application Bindings. Other values than the ones suggested in accordance to BizTalk.Factory
+   Conventions are accepted.
+.OUTPUTS
+   The config store that has been updated.
+.EXAMPLE
+   PS> Update-AffiliateApplicationStore -Name 'BizTalk.Factory'
+.EXAMPLE
+   PS> Update-AffiliateApplicationStore -Name 'BizTalk.Factory' -EnvironmentSettingsAssemblyFilePath .\Be.Stateless.BizTalk.Factory.Application.Deployment\Be.Stateless.BizTalk.Factory.Settings.dll -TargetEnvironment ACC
+.LINK
+   https://www.stateless.be/PowerShell/Module/BizTalk/Deployment/AffiliateApplicationCommands.html
+.NOTES
+   © 2022 be.stateless.
+#>
 function Update-AffiliateApplicationStore {
    [CmdletBinding()]
    [OutputType([ConfigStore])]

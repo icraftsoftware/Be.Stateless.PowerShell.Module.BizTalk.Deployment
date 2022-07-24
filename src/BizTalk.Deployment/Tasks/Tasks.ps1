@@ -32,6 +32,7 @@ Set-StrictMode -Version Latest
 . $PSScriptRoot\Tasks.EventLogSources.ps1
 . $PSScriptRoot\Tasks.Files.ps1
 . $PSScriptRoot\Tasks.Installers.ps1
+. $PSScriptRoot\Tasks.Manifest.ps1
 . $PSScriptRoot\Tasks.ServiceComponents.ps1
 . $PSScriptRoot\Tasks.Sql.ps1
 . $PSScriptRoot\Tasks.SsoConfigStores.ps1
@@ -50,6 +51,7 @@ task Deploy Undeploy, `
    Add-BtsDeploymentTasks, `
    Deploy-Installers, `
    Deploy-ServiceComponents, `
+   Register-Manifest, `
    Start-WindowsServices
 
 # Synopsis: Patch a Whole Microsoft BizTalk Server Application or Library Solution
@@ -68,7 +70,8 @@ task Undeploy -If { -not $SkipUninstall } `
    Undeploy-WindowsServices, `
    Undeploy-Assemblies, `
    Undeploy-Files, `
-   Undeploy-EventLogSources
+   Undeploy-EventLogSources, `
+   Unregister-Manifest
 
 task Add-BtsDeploymentTasks -If ($Manifest.Properties.Type -eq 'Application') `
    Enter-BtsDeployment, `

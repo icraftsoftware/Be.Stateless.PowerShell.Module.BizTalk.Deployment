@@ -38,7 +38,7 @@
       # @{ ModuleName = 'Exec' ; ModuleVersion = '2.1.0.0' ; GUID = '83f4143a-79ee-49ee-a510-7770a0fc1644' }
       @{ ModuleName = 'Gac' ; ModuleVersion = '1.0.1' ; GUID = '2f3a501f-882b-43c4-aaeb-3ffc9fea932c' }
       @{ ModuleName = 'InvokeBuild' ; ModuleVersion = '5.8.6' ; GUID = 'a0319025-5f1f-47f0-ae8d-9c7e151a5aae' }
-      # @{ ModuleName = 'Psx' ; ModuleVersion = '2.1.0.0' ; GUID = '217de01f-f2e1-460a-99a4-b8895d0dd071' }
+      @{ ModuleName = 'Psx' ; ModuleVersion = '2.1.22207.25491' ; GUID = '217de01f-f2e1-460a-99a4-b8895d0dd071' }
       @{ ModuleName = 'SqlServer' ; ModuleVersion = '21.1.18256' ; GUID = '97c3b589-6545-4107-a061-3fe23a4e9195' }
    )
    AliasesToExport       = @(
@@ -72,6 +72,7 @@
          Tags                       = @('be.stateless', 'icraftsoftware', 'Application', 'BizTalk', 'Deployment', 'Declarative', 'SQL')
          LicenseUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment/blob/master/LICENSE'
          ProjectUri                 = 'https://github.com/icraftsoftware/Be.Stateless.PowerShell.Module.BizTalk.Deployment'
+         IconUri                    = 'https://github.com/icraftsoftware/Be.Stateless.Build.Scripts/raw/master/nuget.png'
          ExternalModuleDependencies = @('BizTalk.Administration', 'Dsl.Configuration', 'Exec', 'Gac', 'InvokeBuild', 'Psx', 'SqlServer')
          Prerelease                 = 'preview'
       }

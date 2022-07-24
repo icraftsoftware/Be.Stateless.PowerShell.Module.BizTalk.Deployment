@@ -46,7 +46,6 @@ task Remove-BizTalkApplication -If { (-not $SkipSharedResources) -and (Test-Pseu
 }
 
 # Synopsis: Start a Microsoft BizTalk Server Application
-# the task is not named Start-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
 task Start-BizTalkApplication -If { (-not $SkipSharedResources) -and (Test-PseudoResourceGroup -Name BizTalkApplication) -and (Test-ManifestApplication) } {
    Write-Build DarkGreen "Starting Microsoft BizTalk Server Application '$ApplicationName'"
    Get-ResourceGroup -Name Bindings | ForEach-Object -Process {
@@ -57,7 +56,6 @@ task Start-BizTalkApplication -If { (-not $SkipSharedResources) -and (Test-Pseud
 }
 
 # Synopsis: Stop a Microsoft BizTalk Server Application
-# the task is not named Stop-BizTalkApplication to avoid a clash with the eponymous function is BizTalk.Administration module
 task Stop-BizTalkApplication -If { (-not $SkipSharedResources) -and (Test-PseudoResourceGroup -Name BizTalkApplication) -and (Test-ManifestApplication) } {
    Write-Build DarkGreen "Stopping Microsoft BizTalk Server Application '$ApplicationName'"
    Stop-BizTalkApplication -Name $ApplicationName -TerminateServiceInstances:$TerminateServiceInstances

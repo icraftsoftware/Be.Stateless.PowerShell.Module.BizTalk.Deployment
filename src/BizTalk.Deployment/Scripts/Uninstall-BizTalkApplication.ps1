@@ -16,6 +16,67 @@
 
 #endregion
 
+<#
+.SYNOPSIS
+   Undeploys the resources declared by a given Microsoft BizTalk Server® application deployment manifest.
+.DESCRIPTION
+   This command will entrust Invoke-Build to carry on all the tasks necessary to undeploy the resources declared by a given Microsoft BizTalk Server® application
+   deployment manifest, which manifest is a HashTable created with the Resource.Manifest PowerShell module.
+.PARAMETER Manifest
+   The application deployment manifest instance.
+.PARAMETER Path
+   The path to the application deployment manifest.
+.PARAMETER TargetEnvironment
+   The target deployment environment, which can be any string value, but also supports the target environments defined by BizTalk.Factory, i.e. 'DEV' for
+   development, 'BLD' for build, 'INT' for integration, 'ACC' for acceptance, 'PRE' for preproduction, or 'PRD' for production.
+.PARAMETER Task
+   User defined tasks that the manifest depends on to complete its deployment. Tasks can either be new ones or override existing ones. See Invoke-Build
+   documentation, How to assemble builds using script blocks, https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Inline, and Script block as File,
+   https://github.com/nightroman/Invoke-Build/issues/78, for some explanation.
+   Notice that BizTalk.Deployment provides customization/injection points by defining Enter-/Exit-<ResourceScope> tasks, e.g. Enter-DatabaseDeployment and
+   Exit-DatabaseDeployment that allows to inject pre- or post-processing tasks surrounding the database deployment tasks.
+.PARAMETER ExcludeResourceGroup
+   The wildcard pattern determining the names of the resources or pseudo resources to ignore during the deployment. Notice that even though the tasks related to
+   these resources will still be executed, they will proceed as if these resources had not been declared and will thus have no effect. All the resources of a
+   manifest can be excluded at once by passing the wildcard * character.
+.PARAMETER ExcludeTask
+   The wildcard pattern determining the names of the tasks to skip during the deployment. Skipping a task also skips all its dependant tasks, e.g. skipping the
+   'Deploy' task will skip the whole deployment, as well as passing the wildcard * character.
+.PARAMETER Isolated
+   Whether to execute the tasks that load the application binding assembly written in BizTalk.Factory's Binding DSL in another local process via PowerShell
+   remoting. It is particularly handy for the developer who is fine tuning the binding assembly and constantly needs to recompile and redeploy it without having it
+   being locked by the PowerShell process. As a .NET assembly, once loaded, cannot be unloaded, and unlocked, unless the process that has loaded it is terminated,
+   this switch parameter prevents the developer from constantly having to kill his shell and start a new one. For this reason, it defaults to true when the
+   TargetEnvironment parameter is given the value 'DEV'.
+.PARAMETER SkipFileAdapterFolders
+   Whether to skip deleting the folders declared by both inbound and outbound Microsoft BizTalk Server® file adapters. The same effect could be achieved by
+   excluding the pseudo resource group FileAdapterFolders.
+.PARAMETER SkipHostInstanceRestart
+   Whether to skip restarting the Microsoft BizTalk Server® host instances concerned by the application being deployed.
+.PARAMETER SkipSharedResources
+   Whether to skip all the resources that need to be deployed only once in a Microsoft BizTalk Server® group. Indeed, resources such as Microsoft BizTalk Server®
+   application bindings and other artifacts like orchestrations, schemas, or maps need to be imported in the Microsoft BizTalk Server®'s management database only
+   once, that is to say on only one of the machines belonging to the same Microsoft BizTalk Server® group. While resources such as assembly, windows services,
+   event log sources, or xml configurations need to deployed on every machine belonging to the same Microsoft BizTalk Server® group.
+   To summarize, this switch parameter needs to passed for every machine belonging to the same Microsoft BizTalk Server® group but the one playing the role of the
+   management server.
+.PARAMETER TerminateServiceInstances
+   Whether to terminate any running or suspended Microsoft BizTalk Server® service instances related to the application being uninstalled.
+.EXAMPLE
+   PS> Uninstall-BizTalkApplication -Manifest $m -TargetEnvironment DEV
+.EXAMPLE
+   PS> Uninstall-BizTalkApplication -Manifest $m -TargetEnvironment PRD -InitializationOption Orchestrations, SendPorts
+.EXAMPLE
+   PS> Uninstall-BizTalkApplication -Manifest $m -TargetEnvironment DEV -ExcludeResourceGroup * -Verbose
+
+   As all the resources are excluded, this command outputs the tasks that would have carried on.
+.EXAMPLE
+   PS> Uninstall-BizTalkApplication -Manifest $m -TargetEnvironment DEV -Task { task Undeploy { Write-Host 'I hijacked the whole deployment process.' } }
+.LINK
+   https://www.stateless.be/PowerShell/Module/BizTalk/Deployment/
+.NOTES
+   © 2022 be.stateless.
+#>
 [CmdletBinding(DefaultParameterSetName = 'manifest-path')]
 [OutputType([void])]
 param(
