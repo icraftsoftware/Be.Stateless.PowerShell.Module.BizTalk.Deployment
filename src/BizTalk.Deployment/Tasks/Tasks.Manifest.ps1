@@ -19,7 +19,7 @@
 Set-StrictMode -Version Latest
 
 task Register-Manifest -if (Test-Resource -InputObject $Manifest.Properties -Member Path) {
-   Set-RegistryEntry -Key $KeyPath -Entry $Manifest.Properties.Name -Value $Manifest.Properties.Path -PropertyType String -Force
+   Set-RegistryEntry -Key $KeyPath -Entry $Manifest.Properties.Name -Value $Manifest.Properties.Path -Type String -Force
 }
 
 task Unregister-Manifest -if (Test-Resource -InputObject $Manifest.Properties -Member Path) {
